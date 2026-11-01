@@ -6,7 +6,7 @@ import HeroVideo from '../components/HeroVideo.astro';
 import Affiliations from '../components/Affiliations.astro';
 import FeatureProject from '../components/FeatureProject.astro';
 import ProjectRow from '../components/ProjectRow.astro';
-import BalancingMatrix from '../components/BalancingMatrix.astro';
+import BalancingMethod from '../components/BalancingMethod.astro';
 import Certificates from '../components/Certificates.astro';
 import People from '../components/People.astro';
 import Marked from '../components/Marked.astro';
@@ -62,27 +62,39 @@ const [balancing, macro] = papers;
       <Epigraph quote="research" />
     </header>
 
-    <article class="paper row">
-      <div class="paper-main">
-        <p class="kicker">Hanoi National University of Education</p>
-        <h3>{balancing.title}</h3>
-        <p class="cite ui">{balancing.authors}. <em>{balancing.venue}</em>.</p>
-        <p class="abstract"><span class="label-ui">The question.</span> {balancing.overview}</p>
-        <p class="abstract"><span class="label-ui">What it shows.</span> {balancing.findings}</p>
-        <BalancingMatrix />
+    <article class="paper">
+      <div class="row">
+        <div class="paper-main">
+          <p class="kicker">Hanoi National University of Education</p>
+          <h3>{balancing.title}</h3>
+          <p class="cite ui">{balancing.authors}</p>
+          <p class="abstract"><span class="label-ui">The question.</span> {balancing.overview}</p>
+          <p class="abstract"><span class="label-ui">What it shows.</span> {balancing.findings}</p>
+        </div>
+        <dl class="side-card">
+          <div><dt>Published in</dt><dd>{balancing.journal}</dd></div>
+          <div><dt>Issue</dt><dd>{balancing.issue}</dd></div>
+          <div><dt>Role</dt><dd>{balancing.role}</dd></div>
+          <div><dt>DOI</dt><dd><a href={`https://doi.org/${balancing.doi}`}>{balancing.doi}</a></dd></div>
+        </dl>
       </div>
-      <p class="side ui"><a href={`https://doi.org/${balancing.doi}`}>DOI {balancing.doi}</a></p>
+      <BalancingMethod />
     </article>
 
     <article class="paper row">
       <div class="paper-main">
         <p class="kicker">Journal of Basic and Applied Research International</p>
         <h3>{macro.title}</h3>
-        <p class="cite ui">{macro.authors}. <em>{macro.venue}</em>.</p>
+        <p class="cite ui">{macro.authors}</p>
         <p class="abstract"><span class="label-ui">The question.</span> {macro.overview}</p>
         <p class="abstract"><span class="label-ui">What it shows.</span> <Marked text={macro.findings} highlight={macro.highlight} /></p>
       </div>
-      <p class="side ui"><a href={`https://doi.org/${macro.doi}`}>DOI {macro.doi}</a></p>
+      <dl class="side-card">
+        <div><dt>Published in</dt><dd>{macro.journal}</dd></div>
+        <div><dt>Issue</dt><dd>{macro.issue}</dd></div>
+        <div><dt>Role</dt><dd>{macro.role}</dd></div>
+        <div><dt>DOI</dt><dd><a href={`https://doi.org/${macro.doi}`}>{macro.doi}</a></dd></div>
+      </dl>
     </article>
 
     <article class="paper immc" aria-labelledby="immc-title">
@@ -94,7 +106,12 @@ const [balancing, macro] = papers;
           <p class="abstract"><span class="label-ui">Our work.</span> {immc.work}</p>
           <p class="abstract result"><strong>{immc.result}</strong></p>
         </div>
-        <p class="side ui">Hanoi-Amsterdam High School for the Gifted, representing Vietnam</p>
+        <dl class="side-card">
+          <div><dt>Team</dt><dd>Hanoi-Amsterdam High School for the Gifted</dd></div>
+          <div><dt>Representing</dt><dd>Vietnam</dd></div>
+          <div><dt>Result</dt><dd>Honorable Mention, 2024 and 2025</dd></div>
+          <div><dt>Organizers</dt><dd>COMAP and NeoUnion ESC Organization</dd></div>
+        </dl>
       </div>
       <Certificates />
     </article>
@@ -294,16 +311,42 @@ const [balancing, macro] = papers;
     font-weight: 600;
   }
 
-  .side {
-    font-size: 1rem;
-    font-weight: 500;
+  /* Citation card in the margin column of each research entry. */
+  .side-card {
+    align-self: start;
+    margin: 4px 0 0;
+    padding: 4px 16px;
+    border: 1px solid var(--grid);
+    border-left: 3px solid var(--pen);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+  }
+
+  .side-card div {
+    padding: 9px 0;
+  }
+
+  .side-card div + div {
+    border-top: 1px solid var(--grid);
+  }
+
+  .side-card dt {
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--graphite);
+  }
+
+  .side-card dd {
+    margin: 2px 0 0;
+    font-size: 0.96875rem;
+    line-height: 1.4;
     overflow-wrap: anywhere;
   }
 
   @media (max-width: 900px) {
-    .side {
-      margin-top: 12px;
+    .side-card {
+      margin-top: 16px;
     }
   }
 
