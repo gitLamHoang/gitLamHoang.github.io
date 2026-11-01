@@ -6,6 +6,7 @@ const nav = [
   { label: 'Work', href: '/#work' },
   { label: 'Research', href: '/#research' },
   { label: 'Experience', href: '/#experience' },
+  { label: 'People', href: '/#people' },
 ];
 ---
 
@@ -20,7 +21,7 @@ const nav = [
   <nav aria-label="Main">
     <ul>
       {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
-      <li><a href={contact.resume} download="Harvey_Phan_Resume.pdf">Resume (PDF)</a></li>
+      <li><a href={contact.resume} download="Harvey_Phan_Resume.pdf">Resume<span class="pdf">&nbsp;(PDF)</span></a></li>
     </ul>
   </nav>
   <ThemeToggle />
@@ -98,8 +99,12 @@ const nav = [
     }
 
     nav ul {
-      gap: 0 18px;
+      gap: 0 16px;
       font-size: 1rem;
+    }
+
+    .pdf {
+      display: none;
     }
   }
 </style>
