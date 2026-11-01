@@ -1,14 +1,26 @@
 ---
-title: EEG classification on people the model never saw
-summary: An auditable EEG pipeline, from verified public recordings to predictions on held-out participants.
-role: Machine Learning Researcher, HUST (prototype); public benchmark later
+title: Cross-subject EEG state classification
+summary: An auditable EEG pipeline, from hash-verified public recordings to predictions on participants the model never saw.
+org: Hanoi University of Science and Technology
+role: Machine Learning Researcher (prototype), then public benchmark
 dates: Started 2024, public benchmark 2026
 order: 3
+overview: Classifying mental or physiological state from EEG is a core brain-computer interface problem, and the hard part is generalizing to new people. Windows from the same person are correlated, so a random split leaks subjects into the test set and inflates accuracy. This project keeps participants separate from feature extraction to final evaluation, on PhysioNet's 109-subject EEG Motor Movement/Imagery dataset.
+contribution: I started the work in 2024 as a single-channel hardware and machine learning prototype at Hanoi University of Science and Technology, with guidance from Professor Trinh Van Chien. I later rebuilt it as a reproducible multichannel benchmark with verified acquisition, 512 spectral features, participant-grouped model selection, a sealed holdout, and versioned model artifacts.
 claim: Spectral features separate eyes-open from eyes-closed EEG recordings in participants the model never saw during training or selection.
 result: 79.9% balanced accuracy on 22 unseen participants (95% CI 72.7 to 86.2), against 50.0% for a majority-class baseline.
 highlight: 79.9% balanced accuracy
 limit: Offline evaluation within one dataset. Baseline run order is fixed, so condition and run effects are confounded.
 stack: [Python, MNE, SciPy, scikit-learn]
+specs:
+  - label: Data
+    value: 3,052 windows, 109 participants, 64 channels
+  - label: Features
+    value: 512 Welch-spectrum features per window
+  - label: Selection
+    value: 8 candidates, 5 participant-disjoint folds
+  - label: Uncertainty
+    value: 2,000-sample participant-cluster bootstrap
 links:
   - label: Repository
     href: https://github.com/gitLamHoang/Classfying-brain-wave-state
@@ -25,9 +37,7 @@ sources:
 
 ## The problem
 
-EEG windows from the same person are correlated. A random row split lets a model see the test participants during training, which makes it look more useful than it is. This project keeps participants separate through model selection and evaluation.
-
-It started as a single-channel hardware and machine learning prototype at Hanoi University of Science and Technology in 2024, with guidance from Professor Trinh Van Chien. The public benchmark is a later engineering extension using PhysioNet's EEG Motor Movement/Imagery Dataset.
+EEG windows from the same person are correlated. A random row split lets a model see the test participants during training, which makes it look more useful than it is. This project keeps participants separate through model selection and evaluation, then packages the selected model with its exact feature schema and provenance.
 
 ## What I built
 
