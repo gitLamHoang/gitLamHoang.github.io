@@ -22,14 +22,15 @@ import { affiliations } from '../data/profile';
   }
 
   h2 {
-    font-size: 0.9375rem;
+    font-size: 1rem;
     margin-bottom: 12px;
   }
 
-  /* Flex so every row fills edge to edge, whatever the count. */
+  /* An even 3 by 3 grid: every cell the same width, every row the same height. */
   ul {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -38,11 +39,12 @@ import { affiliations } from '../data/profile';
   }
 
   li {
-    flex: 1 1 9.5rem;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: 14px 16px 16px;
+    justify-content: center;
+    gap: 4px;
+    min-height: 92px;
+    padding: 16px 20px;
     border-right: 1px solid var(--grid);
     border-bottom: 1px solid var(--grid);
     background: color-mix(in srgb, var(--paper-raised) 70%, transparent);
@@ -50,7 +52,7 @@ import { affiliations } from '../data/profile';
 
   .org {
     font-family: var(--font-ui);
-    font-size: 1.1875rem;
+    font-size: 1.25rem;
     font-weight: 600;
     line-height: 1.15;
     letter-spacing: -0.005em;
@@ -58,12 +60,25 @@ import { affiliations } from '../data/profile';
 
   .note {
     font-family: var(--font-ui);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 500;
+    line-height: 1.3;
     color: var(--graphite);
   }
 
   li:first-child .org {
     color: var(--pen);
+  }
+
+  @media (max-width: 760px) {
+    ul {
+      grid-template-columns: minmax(0, 1fr);
+      grid-auto-rows: auto;
+    }
+
+    li {
+      min-height: 0;
+      padding: 12px 16px;
+    }
   }
 </style>
