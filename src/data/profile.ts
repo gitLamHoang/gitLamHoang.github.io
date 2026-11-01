@@ -25,17 +25,17 @@ export const contact = {
   resumeLabel: "Harvey Phan's Resume",
 };
 
-/** Organizations, in the order they appear in the affiliations band. */
+/** Organizations, in the order they appear in the affiliations band: name, then Harvey's role there. */
 export const affiliations = [
   { name: 'Stanford University', note: 'B.S. Computer Science' },
-  { name: 'Stanford Student Robotics', note: 'HARP humanoid program' },
-  { name: 'POSH', note: 'YC W22' },
-  { name: 'Stanford AUV', note: 'Autonomous underwater vehicle' },
+  { name: 'Stanford Student Robotics', note: 'Stanford Humanoid Athletic Robotics Project' },
+  { name: 'POSH (YC W22)', note: 'Software Engineer' },
+  { name: 'Stanford AUV', note: 'Autonomous Underwater Vehicle' },
   { name: 'Pfizer', note: 'AI Engineer Apprenticeship' },
-  { name: 'Brown University', note: 'Machine learning research' },
-  { name: 'HUST', note: 'Machine learning research' },
-  { name: 'HNUE', note: 'Mathematics research' },
-  { name: 'IM²C', note: 'Honorable Mention, 2024 and 2025' },
+  { name: 'Brown University', note: 'Machine Learning Researcher' },
+  { name: 'Hanoi University of Science and Technology', note: 'Machine Learning Researcher' },
+  { name: 'Hanoi National University of Education', note: 'Mathematics Researcher' },
+  { name: 'International Mathematical Modeling Challenge', note: 'Honorable Mention, 2024 and 2025' },
 ];
 
 export interface Role {
@@ -102,6 +102,9 @@ export interface Paper {
   title: string;
   authors: string;
   venue: string;
+  journal: string;
+  issue: string;
+  role: string;
   doi: string;
   /** The research question, for a reader who hasn't seen the paper. */
   overview: string;
@@ -115,6 +118,9 @@ export const papers: Paper[] = [
     title: 'On Balancing Numbers by the Matrix Method',
     authors: 'Luu Ba Thang and Phan Hoang Lam',
     venue: 'HNUE Journal of Science: Natural Science 70(4), 3 to 10, 2025',
+    journal: 'HNUE Journal of Science: Natural Science',
+    issue: 'Vol. 70, Issue 4, pp. 3 to 10, 2025',
+    role: 'Co-author, with Luu Ba Thang',
     doi: '10.18173/2354-1059.2025-0049',
     overview:
       'A balancing number n satisfies 1 + 2 + … + (n − 1) = (n + 1) + … + (n + r) for some r, and the sequence obeys B(n) = 6B(n − 1) − B(n − 2). Fibonacci and Lucas numbers have classic matrix representations, the Q-matrix among them; this paper builds the analogue for balancing numbers.',
@@ -126,6 +132,9 @@ export const papers: Paper[] = [
       'AI-Based Forecasting of Macroeconomic Indicators: Empirical Evidence from Deep Learning Models for Inflation, GDP and Unemployment',
     authors: 'Nguyen Quang Dat, Phan Hoang Lam, Le Duy Quang, Vu Thi Thuy, Nguyen Thi Thanh Ha, and Do Duy Nhat',
     venue: 'Journal of Basic and Applied Research International 31(6), 163 to 171, 2025',
+    journal: 'Journal of Basic and Applied Research International',
+    issue: 'Vol. 31, Issue 6, pp. 163 to 171, 2025',
+    role: 'Co-author, second of six authors',
     doi: '10.56557/jobari/2025/v31i610064',
     overview:
       'Do deep sequence models beat classical econometrics at forecasting inflation, GDP growth, and unemployment? The study tests both families on quarterly U.S. and Vietnam data from 2000 to 2024, 100 quarters per country, with financial and sentiment covariates.',
