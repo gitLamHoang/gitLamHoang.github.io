@@ -1,0 +1,48 @@
+---
+import { quotes, type QuoteKey } from '../data/quotes';
+
+interface Props {
+  quote: QuoteKey;
+  class?: string;
+}
+
+const { quote, class: className } = Astro.props;
+const { text, episode } = quotes[quote];
+---
+
+<figure class:list={['epigraph', className]}>
+  <blockquote>
+    <p>&ldquo;{text}&rdquo;</p>
+  </blockquote>
+  <figcaption>Harvey Specter, <cite>Suits</cite>, {episode}</figcaption>
+</figure>
+
+<style>
+  .epigraph {
+    max-width: 34ch;
+  }
+
+  blockquote {
+    margin: 0;
+  }
+
+  blockquote p {
+    font-style: italic;
+    font-size: 1.25rem;
+    line-height: 1.38;
+    font-variation-settings: 'opsz' 32;
+    text-indent: -0.42em;
+    color: var(--ink-soft);
+  }
+
+  figcaption {
+    margin-top: 6px;
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    color: var(--graphite);
+  }
+
+  cite {
+    font-style: italic;
+  }
+</style>
