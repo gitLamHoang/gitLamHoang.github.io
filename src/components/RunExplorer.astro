@@ -1,0 +1,387 @@
+---
+// Top-down replay of one recorded HARP run (the same run as the video), with a time scrubber.
+// Static geometry and paths render on the server; the script only moves the markers.
+import run from '../data/harp-crowd-run.json';
+
+const PERSON = ['#5b7db0', '#8a9a5b', '#c9a66b', '#8f6c8a', '#4f8a8b', '#b5654a', '#7a7f88'];
+const MODE_LABEL: Record<string, string> = {
+  follow: 'Follow: route request already clear',
+  evade: 'Evade: passing on a new heading',
+  yield: 'Yield: slowing near the route',
+  blocked: 'Blocked: no certifiably clear motion',
+  idle: 'Idle',
+};
+
+const frames = run.frames;
+const last = frames[frames.length - 1];
+const duration = last.t;
+const start = Math.round(frames.length * 0.34);
+
+// World y points up; SVG y points down.
+const pt = (x: number, y: number) => `${x.toFixed(2)},${(-y).toFixed(2)}`;
+
+// Robot path split into runs of the same mode.
+const segments: { mode: string; points: string }[] = [];
+for (let i = 0; i < frames.length; i++) {
+  const f = frames[i];
+  const p = pt(f.r[0], f.r[1]);
+  const cur = segments[segments.length - 1];
+  if (!cur || cur.mode !== f.m) {
+    segments.push({ mode: f.m, points: cur ? `${cur.points.split(' ').at(-1)} ${p}` : p });
+  } else {
+    cur.points += ` ${p}`;
+  }
+}
+const trails = PERSON.map((_, k) => frames.map((f) => pt(f.p[k][0], f.p[k][1])).join(' '));
+
+// Mode timeline: one rect per run of frames.
+const timeline: { mode: string; x: number; w: number }[] = [];
+frames.forEach((f, i) => {
+  const cur = timeline[timeline.length - 1];
+  if (cur && cur.mode === f.m) cur.w += 1;
+  else timeline.push({ mode: f.m, x: i, w: 1 });
+});
+
+const s = run.summary;
+const counts = Object.entries(s.avoidance_mode_transitions).filter(([m]) => m in MODE_LABEL && m !== 'idle');
+const f0 = frames[start];
+---
+
+<figure class="explorer" data-explorer aria-labelledby="explorer-caption">
+  <div class="layout">
+    <div class="map frame">
+      <svg viewBox="-2.5 -5.5 13.5 12.4" role="img" aria-label="Top-down map of the recorded run: a hallway with side rooms and doorways, seven pedestrian paths, and the robot's path from the start on the left to the goal on the right, colored by planner mode." data-explorer-svg>
+        <defs>
+          <pattern id="explorer-grid" width="0.5" height="0.5" patternUnits="userSpaceOnUse">
+            <path d="M 0.5 0 L 0 0 0 0.5" class="grid-line"></path>
+          </pattern>
+        </defs>
+        <rect x="-2.5" y="-5.5" width="13.5" height="12.4" fill="url(#explorer-grid)"></rect>
+        {run.rects.map((r) => <rect class={r.kind} x={r.x} y={-(r.y + r.h)} width={r.w} height={r.h}></rect>)}
+        {trails.map((points, k) => <polyline class="trail" points={points} style={`stroke:${PERSON[k]}`}></polyline>)}
+        {segments.map((seg) => <polyline class={`path m-${seg.mode}`} points={seg.points}></polyline>)}
+        <g class="goal" transform={`translate(${pt(run.goal[0], run.goal[1])})`}>
+          <circle r="0.32"></circle><circle r="0.2" class="goal-inner"></circle><circle r="0.08"></circle>
+        </g>
+        <g data-explorer-people>
+          {PERSON.map((c, k) => <circle r="0.22" cx={f0.p[k][0]} cy={-f0.p[k][1]} style={`fill:${c}`} class="person"></circle>)}
+        </g>
+        <g data-explorer-robot transform={`translate(${pt(f0.r[0], f0.r[1])}) rotate(${(-f0.r[2] * 180) / Math.PI})`}>
+          <line x1="0.22" y1="0" x2="0.5" y2="0" class="robot-heading"></line>
+          <circle r="0.24" class="robot"></circle>
+        </g>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <div class="controls">
+        <button type="button" class="btn btn-primary" data-explorer-play aria-pressed="false">Play</button>
+        <label class="scrub">
+          <span class="sr-only">Time in the run</span>
+          <input type="range" min="0" max={frames.length - 1} value={start} step="1" data-explorer-range />
+        </label>
+      </div>
+      <svg class="modebar" viewBox={`0 0 ${frames.length} 10`} preserveAspectRatio="none" aria-hidden="true">
+        {timeline.map((b) => <rect x={b.x} y="0" width={b.w} height="10" class={`mb m-${b.mode}`}></rect>)}
+        <rect x={start} y="0" width="1.2" height="10" class="playhead" data-explorer-head></rect>
+      </svg>
+      <dl class="readout">
+        <div><dt>Time</dt><dd class="mono" data-explorer-time>{f0.t.toFixed(1)} s of {duration.toFixed(1)} s</dd></div>
+        <div><dt>Planner</dt><dd data-explorer-mode>{MODE_LABEL[f0.m] ?? f0.m}</dd></div>
+        <div><dt>Distance to goal</dt><dd class="mono" data-explorer-goal>{Math.hypot(run.goal[0] - f0.r[0], run.goal[1] - f0.r[1]).toFixed(2)} m</dd></div>
+      </dl>
+      <ul class="modes">
+        {
+          counts.map(([m, n]) => (
+            <li>
+              <span class={`key m-${m}`}></span>
+              <span>{MODE_LABEL[m]}</span>
+              <span class="mono n">{n}×</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="stats">
+        Outcome: <strong>{s.status === 'SUCCEEDED' ? 'goal reached' : s.status.toLowerCase()}</strong>, {s.contacts} contacts,
+        {' '}{s.seconds.toFixed(1)} s, {s.true_goal_error_m.toFixed(2)} m from the goal, longest standstill {s.longest_standstill_s.toFixed(2)} s.
+      </p>
+      <p id="explorer-caption" class="cap">
+    The same recorded run as the video, seen from above. Lines show where each pedestrian walked; the robot's path is colored by what
+    the planner was doing. Counts are mode changes over the run. Data: native G1 trial, building world, mixed crowd, seed 3.
+  </p>
+    </div>
+  </div>
+</figure>
+
+<script>
+  import run from '../data/harp-crowd-run.json';
+
+  const LABEL: Record<string, string> = {
+    follow: 'Follow: route request already clear',
+    evade: 'Evade: passing on a new heading',
+    yield: 'Yield: slowing near the route',
+    blocked: 'Blocked: no certifiably clear motion',
+    idle: 'Idle',
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-explorer]')) {
+    const range = root.querySelector<HTMLInputElement>('[data-explorer-range]')!;
+    const play = root.querySelector<HTMLButtonElement>('[data-explorer-play]')!;
+    const robot = root.querySelector<SVGGElement>('[data-explorer-robot]')!;
+    const people = [...root.querySelectorAll<SVGCircleElement>('[data-explorer-people] circle')];
+    const head = root.querySelector<SVGRectElement>('[data-explorer-head]')!;
+    const time = root.querySelector('[data-explorer-time]')!;
+    const mode = root.querySelector('[data-explorer-mode]')!;
+    const goal = root.querySelector('[data-explorer-goal]')!;
+    const frames = run.frames;
+    const duration = frames[frames.length - 1].t;
+    let timer = 0;
+
+    const show = (i: number) => {
+      const f = frames[i];
+      robot.setAttribute('transform', `translate(${f.r[0]} ${-f.r[1]}) rotate(${(-f.r[2] * 180) / Math.PI})`);
+      f.p.forEach(([x, y], k) => {
+        people[k].setAttribute('cx', String(x));
+        people[k].setAttribute('cy', String(-y));
+      });
+      head.setAttribute('x', String(i));
+      time.textContent = `${f.t.toFixed(1)} s of ${duration.toFixed(1)} s`;
+      mode.textContent = LABEL[f.m] ?? f.m;
+      goal.textContent = `${Math.hypot(run.goal[0] - f.r[0], run.goal[1] - f.r[1]).toFixed(2)} m`;
+      range.setAttribute('aria-valuetext', `${f.t.toFixed(1)} seconds, ${f.m}`);
+    };
+
+    const stop = () => {
+      window.clearInterval(timer);
+      timer = 0;
+      play.textContent = 'Play';
+      play.setAttribute('aria-pressed', 'false');
+    };
+
+    range.addEventListener('input', () => {
+      stop();
+      show(Number(range.value));
+    });
+
+    play.addEventListener('click', () => {
+      if (timer) return stop();
+      if (Number(range.value) >= frames.length - 1) range.value = '0';
+      play.textContent = 'Pause';
+      play.setAttribute('aria-pressed', 'true');
+      // 5 Hz samples played at 4× real time
+      timer = window.setInterval(() => {
+        const next = Number(range.value) + 1;
+        if (next >= frames.length) return stop();
+        range.value = String(next);
+        show(next);
+      }, 1000 / (run.hz * 4));
+    });
+  }
+</script>
+
+<style>
+  .explorer {
+    margin: 0;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 24px 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .map svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .grid-line {
+    fill: none;
+    stroke: var(--grid);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .wall {
+    fill: var(--ink);
+  }
+
+  .block {
+    fill: #5d6f95;
+  }
+
+  .trail {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-opacity: 0.45;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .path {
+    fill: none;
+    stroke: var(--mc);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* One color per planner mode, shared by the path, the timeline, and the legend. */
+  .m-follow { --mc: var(--ink); }
+  .m-evade { --mc: #c99a06; }
+  .m-yield { --mc: var(--pen); }
+  .m-blocked { --mc: var(--graphite-soft); }
+  .m-idle { --mc: var(--grid); }
+
+  .path.m-blocked {
+    stroke-dasharray: 3 4;
+  }
+
+  .goal circle {
+    fill: var(--ink);
+  }
+
+  .goal .goal-inner {
+    fill: var(--paper-raised);
+  }
+
+  .person {
+    stroke: var(--paper-raised);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .robot {
+    fill: var(--pen);
+    stroke: var(--paper-raised);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .robot-heading {
+    stroke: var(--pen);
+    stroke-width: 3;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .controls .btn {
+    min-width: 5.5rem;
+  }
+
+  .scrub {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  input[type='range'] {
+    width: 100%;
+    accent-color: var(--pen);
+  }
+
+  .modebar {
+    display: block;
+    width: 100%;
+    height: 12px;
+    margin-top: 6px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .mb {
+    fill: var(--mc);
+    stroke: none;
+  }
+
+  .playhead {
+    fill: var(--ink);
+    stroke: var(--paper-raised);
+    stroke-width: 0.4;
+  }
+
+  .readout {
+    display: grid;
+    gap: 0;
+    margin: 18px 0 0;
+    border-top: 1px solid var(--grid);
+  }
+
+  .readout div {
+    display: grid;
+    grid-template-columns: 9.5rem minmax(0, 1fr);
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .readout dt {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    color: var(--graphite);
+  }
+
+  .readout dd {
+    margin: 0;
+  }
+
+  .modes {
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+    font-size: 0.96875rem;
+  }
+
+  .modes li {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .key {
+    width: 22px;
+    height: 5px;
+    border-radius: 3px;
+  }
+
+  .key {
+    background: var(--mc);
+  }
+
+  .n {
+    color: var(--graphite);
+    font-size: 0.875rem;
+  }
+
+  .stats {
+    margin-top: 16px;
+    font-size: 0.96875rem;
+    color: var(--ink-soft);
+  }
+
+  .cap {
+    margin-top: 12px;
+    font-size: 0.9375rem;
+    color: var(--graphite);
+    max-width: 90ch;
+  }
+</style>
