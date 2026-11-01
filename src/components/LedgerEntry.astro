@@ -1,0 +1,135 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Marked from './Marked.astro';
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+}
+
+const { entry } = Astro.props;
+const { title, role, dates, claim, result, highlight, limit, links } = entry.data;
+const href = `/work/${entry.id}/`;
+---
+
+<article class="entry row" aria-labelledby={`entry-${entry.id}`}>
+  <h3 class="title" id={`entry-${entry.id}`}><a href={href}>{title}</a></h3>
+  <p class="meta ui quiet"><span>{role}</span><span>{dates}</span></p>
+
+  <dl class="triple">
+    <div>
+      <dt>Claim</dt>
+      <dd>{claim}</dd>
+    </div>
+    <div>
+      <dt>Result</dt>
+      <dd><Marked text={result} highlight={highlight} /></dd>
+    </div>
+  </dl>
+
+  <p class="limit"><span class="limit-label">Limit</span>{' '}{limit}</p>
+
+  <ul class="link-row">
+    <li><a href={href}>Read the full write-up</a></li>
+    {links.slice(0, 2).map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+  </ul>
+</article>
+
+<style>
+  .entry {
+    grid-template-areas:
+      'title meta'
+      'body limit'
+      'links .';
+    row-gap: 14px;
+    padding-block: 36px;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .title {
+    grid-area: title;
+    font-size: clamp(1.5rem, 2.6vw, 1.875rem);
+  }
+
+  .title a {
+    text-decoration: none;
+  }
+
+  .title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.16em;
+  }
+
+  .meta {
+    grid-area: meta;
+    align-self: end;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .meta span {
+    display: block;
+  }
+
+  .triple {
+    grid-area: body;
+    display: grid;
+    gap: 10px;
+    max-width: 66ch;
+  }
+
+  .triple div {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  dt {
+    padding-top: 0.2em;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--graphite);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .limit {
+    grid-area: limit;
+    align-self: start;
+  }
+
+  .link-row {
+    grid-area: links;
+  }
+
+  @media (min-width: 901px) {
+    .link-row {
+      padding-left: calc(4.5rem + 12px);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .entry {
+      grid-template-areas: 'meta' 'title' 'body' 'limit' 'links';
+      row-gap: 10px;
+    }
+
+    .meta {
+      font-size: 0.9375rem;
+    }
+
+    .limit {
+      margin-top: 4px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .triple div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+  }
+</style>
