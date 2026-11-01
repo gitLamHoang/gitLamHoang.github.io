@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe: Home</title>
+<link rel="stylesheet" href="wf.css">
+</head>
+<body>
+<div class="wf-top">
+  <h1>Home page wireframe (Harvey's Hub)</h1>
+  <p>Low fidelity: layout, hierarchy, and copy only. Color, type, and texture come later in the design pass. Dashed "note" boxes explain behavior and are not part of the page. Quoted lines are Harvey Specter's, checked against the episode transcripts.</p>
+  <div class="wf-nav"><a href="index.html">All wireframes</a><a href="project.html">Project page</a><a href="404.html">404</a></div>
+</div>
+
+<div class="frames">
+
+<!-- ===================== DESKTOP ===================== -->
+<div class="frame-wrap">
+<h2>Desktop, 1200 px</h2>
+<div class="frame desktop">
+
+  <header class="site">
+    <strong style="font-size:16px">Harvey's Hub</strong>
+    <div class="links"><span>Work</span><span>Research</span><span>Experience</span><span>Resume (PDF)</span><span class="btn" style="min-height:24px;padding:2px 8px">Light / Dark</span></div>
+  </header>
+
+  <div class="page">
+    <!-- HERO -->
+    <div class="grid2" style="margin-top:44px">
+      <div>
+        <div class="small muted" style="margin-bottom:10px">Harvey Phan</div>
+        <div style="font-size:40px;line-height:1.1;font-weight:700;max-width:16ch">I write navigation software for humanoid robots, and I measure what it can't do yet.</div>
+        <p style="margin:16px 0 0;max-width:60ch">CS at Stanford. Software Engineer Lead for HARP's Human Perception &amp; Social Interaction Team, working on the Unitree G1.</p>
+      </div>
+      <div style="align-self:end">
+        <div class="quote"><q>I don't have dreams. I have goals.</q><cite>Harvey Specter, Suits, S3E6</cite></div>
+        <div class="note"><b>Hero quote.</b> Sits beside the route field: the waypoints are the goals.</div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:28px">
+      <div class="span2">
+        <div class="row between" style="margin-bottom:8px">
+          <span class="small" style="font-family:ui-monospace,Menlo,monospace">route: 3 waypoints, 1 lap</span>
+          <div class="row" style="gap:8px">
+            <span class="btn primary">Run</span><span class="btn">Stop (take over)</span><span class="btn">Reset</span><span class="btn">Add random waypoint</span>
+            <span class="small muted">Laps</span><span class="btn">1</span><span class="btn primary">2</span><span class="btn">3</span>
+          </div>
+        </div>
+        <div class="field">
+          <div class="wp" style="left:120px;top:70px">1</div>
+          <div class="wp" style="left:430px;top:230px">2</div>
+          <div class="wp" style="left:760px;top:90px">3</div>
+          <svg width="100%" height="100%" style="position:absolute;inset:0" aria-hidden="true"><polyline points="131,81 441,241 771,101 131,81" fill="none" stroke="#777" stroke-width="2" stroke-dasharray="6 5"/></svg>
+          <div class="robot" style="left:300px;top:165px;transform:rotate(27deg)"></div>
+          <div class="readout">state&nbsp;&nbsp;&nbsp;walking<br>speed&nbsp;&nbsp;&nbsp;0.42 m/s<br>to target 1.8 m<br>lap&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 of 2</div>
+          <div class="note" style="position:absolute;left:12px;bottom:12px;width:300px"><b>Route field.</b> Click or tap the floor to add a waypoint. Grid square = 0.5 m. On page load the marker walks one lap of this default route, once. Reduced motion: route drawn, marker parked.</div>
+        </div>
+        <div class="row" style="margin-top:8px;gap:16px;align-items:stretch">
+          <div class="spark" style="flex:1">
+            <svg width="100%" height="100%" viewBox="0 0 600 46" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,42 40,30 80,14 220,10 260,22 290,38 300,42 330,30 360,14 470,10 510,24 540,40 560,42" fill="none" stroke="#555" stroke-width="2"/></svg>
+          </div>
+          <div class="note" style="width:300px"><b>Speed trace.</b> Live. Ramps up, holds, slows near each waypoint. Stop drops it to zero at once.</div>
+        </div>
+        <p class="small muted" style="margin:8px 0 0">Illustrates the controller behavior from HARP PRs #2 and #5 (waypoint laps, manual takeover, speed ramping). It is a browser simulation, not robot data.</p>
+      </div>
+    </div>
+
+    <!-- WORK LEDGER -->
+    <h3 class="sec">Work</h3>
+    <div class="quote"><q>Winners don't make excuses when the other side plays the game.</q><cite>Harvey Specter, Suits, S1E7</cite></div>
+    <p class="sec-sub">Each project: what it claims, what I measured, and the main limit, stated plainly.</p>
+
+    <div class="entry grid2">
+      <div>
+        <h4>Waypoint navigation for a humanoid robot</h4>
+        <div class="triple">
+          <span class="k">Claim</span><span>The G1 can follow configurable waypoint routes and repeated laps in simulation, with manual takeover and runtime safeguards.</span>
+          <span class="k">Result</span><span>Two merged PRs: waypoint routes with fault handling (#2); an odometry route recorder and speed ramping (#5). Tested in simulation and with local ROS 2 tests.</span>
+        </div>
+        <div class="row" style="margin-top:12px;gap:8px"><span class="btn">PR #2</span><span class="btn">PR #5</span><span class="btn">Team repo</span><span class="btn">Read more</span></div>
+      </div>
+      <div>
+        <div class="small muted">Software Engineer Lead, HARP<br>Oct. 2026 to present</div>
+        <div class="margin-note" style="margin-top:14px"><b>Limit:</b> Physical robot validation is pending. The latest recorder and speed changes still need simulator checks.</div>
+      </div>
+    </div>
+
+    <div class="entry grid2">
+      <div>
+        <h4>Pharmaceutical document processing</h4>
+        <div class="triple">
+          <span class="k">Claim</span><span>A Python and Docker pipeline can run OCR, retrieval, and classification over pharmaceutical vendor files, and a public follow-up keeps every extracted date tied to its source.</span>
+          <span class="k">Result</span><span>50+ vendor files; 4 OCR/LLM approaches across 6 chunking configurations; 100+ outputs reviewed. Public continuation: 742 source-linked date cells from 60 MHRA notices.</span>
+        </div>
+        <div class="row" style="margin-top:12px;gap:8px"><span class="btn">Public demo</span><span class="btn">Repo</span><span class="btn">Read more</span></div>
+      </div>
+      <div>
+        <div class="small muted">AI Engineer Apprentice, Pfizer<br>Jun. to Sep. 2026</div>
+        <div class="margin-note" style="margin-top:14px"><b>Limit:</b> The Pfizer code and data are internal. The public continuation is a historical snapshot.</div>
+      </div>
+    </div>
+
+    <div class="entry grid2">
+      <div>
+        <h4>EEG classification on people the model never saw</h4>
+        <div class="triple">
+          <span class="k">Claim</span><span>Spectral features separate eyes-open from eyes-closed EEG in held-out participants.</span>
+          <span class="k">Result</span><span><span class="hl">79.9% balanced accuracy</span> on 22 unseen participants (95% CI 72.7 to 86.2), against a 50.0% baseline.</span>
+        </div>
+        <div class="row" style="margin-top:12px;gap:8px"><span class="btn">Repo</span><span class="btn">Protocol</span><span class="btn">Read more</span></div>
+      </div>
+      <div>
+        <div class="small muted">Started at HUST, 2024<br>Public benchmark, 2026</div>
+        <div class="margin-note" style="margin-top:14px"><b>Limit:</b> Offline, same-dataset evaluation. Baseline run order is confounded with condition.</div>
+      </div>
+    </div>
+
+    <div class="entry grid2">
+      <div>
+        <h4>Forecasting NYC taxi demand by zone and hour</h4>
+        <div class="triple">
+          <span class="k">Claim</span><span>Boosting on past-only features beats a weekly baseline for hourly pickups.</span>
+          <span class="k">Result</span><span><span class="hl">MAE 3.693 vs 5.104</span> (27.65% lower) over 559,370 zone-hours of walk-forward validation.</span>
+        </div>
+        <div class="row" style="margin-top:12px;gap:8px"><span class="btn">Live demo</span><span class="btn">Repo</span><span class="btn">Read more</span></div>
+      </div>
+      <div>
+        <div class="small muted">Personal project, 2026</div>
+        <div class="margin-note" style="margin-top:14px"><b>Limit:</b> Worse on sparse zones every month. No live feed exists.</div>
+      </div>
+    </div>
+
+    <!-- RESEARCH -->
+    <h3 class="sec">Research</h3>
+    <div class="quote"><q>I don't play the odds. I play the man.</q><cite>Harvey Specter, Suits, S2E6</cite></div>
+    <p class="sec-sub">Two co-authored papers and a modeling competition. These ones do play the odds.</p>
+    <div class="grid2">
+      <div>
+        <div class="entry" style="border-top:0;padding-top:0">
+          <h4>On Balancing Numbers by the Matrix Method</h4>
+          <p class="small" style="margin:4px 0">Luu Ba Thang and Phan Hoang Lam. HNUE Journal of Science: Natural Science 70(4), 3 to 10, 2025.</p>
+          <div class="box pad" style="margin-top:12px">
+            <div class="row" style="gap:24px;align-items:center">
+              <span class="small">B =</span>
+              <div class="matrix"><span>6</span><span>1</span><span>-1</span><span>0</span></div>
+              <span class="small">B<sup>n</sup> =</span>
+              <div class="matrix"><span>35</span><span>6</span><span>-6</span><span>-1</span></div>
+              <span class="btn primary">n + 1</span><span class="btn">reset</span>
+            </div>
+            <p class="small" style="margin:10px 0 0">Balancing numbers so far: 1, 6, 35</p>
+          </div>
+        </div>
+        <div class="entry">
+          <h4>AI-Based Forecasting of Macroeconomic Indicators</h4>
+          <p class="small" style="margin:4px 0">Nguyen Quang Dat, Phan Hoang Lam, et al. Journal of Basic and Applied Research International 31(6), 163 to 171, 2025.</p>
+          <p class="small" style="margin:6px 0 0">Hybrid VAR-LSTM on U.S. and Vietnam data, 2000 to 2024: <span class="hl">RMSE 0.58, 74.0% directional accuracy</span>.</p>
+        </div>
+        <div class="entry">
+          <h4>International Mathematical Modeling Challenge</h4>
+          <p class="small" style="margin:4px 0">Binary integer program for multi-round scheduling. Honorable Mention, 2024 and 2025.</p>
+        </div>
+      </div>
+      <div>
+        <div class="small muted">DOI 10.18173/2354-1059.2025-0049</div>
+        <div class="note" style="margin-top:12px"><b>Matrix widget.</b> Step n. Shows the matrix power and the balancing numbers it produces. Matrix form from the paper's Theorem 2.1.</div>
+        <div class="note" style="margin-top:12px"><b>Citations</b> keep the published author name, Phan Hoang Lam.</div>
+        <div class="small muted" style="margin-top:90px">DOI 10.56557/jobari/2025/v31i610064</div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <h3 class="sec">Experience</h3>
+    <div class="quote"><q>Loyalty is a two-way street.</q><cite>Harvey Specter, Suits, S3E1</cite></div>
+    <div class="grid2"><div>
+      <table class="exp">
+        <tr><td><b>Software Engineer Lead</b>, Humanoid Athletic Robotics Project (HARP), Stanford Student Robotics</td><td>Oct. 2026 to present</td></tr>
+        <tr><td><b>Software Engineer</b>, POSH (YC W22)<br><span class="small muted">AI infrastructure, modeling, time series</span></td><td>Sep. 2026 to present</td></tr>
+        <tr><td><b>Software Engineer</b>, Stanford Autonomous Underwater Vehicle</td><td>Sep. 2026 to present</td></tr>
+        <tr><td><b>AI Engineer Apprentice</b>, Pfizer<br><span class="small muted">Pharmaceutical document processing</span></td><td>Jun. to Sep. 2026</td></tr>
+        <tr><td><b>Machine Learning Researcher</b>, Brown University<br><span class="small muted">CNN-based soil texture analysis, mentored by MSc. Leonard Gleyzer</span></td><td>Jun. to Oct. 2025</td></tr>
+        <tr><td><b>Mathematics Researcher</b>, Hanoi National University of Education</td><td>Jan. to Aug. 2025</td></tr>
+        <tr><td><b>Machine Learning Researcher</b>, Hanoi University of Science and Technology</td><td>Jun. to Aug. 2024</td></tr>
+      </table>
+    </div>
+    <div><div class="note"><b>No detail pages</b> for POSH and AUV yet: titles and dates only, until there is something public to show.</div></div></div>
+
+    <!-- EDUCATION / HONORS / SKILLS -->
+    <h3 class="sec">Education and honors</h3>
+    <div class="quote"><q>I don't get lucky. I make my own luck.</q><cite>Harvey Specter, Suits, S3E15</cite></div>
+    <div class="row" style="align-items:flex-start;gap:40px;margin-top:8px">
+      <div style="flex:1"><b>Education</b><p class="small">Stanford University, B.S. in Computer Science, class of 2030</p><p class="small">Hanoi-Amsterdam High School for the Gifted, Mathematics Specialized Class, 2026</p></div>
+      <div style="flex:1"><b>Honors and scores</b><p class="small">Bronze Medal, Vietnam National Student Mathematics Olympiad<br>Second Prize, Hanoi Mathematics Olympiad<br>Honorable Mention, IMMC, 2024 and 2025<br>SAT 1550 (800 Math); IELTS 8.0<br>AP 5s: Calculus BC, Computer Science A, Macroeconomics</p></div>
+      <div style="flex:1"><b>Tools</b><p class="small">Python, C/C++, Java, SQL, R, TypeScript<br>PyTorch, scikit-learn, pandas, NumPy, SciPy<br>ROS 2, MuJoCo, Docker, Git</p></div>
+    </div>
+  </div>
+
+  <footer class="site">
+    <div class="row between">
+      <div>
+        <div style="font-size:22px;font-weight:700">Get in touch</div>
+        <div class="quote" style="margin:10px 0 0"><q>Life is this. I like this.</q><cite>Harvey Specter, Suits, S1E10</cite></div>
+      </div>
+      <span class="btn primary">Harvey Phan's Resume (PDF)</span>
+    </div>
+    <div class="row" style="gap:28px;margin-top:14px">
+      <span>hoanglam@stanford.edu</span><span>(302) 687-2315</span><span>Palo Alto and Stanford, CA</span><span>LinkedIn</span><span>GitHub</span>
+    </div>
+    <p class="tiny muted" style="margin:14px 0 0">Legal name: Phan Hoang Lam. Quotes are Harvey Specter's, from Suits (USA Network); this site is not affiliated with the show.</p>
+  </footer>
+</div>
+</div>
+
+<!-- ===================== MOBILE ===================== -->
+<div class="frame-wrap">
+<h2>Mobile, 375 px</h2>
+<div class="frame mobile">
+  <header class="site">
+    <strong>Harvey's Hub</strong>
+    <div class="row small" style="gap:12px"><span>Work</span><span>Research</span><span>CV</span><span class="btn" style="min-height:24px;padding:2px 6px">◐</span></div>
+  </header>
+  <div class="page">
+    <div class="small muted" style="margin-top:24px">Harvey Phan</div>
+    <div style="font-size:28px;line-height:1.12;font-weight:700;margin-top:6px">I write navigation software for humanoid robots, and I measure what it can't do yet.</div>
+    <p class="small" style="margin:12px 0 0">CS at Stanford. Software Engineer Lead for HARP's Human Perception &amp; Social Interaction Team.</p>
+    <div class="quote" style="margin-top:14px"><q>I don't have dreams. I have goals.</q><cite>Harvey Specter, Suits, S3E6</cite></div>
+
+    <div class="field" style="margin:16px -16px 0;border-left:0;border-right:0">
+      <div class="wp" style="left:40px;top:50px">1</div>
+      <div class="wp" style="left:170px;top:200px">2</div>
+      <div class="wp" style="left:300px;top:70px">3</div>
+      <div class="robot" style="left:110px;top:120px;transform:rotate(48deg)"></div>
+      <div class="readout" style="top:auto;bottom:10px">walking 0.42 m/s<br>lap 1 of 2</div>
+    </div>
+    <div class="row wrap" style="gap:8px;margin-top:10px"><span class="btn primary">Run</span><span class="btn">Stop</span><span class="btn">Reset</span><span class="btn">Add waypoint</span><span class="btn">Laps: 2</span></div>
+    <div class="spark" style="margin-top:8px;height:36px"></div>
+    <div class="note" style="margin-top:12px"><b>Mobile field.</b> Full bleed. Controls wrap to two rows; every target 44 px tall in the real build.</div>
+
+    <h3 class="sec">Work</h3>
+    <div class="quote"><q>Winners don't make excuses when the other side plays the game.</q><cite>Harvey Specter, Suits, S1E7</cite></div>
+    <div class="entry">
+      <div class="small muted">Software Engineer Lead, HARP. Oct. 2026 to present</div>
+      <h4 style="margin-top:4px">Waypoint navigation for a humanoid robot</h4>
+      <div class="triple" style="grid-template-columns:54px 1fr">
+        <span class="k">Claim</span><span class="small">The G1 follows configurable waypoint routes and laps in simulation, with manual takeover.</span>
+        <span class="k">Result</span><span class="small">Two merged PRs, tested in simulation and ROS 2.</span>
+      </div>
+      <div class="margin-note" style="margin-top:10px"><b>Limit:</b> Physical robot validation is pending.</div>
+      <div class="row" style="margin-top:10px;gap:8px"><span class="btn">PRs</span><span class="btn">Read more</span></div>
+    </div>
+    <div class="note"><b>Margin notes fold inline</b> under each entry on mobile; dates move above the title.</div>
+    <div class="entry"><div class="line" style="width:60%"></div><div class="line" style="width:90%"></div><div class="line" style="width:80%"></div></div>
+    <div class="entry"><div class="line" style="width:60%"></div><div class="line" style="width:90%"></div><div class="line" style="width:80%"></div></div>
+
+    <h3 class="sec">Research</h3>
+    <div class="quote"><q>I don't play the odds. I play the man.</q><cite>Harvey Specter, Suits, S2E6</cite></div>
+    <div class="box pad"><div class="row" style="gap:10px"><div class="matrix"><span>35</span><span>6</span><span>-6</span><span>-1</span></div><span class="btn primary">n + 1</span></div><p class="small" style="margin:8px 0 0">1, 6, 35</p></div>
+    <div class="entry" style="margin-top:12px"><div class="line" style="width:80%"></div><div class="line" style="width:95%"></div></div>
+
+    <h3 class="sec">Experience</h3>
+    <div class="quote"><q>Loyalty is a two-way street.</q><cite>Harvey Specter, Suits, S3E1</cite></div>
+    <div class="line" style="width:90%"></div><div class="line" style="width:85%"></div><div class="line" style="width:92%"></div>
+  </div>
+  <footer class="site">
+    <div style="font-size:20px;font-weight:700">Get in touch</div>
+    <div class="quote" style="margin:10px 0"><q>Life is this. I like this.</q><cite>Harvey Specter, Suits, S1E10</cite></div>
+    <p class="small">hoanglam@stanford.edu<br>(302) 687-2315<br>Palo Alto and Stanford, CA</p>
+    <div class="row wrap" style="gap:8px"><span class="btn">LinkedIn</span><span class="btn">GitHub</span><span class="btn primary">Resume (PDF)</span></div>
+    <p class="tiny muted" style="margin:12px 0 0">Legal name: Phan Hoang Lam.</p>
+  </footer>
+</div>
+</div>
+
+</div>
+</body>
+</html>

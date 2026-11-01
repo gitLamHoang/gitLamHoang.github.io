@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe: Project page</title>
+<link rel="stylesheet" href="wf.css">
+</head>
+<body>
+<div class="wf-top">
+  <h1>Project page wireframe (/work/[slug])</h1>
+  <p>One template for all four projects. Example content: NYC taxi forecasting. Sections drop out when a project has nothing for them. Project pages carry no Harvey Specter quote; the evidence speaks there.</p>
+  <div class="wf-nav"><a href="index.html">All wireframes</a><a href="home.html">Home</a><a href="404.html">404</a></div>
+</div>
+
+<div class="frames">
+
+<div class="frame-wrap">
+<h2>Desktop, 1200 px</h2>
+<div class="frame desktop">
+  <header class="site">
+    <strong style="font-size:16px">Harvey's Hub</strong>
+    <div class="links"><span>Work</span><span>Research</span><span>Experience</span><span>Resume (PDF)</span><span class="btn" style="min-height:24px;padding:2px 8px">Light / Dark</span></div>
+  </header>
+  <div class="page">
+    <p class="small" style="margin:28px 0 0">All work</p>
+    <div class="grid2" style="margin-top:14px">
+      <div>
+        <div style="font-size:36px;line-height:1.12;font-weight:700">Forecasting NYC taxi demand by zone and hour</div>
+        <p style="margin:12px 0 0">Where yellow-taxi pickups concentrate, and where hourly forecasts miss, across 262 zones.</p>
+      </div>
+      <div style="align-self:end">
+        <div class="small muted">Personal project, 2026<br>Python, SQL, TypeScript, FastAPI</div>
+        <div class="row" style="gap:8px;margin-top:10px"><span class="btn primary">Live demo</span><span class="btn">Repo</span></div>
+      </div>
+    </div>
+
+    <!-- ledger triple, larger -->
+    <div class="grid2" style="margin-top:28px">
+      <div class="box pad" style="background:#f6f6f6">
+        <div class="triple">
+          <span class="k">Claim</span><span>Boosting on past-only features beats a weekly baseline for hourly pickups per zone.</span>
+          <span class="k">Result</span><span><span class="hl">MAE 3.693 vs 5.104</span>, 27.65% lower, over 559,370 zone-hours of walk-forward validation.</span>
+        </div>
+      </div>
+      <div><div class="margin-note"><b>Limit:</b> Boosting is worse on sparse-zone MAE in every month. The study uses historical counts; no live feed exists.</div></div>
+    </div>
+
+    <!-- figure -->
+    <div class="grid2" style="margin-top:28px">
+      <div class="span2 box" style="height:300px;display:grid;place-items:center"><span class="muted">Screenshot from the repo (docs/images/explorer.png), linked to the demo</span></div>
+    </div>
+
+    <!-- body sections -->
+    <div class="grid2" style="margin-top:8px">
+      <div>
+        <h3 class="sec" style="font-size:18px">The problem</h3>
+        <div class="line" style="width:96%"></div><div class="line" style="width:90%"></div><div class="line" style="width:70%"></div>
+        <h3 class="sec" style="font-size:18px">What I built</h3>
+        <ul class="small" style="padding-left:18px;margin:0">
+          <li>Acquisition and hourly aggregation for 23,263,775 accepted pickups, Dec. 2025 to May 2026</li>
+          <li>Past-only features, models, and walk-forward evaluation in Python</li>
+          <li>A TypeScript and SVG explorer that runs from a committed snapshot</li>
+        </ul>
+        <h3 class="sec" style="font-size:18px">Measured results</h3>
+        <table class="exp">
+          <tr><td><b>Comparison</b></td><td><b>Result</b></td></tr>
+          <tr><td>Walk-forward validation</td><td>MAE 27.65% lower than weekly baseline</td></tr>
+          <tr><td>Six-hour observation delay</td><td>MAE 22.94% higher</td></tr>
+          <tr><td>XGBoost depth 6</td><td>MAE 0.76% lower</td></tr>
+        </table>
+        <h3 class="sec" style="font-size:18px">Limits</h3>
+        <div class="line" style="width:92%"></div><div class="line" style="width:60%"></div>
+      </div>
+      <div style="padding-top:48px">
+        <div class="note"><b>Margin column</b> carries definitions and caveats next to the text they qualify, e.g. "MAE: mean absolute error in pickups per zone-hour."</div>
+        <div class="margin-note" style="margin-top:120px">Separate studies use matched controls; percentages are not one ranking.</div>
+      </div>
+    </div>
+
+    <div class="row between hair" style="margin-top:40px;padding-top:16px">
+      <span class="small">Previous: EEG classification</span>
+      <span class="small">Next: Waypoint navigation</span>
+    </div>
+  </div>
+  <footer class="site">
+    <div class="row" style="gap:28px"><span>hoanglam@stanford.edu</span><span>(302) 687-2315</span><span>LinkedIn</span><span>GitHub</span><span>Resume (PDF)</span></div>
+    <p class="tiny muted" style="margin:14px 0 0">Legal name: Phan Hoang Lam.</p>
+  </footer>
+</div>
+</div>
+
+<div class="frame-wrap">
+<h2>Mobile, 375 px</h2>
+<div class="frame mobile">
+  <header class="site"><strong>Harvey's Hub</strong><div class="row small" style="gap:12px"><span>Work</span><span>Research</span><span>CV</span></div></header>
+  <div class="page">
+    <p class="small" style="margin:20px 0 0">All work</p>
+    <div style="font-size:26px;line-height:1.15;font-weight:700;margin-top:8px">Forecasting NYC taxi demand by zone and hour</div>
+    <div class="small muted" style="margin-top:8px">Personal project, 2026</div>
+    <div class="row" style="gap:8px;margin-top:10px"><span class="btn primary">Live demo</span><span class="btn">Repo</span></div>
+    <div class="box pad" style="margin-top:16px;background:#f6f6f6">
+      <div class="triple" style="grid-template-columns:54px 1fr">
+        <span class="k">Claim</span><span class="small">Boosting beats a weekly baseline.</span>
+        <span class="k">Result</span><span class="small"><span class="hl">MAE 3.693 vs 5.104</span></span>
+      </div>
+      <div class="margin-note" style="margin-top:10px"><b>Limit:</b> Worse on sparse zones.</div>
+    </div>
+    <div class="box" style="height:180px;margin-top:16px"></div>
+    <h3 class="sec">The problem</h3><div class="line"></div><div class="line" style="width:80%"></div>
+    <h3 class="sec">What I built</h3><div class="line"></div><div class="line" style="width:85%"></div>
+    <h3 class="sec">Measured results</h3><div class="line"></div><div class="line" style="width:75%"></div>
+  </div>
+</div>
+</div>
+
+</div>
+</body>
+</html>
