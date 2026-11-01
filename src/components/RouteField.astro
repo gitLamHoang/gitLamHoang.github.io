@@ -1,0 +1,300 @@
+---
+interface Props {
+  /** Walk one lap on page load (home hero only). Skipped under reduced motion. */
+  autoplay?: boolean;
+  id: string;
+}
+
+const { autoplay = false, id } = Astro.props;
+---
+
+<figure class="route" data-route data-autoplay={autoplay ? 'true' : undefined} aria-labelledby={`${id}-caption`}>
+  <div class="route-bar">
+    <p class="route-label mono" data-route-label>route: 3 waypoints, 1 lap</p>
+    <div class="route-controls">
+      <div class="group" role="group" aria-label="Route controls">
+        <button type="button" class="btn btn-primary" data-act="run">Run</button>
+        <button type="button" class="btn btn-stop" data-act="stop">Stop (take over)</button>
+        <button type="button" class="btn" data-act="reset">Reset</button>
+        <button type="button" class="btn" data-act="add">Add random waypoint</button>
+      </div>
+      <div class="group laps" role="group" aria-label="Number of laps">
+        <span class="ui quiet">Laps</span>
+        <button type="button" class="btn lap" data-laps="1" aria-pressed="true">1</button>
+        <button type="button" class="btn lap" data-laps="2" aria-pressed="false">2</button>
+        <button type="button" class="btn lap" data-laps="3" aria-pressed="false">3</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="route-stage" data-route-stage>
+    <svg class="route-svg" data-route-svg role="img" aria-label="Route field with 3 waypoints. The robot is parked on waypoint 1.">
+      <defs>
+        <pattern id={`${id}-minor`} width="0.5" height="0.5" patternUnits="userSpaceOnUse">
+          <path d="M 0.5 0 L 0 0 0 0.5" class="grid-minor"></path>
+        </pattern>
+        <pattern id={`${id}-major`} width="2" height="2" patternUnits="userSpaceOnUse">
+          <rect width="2" height="2" fill={`url(#${id}-minor)`}></rect>
+          <path d="M 2 0 L 0 0 0 2" class="grid-major"></path>
+        </pattern>
+      </defs>
+      <rect class="floor" x="0" y="0" width="100%" height="100%" fill={`url(#${id}-major)`} data-route-floor></rect>
+      <polyline class="path" data-route-path points=""></polyline>
+      <polyline class="trail" data-route-trail points=""></polyline>
+      <g data-route-waypoints></g>
+      <g class="robot" data-route-robot>
+        <path d="M 0.2 0 L 0.36 0" class="robot-heading"></path>
+        <circle r="0.2" class="robot-body"></circle>
+        <path d="M -0.08 -0.075 L 0.15 0 L -0.08 0.075 Z" class="robot-nose"></path>
+      </g>
+    </svg>
+    <p class="hint ui" data-route-hint>Click or tap the floor to add a waypoint</p>
+  </div>
+
+  <div class="telemetry">
+    <dl class="readout mono">
+      <div><dt>state</dt><dd data-read="state">idle</dd></div>
+      <div><dt>speed</dt><dd data-read="speed">0.00 m/s</dd></div>
+      <div><dt>to target</dt><dd data-read="dist">0.0 m</dd></div>
+      <div><dt>lap</dt><dd data-read="lap">1 of 1</dd></div>
+    </dl>
+    <div class="trace">
+      <svg viewBox="0 0 600 60" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="0" x2="600" y1="6" y2="6" class="trace-max"></line>
+        <polyline data-route-trace points="" class="trace-line"></polyline>
+      </svg>
+      <p class="trace-label ui quiet">Speed over the last 20 s. Dashed line: 0.80 m/s limit.</p>
+    </div>
+  </div>
+
+  <figcaption id={`${id}-caption`} class="caption quiet">
+    A browser simulation of the controller behavior in HARP PRs #2 and #5: repeated laps over a waypoint route, speed that ramps up and slows near each target, and a manual takeover that stops at once. One grid square is 0.5 m. Not robot data.
+  </figcaption>
+  <p class="sr-only" aria-live="polite" data-route-status></p>
+</figure>
+
+<script>
+  import { initRouteFields } from '../scripts/route-field.ts';
+  initRouteFields();
+</script>
+
+<style>
+  .route {
+    margin: 0;
+  }
+
+  .route-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    margin-bottom: 10px;
+  }
+
+  .route-label {
+    font-size: 0.875rem;
+    color: var(--graphite);
+  }
+
+  .route-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lap {
+    min-width: 44px;
+    padding: 0;
+  }
+
+  .route-stage {
+    position: relative;
+    height: clamp(300px, 34vw, 420px);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  .route-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+  }
+
+  .route-svg :global(.grid-minor) {
+    fill: none;
+    stroke: var(--grid);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .route-svg :global(.grid-major) {
+    fill: none;
+    stroke: color-mix(in srgb, var(--grid) 55%, var(--graphite));
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .path {
+    fill: none;
+    stroke: var(--route);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 6;
+    opacity: 0.55;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .trail {
+    fill: none;
+    stroke: var(--route);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .route-svg :global(.wp circle) {
+    fill: var(--paper-raised);
+    stroke: var(--ink);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .route-svg :global(.wp.is-target circle) {
+    fill: var(--hl);
+  }
+
+  .route-svg :global(.wp text) {
+    fill: var(--ink);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 0.26px;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  .route-svg :global(.wp.is-target text) {
+    fill: #1c2b4b;
+  }
+
+  .robot-body {
+    fill: var(--pen);
+  }
+
+  .robot-nose {
+    fill: var(--paper-raised);
+  }
+
+  .robot-heading {
+    stroke: var(--pen);
+    stroke-width: 3;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hint {
+    position: absolute;
+    left: 14px;
+    bottom: 10px;
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--graphite);
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+
+  .hint.is-hidden {
+    opacity: 0;
+  }
+
+  .telemetry {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px 24px;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .readout {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 2px 20px;
+    font-size: 0.875rem;
+  }
+
+  .readout div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .readout dt {
+    color: var(--graphite);
+  }
+
+  .readout dd {
+    margin: 0;
+    min-width: 9ch;
+  }
+
+  .trace svg {
+    display: block;
+    width: 100%;
+    height: 44px;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .trace-max {
+    stroke: var(--graphite);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .trace-line {
+    fill: none;
+    stroke: var(--pen);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .trace-label {
+    margin-top: 4px;
+    font-size: 0.875rem;
+  }
+
+  .caption {
+    margin-top: 14px;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    max-width: 78ch;
+  }
+
+  @media (max-width: 720px) {
+    .telemetry {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .readout {
+      grid-template-columns: repeat(2, auto);
+      justify-content: start;
+    }
+
+    .route-stage {
+      margin-inline: calc(var(--gutter) * -1);
+      border-inline: 0;
+      border-radius: 0;
+    }
+  }
+</style>
