@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import { immc } from '../data/profile';
+import cert2025 from '../assets/immc/immc-2025-honorable-mention.png';
+import cert2024 from '../assets/immc/immc-2024-honorable-mention.png';
+
+const images: Record<string, ImageMetadata> = { '2025': cert2025, '2024': cert2024 };
+---
+
+<ul class="certs">
+  {
+    immc.certificates.map((c) => (
+      <li>
+        <a href={c.pdf} class="frame shot">
+          <Image
+            src={images[c.year]}
+            alt={`IM²C ${c.year} Certificate of Achievement, Honorable Mention, Hanoi-Amsterdam High School for the Gifted, representing Vietnam.`}
+            widths={[360, 540, 720]}
+            sizes="(max-width: 700px) 100vw, 340px"
+          />
+        </a>
+        <p class="label ui">{c.label}</p>
+        <p class="team">{c.team}</p>
+        <p class="ui"><a href={c.pdf}>Certificate (PDF)</a></p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .certs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 20px 24px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .shot {
+    display: block;
+    background: #fff;
+  }
+
+  .shot img {
+    width: 100%;
+    height: auto;
+    transition: transform 400ms ease;
+  }
+
+  .shot:hover img {
+    transform: scale(1.02);
+  }
+
+  .label {
+    margin-top: 10px;
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+
+  .team {
+    margin-top: 2px;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--graphite);
+  }
+
+  .ui:last-child {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .ui:last-child a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>
