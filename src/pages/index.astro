@@ -1,0 +1,307 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Epigraph from '../components/Epigraph.astro';
+import RouteField from '../components/RouteField.astro';
+import LedgerEntry from '../components/LedgerEntry.astro';
+import BalancingMatrix from '../components/BalancingMatrix.astro';
+import Marked from '../components/Marked.astro';
+import { education, experience, honors, immc, papers, person, scores, tools } from '../data/profile';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const [balancing, macro] = papers;
+---
+
+<Base>
+  <section class="hero wrap" aria-labelledby="hero-name">
+    <div class="row hero-head">
+      <div>
+        <h1 id="hero-name" class="name">{person.name}</h1>
+        <p class="statement">{person.statement}</p>
+        <p class="intro">{person.intro}</p>
+      </div>
+      <Epigraph quote="hero" class="hero-quote" />
+    </div>
+    <div class="hero-field">
+      <RouteField id="hero-route" autoplay />
+    </div>
+  </section>
+
+  <section class="section wrap" id="work" aria-labelledby="work-title">
+    <header class="row section-head">
+      <div>
+        <h2 id="work-title">Work</h2>
+        <p class="lede">Each project: what it claims, what was measured, and the main limit, stated plainly.</p>
+      </div>
+      <Epigraph quote="work" />
+    </header>
+    {work.map((entry) => <LedgerEntry entry={entry} />)}
+  </section>
+
+  <section class="section wrap" id="research" aria-labelledby="research-title">
+    <header class="row section-head">
+      <div>
+        <h2 id="research-title">Research</h2>
+        <p class="lede">Two co-authored papers and a modeling competition. These ones do play the odds.</p>
+      </div>
+      <Epigraph quote="research" />
+    </header>
+
+    <article class="paper row">
+      <div class="measure">
+        <h3>{balancing.title}</h3>
+        <p class="cite ui quiet">{balancing.authors}. <em>{balancing.venue}</em>.</p>
+        <p class="abstract">{balancing.summary}</p>
+        <BalancingMatrix />
+      </div>
+      <p class="side ui quiet"><a href={`https://doi.org/${balancing.doi}`}>DOI {balancing.doi}</a></p>
+    </article>
+
+    <article class="paper row">
+      <div class="measure">
+        <h3>{macro.title}</h3>
+        <p class="cite ui quiet">{macro.authors}. <em>{macro.venue}</em>.</p>
+        <p class="abstract"><Marked text={macro.summary} highlight={macro.highlight} /></p>
+      </div>
+      <p class="side ui quiet"><a href={`https://doi.org/${macro.doi}`}>DOI {macro.doi}</a></p>
+    </article>
+
+    <article class="paper row">
+      <div class="measure">
+        <h3>{immc.title}</h3>
+        <p class="abstract">{immc.summary}</p>
+      </div>
+      <p class="side ui quiet">2024 and 2025</p>
+    </article>
+  </section>
+
+  <section class="section wrap" id="experience" aria-labelledby="experience-title">
+    <header class="row section-head">
+      <div>
+        <h2 id="experience-title">Experience</h2>
+      </div>
+      <Epigraph quote="experience" />
+    </header>
+    <ol class="roles">
+      {
+        experience.map((r) => (
+          <li class="row role">
+            <div>
+              <p class="role-title">
+                <strong>{r.title}</strong>, {r.org}
+              </p>
+              {r.detail && <p class="quiet role-detail">{r.detail}</p>}
+              {r.work && (
+                <p class="role-link ui">
+                  <a href={`/work/${r.work}/`}>See the project</a>
+                </p>
+              )}
+            </div>
+            <p class="ui quiet role-dates">{r.dates}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="section wrap" id="education" aria-labelledby="education-title">
+    <header class="row section-head">
+      <div>
+        <h2 id="education-title">Education and honors</h2>
+      </div>
+      <Epigraph quote="honors" />
+    </header>
+    <div class="facts">
+      <div>
+        <h3>Education</h3>
+        <ul>
+          {
+            education.map((e) => (
+              <li>
+                <strong>{e.school}</strong>
+                <span class="quiet">{e.detail}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <h3>Honors and scores</h3>
+        <ul>
+          {honors.map((h) => <li>{h}</li>)}
+          {scores.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+      <div>
+        <h3>Tools</h3>
+        <ul>
+          {
+            tools.map((t) => (
+              <li>
+                <strong>{t.group}</strong>
+                <span class="quiet">{t.items}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-top: clamp(28px, 6vw, 72px);
+  }
+
+  .hero-head {
+    align-items: end;
+  }
+
+  .name {
+    font-size: clamp(3.25rem, 9vw, 6rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  .statement {
+    margin-top: 20px;
+    max-width: 30ch;
+    font-size: clamp(1.375rem, 2.5vw, 1.875rem);
+    line-height: 1.28;
+    font-variation-settings: 'opsz' 40;
+    text-wrap: balance;
+  }
+
+  .intro {
+    margin-top: 16px;
+    max-width: 58ch;
+    color: var(--graphite);
+  }
+
+  .hero-head :global(.hero-quote) {
+    padding-bottom: 6px;
+  }
+
+  @media (max-width: 900px) {
+    .hero-head :global(.hero-quote) {
+      margin-top: 24px;
+    }
+  }
+
+  .hero-field {
+    margin-top: clamp(28px, 4vw, 44px);
+  }
+
+  .paper {
+    padding-block: 34px;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .paper h3 {
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+  }
+
+  .cite {
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+
+  .abstract {
+    margin-top: 12px;
+  }
+
+  .side {
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 900px) {
+    .side {
+      margin-top: 12px;
+    }
+  }
+
+  .roles {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .role {
+    padding-block: 18px;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .role-title {
+    max-width: 62ch;
+  }
+
+  .role-title strong {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.1875rem;
+  }
+
+  .role-detail {
+    margin-top: 2px;
+    font-size: 1rem;
+  }
+
+  .role-link {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .role-link a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .role-dates {
+    font-size: 1rem;
+    padding-top: 2px;
+  }
+
+  @media (max-width: 900px) {
+    .role-dates {
+      order: -1;
+      font-size: 0.9375rem;
+    }
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 32px var(--col-gap);
+    padding-top: 28px;
+  }
+
+  .facts h3 {
+    font-size: 1.3125rem;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .facts ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .facts li {
+    display: flex;
+    flex-direction: column;
+    padding-block: 10px;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-bottom: 1px solid color-mix(in srgb, var(--grid) 60%, transparent);
+  }
+
+  .facts li strong {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+</style>
