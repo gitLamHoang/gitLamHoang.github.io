@@ -2,8 +2,8 @@
 title: Cross-subject EEG state classification
 summary: An auditable EEG pipeline, from hash-verified public recordings to predictions on participants the model never saw.
 org: Hanoi University of Science and Technology
-role: Machine Learning Researcher (prototype), then public benchmark
-dates: Started 2024, public benchmark 2026
+role: Machine Learning Researcher
+dates: 2024 prototype; public benchmark 2026
 order: 3
 overview: Classifying mental or physiological state from EEG is a core brain-computer interface problem, and the hard part is generalizing to new people. Windows from the same person are correlated, so a random split leaks subjects into the test set and inflates accuracy. This project keeps participants separate from feature extraction to final evaluation, on PhysioNet's 109-subject EEG Motor Movement/Imagery dataset.
 contribution: I started the work in 2024 as a single-channel hardware and machine learning prototype at Hanoi University of Science and Technology, with guidance from Professor Trinh Van Chien. I later rebuilt it as a reproducible multichannel benchmark with verified acquisition, 512 spectral features, participant-grouped model selection, a sealed holdout, and versioned model artifacts.
@@ -30,6 +30,7 @@ figure:
   src: ../../assets/work/eeg-benchmark.png
   alt: Grouped model-selection scores and the confusion matrix on the held-out participants.
   caption: Grouped model selection, then one final evaluation on 22 held-out participants.
+  fit: contain
 sources:
   - gitLamHoang/Classfying-brain-wave-state README (PhysioNet benchmark)
   - Current CV (HUST role, 2026 public-data continuation)

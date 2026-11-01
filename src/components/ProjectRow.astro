@@ -33,7 +33,7 @@ const href = `/work/${entry.id}/`;
   </div>
   {
     figure && (
-      <a class="media frame" href={href} tabindex="-1" aria-hidden="true">
+      <a class:list={['media frame', `fit-${figure.fit}`]} href={href} tabindex="-1" aria-hidden="true">
         <Image src={figure.src} alt="" widths={[480, 720, 960]} sizes="(max-width: 900px) 100vw, 520px" />
       </a>
     )
@@ -132,6 +132,12 @@ const href = `/work/${entry.id}/`;
 
   .media:hover img {
     transform: scale(1.02);
+  }
+
+  .fit-contain img {
+    object-fit: contain;
+    object-position: center;
+    padding: 12px;
   }
 
   @media (max-width: 900px) {

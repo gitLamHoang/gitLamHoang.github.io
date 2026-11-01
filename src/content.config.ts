@@ -30,7 +30,14 @@ const work = defineCollection({
         specs: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
         links: z.array(link).default([]),
         figure: z
-          .object({ src: image(), alt: z.string(), caption: z.string(), href: z.url().optional() })
+          .object({
+            src: image(),
+            alt: z.string(),
+            caption: z.string(),
+            href: z.url().optional(),
+            /** cover crops to the frame from the top; contain shows the whole image (for wide charts). */
+            fit: z.enum(['cover', 'contain']).default('cover'),
+          })
           .optional(),
         /** Project-specific media block on the detail page. */
         showcase: z.enum(['none', 'harp']).default('none'),
