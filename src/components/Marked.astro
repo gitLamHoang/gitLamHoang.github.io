@@ -1,0 +1,12 @@
+---
+// Renders text with one exact substring under the highlighter.
+interface Props {
+  text: string;
+  highlight?: string;
+}
+
+const { text, highlight } = Astro.props;
+const at = highlight ? text.indexOf(highlight) : -1;
+---
+
+{at < 0 ? text : <>{text.slice(0, at)}<mark class="hl">{highlight}</mark>{text.slice(at + highlight!.length)}</>}
