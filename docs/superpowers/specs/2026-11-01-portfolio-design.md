@@ -197,3 +197,16 @@ Exact copy wording within the facts above, component breakdown, CSS architecture
 - Route field: top speed 0.8 m/s, 80 px per meter, and a tighter default triangle, so the load-time lap takes about 20 seconds instead of 45. The page grid is 40 px to match one 0.5 m square on the field.
 - The robot marker is a narrow arrowhead plus a heading tick; the first, near-equilateral wedge read as pointing backwards.
 - Matrix digits are grouped with thin spaces, because thousands commas collided with the commas between sequence terms.
+
+## Revision 3 (Harvey's feedback after launch)
+
+Harvey asked for six changes; each is listed with what was built.
+
+1. **Whole-project context.** Every project and paper now opens with the project's own idea (`overview`), then Harvey's part (`contribution`), before claim, result, and limit. The schema requires both fields.
+2. **Spacing and contrast.** Secondary text darkened from `#5A6470` to `#3F4957` (dark theme `#B9C4D2`); section padding cut to at most 88 px; layout widened to 1280 px; projects now pair text with their evidence image instead of an empty margin column.
+3. **Recorded simulation as the hero.** The hero is a video of a real recorded HARP run (`building-suite-20261101T092032Z/building-mixed-seed3`): the native MuJoCo G1 on the GR00T walker, steered by Harvey's NMPC through a building with seven pedestrians, zero contacts, 64.7 s. Every pose comes from the run's logs. Display choices are disclosed next to the video: walls cut to 0.9 m, moving tracks only, 2.5× playback.
+4. **More graphics.** An NMPC pipeline diagram, an interactive top-down run explorer with mode-colored path and scrubber, project screenshots beside each entry, IM²C certificates, and people photos.
+5. **Organizations and IM²C.** An affiliations band under the hero (Stanford, Stanford Student Robotics, POSH, Stanford AUV, Pfizer, Brown, HUST, HNUE, IM²C), org-first experience rows, org kickers on every project, and an IM²C entry with both Honorable Mention certificates (2024, 2025) and team credits.
+6. **HARP leads with the MPC.** The featured project is the predictive avoidance layer on branch `lam/predictive-avoidance`: tracking, constant-velocity forecasting, NMPC with SLSQP refinement, least-intrusion fallback; 7 of 7 native G1 crowd trials with zero contacts. The building-world work is described as in progress, with its failures stated.
+
+Also added: a "People I've met" section from Harvey's photos (names and titles as he recorded them; photos re-encoded without location metadata). Quotes were reassigned so each section keeps one verified line.

@@ -1,6 +1,6 @@
 # Harvey's Hub
 
-Harvey Phan's portfolio: navigation software for humanoid robots and applied machine learning. Every project is shown as a ledger entry with its claim, its measured result, and its main limit.
+Harvey Phan's portfolio: predictive crowd navigation for humanoid robots, applied machine learning, and mathematical research. Every project opens with the whole project's idea, then Harvey's part, then its claim, measured result, and main limit.
 
 Live at **https://gitlamhoang.github.io**.
 
@@ -25,6 +25,8 @@ Pushing to `main` runs the tests and type check, builds the site, and deploys it
 | Projects (one Markdown file each) | `src/content/work/*.md` |
 | Experience, education, honors, papers, contact | `src/data/profile.ts` |
 | Harvey Specter quotes | `src/data/quotes.ts` |
+| HARP replay video and explorer data | `public/media/`, `src/data/harp-crowd-run.json`, built by `scripts/replay/` |
+| IM²C certificates, people photos | `public/certificates/`, `src/assets/immc/`, `src/assets/people/` |
 | Resume PDF | `public/Harvey_Phan_Resume.pdf`, built from `resume/harvey_phan_resume.tex` |
 | Link preview image | `public/og.png`, built by `node scripts/og.mjs` |
 
@@ -47,7 +49,10 @@ cp /tmp/resume/harvey_phan_resume.pdf public/Harvey_Phan_Resume.pdf
 ## How it's built
 
 - [Astro](https://astro.build) 7, static output, no UI framework.
-- `src/lib/route-model.ts`: the hero's waypoint-following model (speed ramp, slow-down near each target, manual takeover). `src/scripts/route-field.ts` draws it.
+- `src/components/HeroVideo.astro`: the recorded HARP crowd run, replayed in MuJoCo from the run's own logs (`scripts/replay/`).
+- `src/components/RunExplorer.astro`: the same run from above, with a time scrubber and the robot path colored by planner mode.
+- `src/components/Pipeline.astro`: the NMPC avoidance layer as a signal chain.
+- `src/lib/route-model.ts`: the browser waypoint model on the HARP page (speed ramp, slow-down near each target, manual takeover). `src/scripts/route-field.ts` draws it.
 - `src/lib/balancing.ts`: the balancing-number matrix from Theorem 2.1 of the HNUE paper, in exact BigInt arithmetic.
 - Fonts: Source Serif 4, Barlow Semi Condensed, IBM Plex Mono, self-hosted through Fontsource.
 - Design notes: `docs/superpowers/specs/`. Wireframes: `wireframes/`.
