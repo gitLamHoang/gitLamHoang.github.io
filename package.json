@@ -1,0 +1,28 @@
+{
+  "name": "harveys-hub",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Harvey Phan's portfolio: robotics and AI work, each with its claim, measured result, and main limit.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "node --test 'src/lib/*.test.ts'"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource-variable/source-serif-4": "5.3.1",
+    "@fontsource/barlow-semi-condensed": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "astro": "7.4.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "typescript": "6.0.3"
+  }
+}
