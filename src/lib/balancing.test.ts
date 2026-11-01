@@ -43,3 +43,28 @@ test('mul is associative on powers of B', () => {
 test('power rejects n < 1', () => {
   assert.throws(() => power(0), RangeError);
 });
+
+test('addition formula: B(m+n) = B(m+1)B(n) - B(m)B(n-1)', () => {
+  for (let m = 1; m <= 18; m++) {
+    for (let n = 1; n <= 18; n++) assert.equal(seq[m + n], seq[m + 1] * seq[n] - seq[m] * seq[n - 1]);
+  }
+});
+
+test('Binet-like closed form with eigenvalues 3 ± 2√2', () => {
+  const l1 = 3 + 2 * Math.SQRT2;
+  const l2 = 3 - 2 * Math.SQRT2;
+  for (let n = 0; n <= 20; n++) {
+    const binet = (l1 ** n - l2 ** n) / (4 * Math.SQRT2);
+    assert.ok(Math.abs(binet - Number(seq[n])) / Math.max(1, Number(seq[n])) < 1e-12, `n = ${n}`);
+  }
+});
+
+test('n is balancing: 1 + ... + (n - 1) = (n + 1) + ... + (n + r) for some r', () => {
+  const sum = (a: bigint, b: bigint) => ((a + b) * (b - a + 1n)) / 2n;
+  // B(1) = 1 balances only by convention (r = 0, both sums empty), so start at B(2) = 6.
+  for (const n of seq.slice(2, 9)) {
+    let found = false;
+    for (let r = 1n; r <= n; r++) if (sum(1n, n - 1n) === sum(n + 1n, n + r)) found = true;
+    assert.ok(found, `B = ${n}`);
+  }
+});
