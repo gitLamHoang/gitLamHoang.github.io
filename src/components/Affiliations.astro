@@ -1,0 +1,69 @@
+---
+import { affiliations } from '../data/profile';
+---
+
+<section class="affiliations wrap" aria-labelledby="affiliations-title">
+  <h2 id="affiliations-title" class="label-ui">Where I've worked, studied, and competed</h2>
+  <ul>
+    {
+      affiliations.map((a) => (
+        <li>
+          <span class="org">{a.name}</span>
+          <span class="note">{a.note}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .affiliations {
+    padding-top: clamp(36px, 5vw, 56px);
+  }
+
+  h2 {
+    font-size: 0.9375rem;
+    margin-bottom: 12px;
+  }
+
+  /* Flex so every row fills edge to edge, whatever the count. */
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1.5px solid var(--ink);
+    border-left: 1px solid var(--grid);
+  }
+
+  li {
+    flex: 1 1 9.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px 16px 16px;
+    border-right: 1px solid var(--grid);
+    border-bottom: 1px solid var(--grid);
+    background: color-mix(in srgb, var(--paper-raised) 70%, transparent);
+  }
+
+  .org {
+    font-family: var(--font-ui);
+    font-size: 1.1875rem;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+
+  .note {
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--graphite);
+  }
+
+  li:first-child .org {
+    color: var(--pen);
+  }
+</style>
