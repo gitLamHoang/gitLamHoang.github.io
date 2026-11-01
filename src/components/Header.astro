@@ -1,0 +1,105 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { contact, person } from '../data/profile';
+
+const nav = [
+  { label: 'Work', href: '/#work' },
+  { label: 'Research', href: '/#research' },
+  { label: 'Experience', href: '/#experience' },
+];
+---
+
+<header class="site-header wrap">
+  <a class="wordmark" href="/" aria-label={`${person.siteTitle}, home`}>
+    <svg class="wordmark-glyph" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"></circle>
+      <path d="M9 7.5 L17 12 L9 16.5 Z" fill="var(--pen)"></path>
+    </svg>
+    <span>{person.siteTitle}</span>
+  </a>
+  <nav aria-label="Main">
+    <ul>
+      {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      <li><a href={contact.resume} download="Harvey_Phan_Resume.pdf">Resume (PDF)</a></li>
+    </ul>
+  </nav>
+  <ThemeToggle />
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 24px;
+    padding-block: 18px;
+  }
+
+  nav {
+    margin-left: auto;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    font-family: var(--font-ui);
+    font-size: 1.3125rem;
+    font-weight: 600;
+    letter-spacing: 0.005em;
+    text-decoration: none;
+  }
+
+  .wordmark-glyph {
+    width: 26px;
+    height: 26px;
+  }
+
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-ui);
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  @media (max-width: 640px) {
+    .site-header {
+      padding-block: 12px 4px;
+    }
+
+    /* Wordmark and theme toggle share the first row; the links get their own. */
+    .site-header :global(.theme-toggle) {
+      margin-left: auto;
+    }
+
+    nav {
+      order: 3;
+      width: 100%;
+      margin-left: 0;
+    }
+
+    nav ul {
+      gap: 0 18px;
+      font-size: 1rem;
+    }
+  }
+</style>

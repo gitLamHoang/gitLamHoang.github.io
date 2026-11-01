@@ -1,0 +1,73 @@
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme">
+  <svg viewBox="0 0 20 20" aria-hidden="true">
+    <circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+    <path d="M10 3 A7 7 0 0 1 10 17 Z" fill="currentColor"></path>
+  </svg>
+  <span data-theme-label>Dark</span>
+</button>
+
+<script>
+  const root = document.documentElement;
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const current = () => (root.dataset.theme as 'light' | 'dark' | undefined) ?? (media.matches ? 'dark' : 'light');
+
+  function sync() {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+      button.setAttribute('aria-label', `Switch to ${next} theme`);
+      const label = button.querySelector('[data-theme-label]');
+      if (label) label.textContent = next === 'dark' ? 'Dark' : 'Light';
+    }
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+    button.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      sync();
+    });
+  }
+  media.addEventListener('change', sync);
+  sync();
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1.5px solid var(--grid);
+    border-radius: var(--radius);
+    background: transparent;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--ink);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (max-width: 640px) {
+    .theme-toggle {
+      min-width: 44px;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .theme-toggle span {
+      display: none;
+    }
+  }
+</style>
