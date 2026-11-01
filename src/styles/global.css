@@ -8,8 +8,9 @@
   --grid: #d3ded9;
   --grid-faint: rgb(193 208 201 / 0.42);
   --ink: #1c2b4b;
-  --ink-soft: #33415f;
-  --graphite: #5a6470;
+  --ink-soft: #24324f;
+  --graphite: #3f4957;
+  --graphite-soft: #5d6776;
   --hl: #f0d64a;
   --hl-mark: rgb(240 214 74 / 0.85);
   --pen: #c0283a;
@@ -22,7 +23,7 @@
   /* one grid square on the page = 0.5 m on the route field */
   --cell: 40px;
   --gutter: clamp(16px, 4vw, 56px);
-  --margin-col: 17.5rem;
+  --margin-col: 19rem;
   --col-gap: clamp(24px, 4vw, 64px);
   --radius: 4px;
 }
@@ -35,8 +36,9 @@
     --grid: #2a3a52;
     --grid-faint: rgb(52 70 98 / 0.42);
     --ink: #dfe6ef;
-    --ink-soft: #c3cedb;
-    --graphite: #97a4b6;
+    --ink-soft: #d0d9e4;
+    --graphite: #b9c4d2;
+    --graphite-soft: #9aa7b8;
     --hl: #f0d64a;
     --hl-mark: rgb(240 214 74 / 0.3);
     --pen: #ff7a86;
@@ -51,8 +53,9 @@
   --grid: #2a3a52;
   --grid-faint: rgb(52 70 98 / 0.42);
   --ink: #dfe6ef;
-  --ink-soft: #c3cedb;
-  --graphite: #97a4b6;
+  --ink-soft: #d0d9e4;
+  --graphite: #b9c4d2;
+  --graphite-soft: #9aa7b8;
   --hl: #f0d64a;
   --hl-mark: rgb(240 214 74 / 0.3);
   --pen: #ff7a86;
@@ -175,7 +178,7 @@ code {
 
 .wrap {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -285,13 +288,13 @@ mark.hl {
 /* ---------- sections ---------- */
 
 .section {
-  padding-block: clamp(56px, 9vw, 112px) 0;
+  padding-block: clamp(48px, 6.5vw, 88px) 0;
 }
 
 .section-head {
   align-items: end;
-  padding-bottom: 28px;
-  margin-bottom: 8px;
+  padding-bottom: 20px;
+  margin-bottom: 4px;
   border-bottom: 1.5px solid var(--ink);
 }
 
@@ -300,7 +303,8 @@ mark.hl {
 }
 
 .section-head .lede {
-  margin-top: 10px;
+  margin-top: 8px;
+  max-width: 62ch;
   color: var(--graphite);
   font-size: 1.0625rem;
 }
@@ -354,4 +358,68 @@ mark.hl {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ---------- shared pieces for the work and research sections ---------- */
+
+/* Small organization kicker above a title: who the work was for. */
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--pen);
+}
+
+.kicker::before {
+  content: '';
+  width: 14px;
+  height: 2px;
+  background: currentColor;
+}
+
+/* Engineering spec sheet: label and value pairs. */
+.specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--grid);
+}
+
+.specs div {
+  padding: 10px 14px 10px 0;
+  border-bottom: 1px solid var(--grid);
+}
+
+.specs dt {
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--graphite);
+}
+
+.specs dd {
+  margin: 2px 0 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  font-variant-numeric: lining-nums;
+}
+
+.label-ui {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--graphite);
+}
+
+/* Bordered media frame for screenshots and video. */
+.frame {
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  overflow: hidden;
 }
