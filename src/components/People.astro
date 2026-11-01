@@ -1,0 +1,88 @@
+---
+import { Image } from 'astro:assets';
+import { people } from '../data/profile';
+
+const photos = import.meta.glob<{ default: ImageMetadata }>('../assets/people/*.jpg', { eager: true });
+const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
+---
+
+<ul class="people">
+  {
+    people.map((p) => (
+      <li>
+        <figure>
+          <div class="photo frame">
+            <Image
+              src={photo(p.photo)}
+              alt={`Harvey Phan with ${p.name}`}
+              widths={[360, 540, 720]}
+              sizes="(max-width: 700px) 100vw, 400px"
+              style={`object-position:${p.focus}`}
+            />
+          </div>
+          <figcaption>
+            <span class="name">{p.name}</span>
+            <span class="title">{p.title}</span>
+          </figcaption>
+        </figure>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .people {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (max-width: 900px) {
+    .people {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .people {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  .photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--pen);
+  }
+
+  .name {
+    font-family: var(--font-ui);
+    font-size: 1.3125rem;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  .title {
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--graphite);
+  }
+</style>
