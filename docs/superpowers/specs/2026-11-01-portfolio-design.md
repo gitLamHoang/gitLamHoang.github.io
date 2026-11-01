@@ -210,3 +210,11 @@ Harvey asked for six changes; each is listed with what was built.
 6. **HARP leads with the MPC.** The featured project is the predictive avoidance layer on branch `lam/predictive-avoidance`: tracking, constant-velocity forecasting, NMPC with SLSQP refinement, least-intrusion fallback; 7 of 7 native G1 crowd trials with zero contacts. The building-world work is described as in progress, with its failures stated.
 
 Also added: a "People I've met" section from Harvey's photos (names and titles as he recorded them; photos re-encoded without location metadata). Quotes were reassigned so each section keeps one verified line.
+
+## Revision 4 (format pass)
+
+- Organizations band: full names (International Mathematical Modeling Challenge, Hanoi National University of Education, Hanoi University of Science and Technology), roles in title case, and an even 3 by 3 grid so every block is the same size. Stanford Student Robotics' note uses the program's official name, Stanford Humanoid Athletic Robotics Project.
+- Organization kickers above each title are larger (17 to 20 px).
+- The balancing-numbers widget that stepped through matrix powers is replaced by a typeset derivation of the method: definition, recurrence, the B-matrix and Theorem 2.1, determinant, addition formula, eigenvalues, closed form, and divisibility. Long equations have a two-line form on phones. Unit tests check each identity.
+- Research entries carry a citation card (journal, issue, role, DOI) in the margin column; IM²C carries team, country, result, and organizers.
+- Wide figures (the EEG chart) fit inside their frame instead of being cropped; the featured project stacks below 1100 px so its spec sheet keeps several columns.

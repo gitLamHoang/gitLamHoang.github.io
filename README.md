@@ -53,7 +53,7 @@ cp /tmp/resume/harvey_phan_resume.pdf public/Harvey_Phan_Resume.pdf
 - `src/components/RunExplorer.astro`: the same run from above, with a time scrubber and the robot path colored by planner mode.
 - `src/components/Pipeline.astro`: the NMPC avoidance layer as a signal chain.
 - `src/lib/route-model.ts`: the browser waypoint model on the HARP page (speed ramp, slow-down near each target, manual takeover). `src/scripts/route-field.ts` draws it.
-- `src/lib/balancing.ts`: the balancing-number matrix from Theorem 2.1 of the HNUE paper, in exact BigInt arithmetic.
+- `src/components/BalancingMethod.astro`: the HNUE paper's matrix method, typeset with KaTeX at build time (no math JavaScript ships). `src/lib/balancing.ts` and its tests check every identity the panel shows, in exact BigInt arithmetic.
 - Fonts: Source Serif 4, Barlow Semi Condensed, IBM Plex Mono, self-hosted through Fontsource.
 - Design notes: `docs/superpowers/specs/`. Wireframes: `wireframes/`.
 
