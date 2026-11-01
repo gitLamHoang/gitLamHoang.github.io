@@ -1,0 +1,213 @@
+---
+// The matrix method for balancing numbers, as a short typeset derivation. Rendered to HTML at build
+// time with KaTeX, so the page ships no math JavaScript. Each identity is checked in src/lib/balancing.test.ts.
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const tex = (s: string) => katex.renderToString(s, { displayMode: true, throwOnError: true, output: 'htmlAndMathml' });
+
+const steps = [
+  {
+    label: 'Definition',
+    math: String.raw`1 + 2 + \cdots + (n-1) \;=\; (n+1) + \cdots + (n+r)`,
+    narrow: String.raw`\begin{aligned} &1 + 2 + \cdots + (n-1) \\ &\quad = (n+1) + \cdots + (n+r) \end{aligned}`,
+    note: 'A positive integer n is a balancing number when some r makes the two sums equal.',
+  },
+  {
+    label: 'Recurrence',
+    math: String.raw`B_0 = 0, \qquad B_1 = 1, \qquad B_{n+1} = 6B_n - B_{n-1}`,
+    narrow: String.raw`\begin{aligned} &B_0 = 0, \quad B_1 = 1, \\ &B_{n+1} = 6B_n - B_{n-1} \end{aligned}`,
+    note: 'Balancing numbers satisfy a second-order linear recurrence, like the Fibonacci and Pell numbers.',
+  },
+  {
+    label: 'The B-matrix',
+    math: String.raw`B = \begin{pmatrix} 6 & 1 \\ -1 & 0 \end{pmatrix}, \qquad B^{n} = \begin{pmatrix} B_{n+1} & B_{n} \\ -B_{n} & -B_{n-1} \end{pmatrix}`,
+    narrow: String.raw`\begin{aligned} &B = \begin{pmatrix} 6 & 1 \\ -1 & 0 \end{pmatrix}, \\[4pt] &B^{n} = \begin{pmatrix} B_{n+1} & B_{n} \\ -B_{n} & -B_{n-1} \end{pmatrix} \end{aligned}`,
+    note: 'Theorem 2.1: powers of B carry the sequence. Proved by induction: multiply the k-th power by B and apply the recurrence.',
+  },
+  {
+    label: 'Determinant',
+    math: String.raw`\det B^{n} = (\det B)^{n} = 1 \;\;\Longrightarrow\;\; B_{n}^{2} - B_{n+1}B_{n-1} = 1`,
+    narrow: String.raw`\begin{aligned} &\det B^{n} = (\det B)^{n} = 1 \\ &\Longrightarrow\; B_{n}^{2} - B_{n+1}B_{n-1} = 1 \end{aligned}`,
+    note: 'Taking determinants of both sides gives a Cassini-type identity.',
+  },
+  {
+    label: 'Addition',
+    math: String.raw`B^{m+n} = B^{m}B^{n} \;\;\Longrightarrow\;\; B_{m+n} = B_{m+1}B_{n} - B_{m}B_{n-1}`,
+    narrow: String.raw`\begin{aligned} &B^{m+n} = B^{m}B^{n} \\ &\Longrightarrow\; B_{m+n} = B_{m+1}B_{n} - B_{m}B_{n-1} \end{aligned}`,
+    note: 'Comparing entries of a product of powers gives an addition formula.',
+  },
+  {
+    label: 'Eigenvalues',
+    math: String.raw`\det(B - \lambda I) = \lambda^{2} - 6\lambda + 1 = 0 \;\;\Longrightarrow\;\; \lambda_{1,2} = 3 \pm 2\sqrt{2}`,
+    narrow: String.raw`\begin{aligned} &\lambda^{2} - 6\lambda + 1 = 0 \\ &\Longrightarrow\; \lambda_{1,2} = 3 \pm 2\sqrt{2} \end{aligned}`,
+    note: 'B has two distinct real eigenvalues, so it diagonalizes.',
+  },
+  {
+    label: 'Closed form',
+    math: String.raw`B_{n} = \frac{\lambda_1^{\,n} - \lambda_2^{\,n}}{\lambda_1 - \lambda_2} = \frac{(3+2\sqrt{2})^{n} - (3-2\sqrt{2})^{n}}{4\sqrt{2}}`,
+    narrow: String.raw`\begin{aligned} &B_{n} = \frac{\lambda_1^{\,n} - \lambda_2^{\,n}}{\lambda_1 - \lambda_2} \\[4pt] &\phantom{B_n} = \frac{(3+2\sqrt{2})^{n} - (3-2\sqrt{2})^{n}}{4\sqrt{2}} \end{aligned}`,
+    note: 'Writing the matrix power through its eigen-decomposition gives a Binet-like formula.',
+  },
+  {
+    label: 'Divisibility',
+    math: String.raw`\gcd(B_{m}, B_{n}) = B_{\gcd(m,\,n)}`,
+    note: 'The addition formula and the Euclidean algorithm reduce a gcd of balancing numbers to a gcd of their indices.',
+  },
+];
+---
+
+<figure class="method" aria-labelledby="method-title">
+  <div class="method-head">
+    <p id="method-title" class="method-title">The method</p>
+    <p class="method-idea">
+      Encode the recurrence in a 2 × 2 matrix whose powers carry the sequence. Then each tool of linear algebra, the determinant,
+      matrix multiplication, and eigenvalues, turns into an identity about balancing numbers.
+    </p>
+  </div>
+  <ol>
+    {
+      steps.map((s) => (
+        <li>
+          <p class="step-label">{s.label}</p>
+          <div class="step-body">
+            <div class:list={['eq', s.narrow && 'eq-wide']} set:html={tex(s.math)} />
+            {s.narrow && <div class="eq eq-narrow" set:html={tex(s.narrow)} />}
+            <p class="step-note">{s.note}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</figure>
+
+<style>
+  .method {
+    margin: 20px 0 0;
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+  }
+
+  .method-head {
+    padding: 18px 22px 16px;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .method-title {
+    font-family: var(--font-ui);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .method-idea {
+    margin-top: 6px;
+    color: var(--ink-soft);
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 9.5rem minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 4px 28px;
+    padding: 10px 22px;
+    counter-increment: step;
+  }
+
+  .step-body {
+    display: contents;
+  }
+
+  li + li {
+    border-top: 1px solid var(--grid);
+  }
+
+  .step-label {
+    font-family: var(--font-ui);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .step-label::before {
+    content: counter(step) ' ';
+    color: var(--pen);
+  }
+
+  .eq :global(.katex-display) {
+    margin: 0.35em 0;
+    text-align: left;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 2px;
+  }
+
+  .eq :global(.katex-display > .katex) {
+    text-align: left;
+    font-size: 1.12em;
+  }
+
+  /* Narrow screens get a two-line version of each long equation instead of a scrollbar. */
+  .eq-narrow {
+    display: none;
+  }
+
+  .step-note {
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--graphite);
+  }
+
+  @media (max-width: 1000px) {
+    li {
+      grid-template-columns: 9.5rem minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .step-label {
+      padding-top: 0.9em;
+    }
+
+    .step-note {
+      grid-column: 2;
+      padding-bottom: 4px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    li {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 12px 16px 14px;
+    }
+
+    .method-head {
+      padding: 16px;
+    }
+
+    .step-label {
+      padding-top: 0;
+    }
+
+    .step-note {
+      grid-column: 1;
+    }
+
+    .eq :global(.katex-display > .katex) {
+      font-size: 1em;
+    }
+
+    .eq-wide {
+      display: none;
+    }
+
+    .eq-narrow {
+      display: block;
+    }
+  }
+</style>
