@@ -4,6 +4,9 @@ import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Marked from '../../components/Marked.astro';
 import RouteField from '../../components/RouteField.astro';
+import HeroVideo from '../../components/HeroVideo.astro';
+import Pipeline from '../../components/Pipeline.astro';
+import RunExplorer from '../../components/RunExplorer.astro';
 
 export async function getStaticPaths() {
   const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
@@ -24,7 +27,8 @@ interface Props {
 }
 
 const { entry, prev, next } = Astro.props;
-const { title, summary, role, dates, stack, claim, result, highlight, limit, links, figure, routeFigure } = entry.data;
+const { title, summary, org, role, dates, stack, overview, contribution, claim, result, highlight, limit, specs, links, figure, showcase } =
+  entry.data;
 const { Content } = await render(entry);
 ---
 
@@ -34,6 +38,7 @@ const { Content } = await render(entry);
 
     <header class="row project-head">
       <div>
+        <p class="kicker">{org}</p>
         <h1>{title}</h1>
         <p class="summary">{summary}</p>
       </div>
@@ -43,6 +48,35 @@ const { Content } = await render(entry);
         {stack && <p class="quiet stack">{stack.join(', ')}</p>}
       </div>
     </header>
+
+    {
+      showcase === 'harp' && (
+        <div class="figure">
+          <HeroVideo />
+        </div>
+      )
+    }
+
+    <div class="row intro-block">
+      <div class="measure">
+        <h2 class="h-sub">The project</h2>
+        <p>{overview}</p>
+        <h2 class="h-sub">My part</h2>
+        <p>{contribution}</p>
+      </div>
+      {
+        specs && (
+          <dl class="specs side-specs">
+            {specs.map((sp) => (
+              <div>
+                <dt>{sp.label}</dt>
+                <dd>{sp.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+    </div>
 
     <div class="row ledger">
       <dl class="triple">
@@ -71,10 +105,17 @@ const { Content } = await render(entry);
     }
 
     {
-      routeFigure && (
-        <div class="figure">
-          <RouteField id={`${entry.id}-route`} />
-        </div>
+      showcase === 'harp' && (
+        <>
+          <div class="figure">
+            <h2 class="h-sub">How the controller decides</h2>
+            <Pipeline />
+          </div>
+          <div class="figure">
+            <h2 class="h-sub">Scrub the recorded run</h2>
+            <RunExplorer />
+          </div>
+        </>
       )
     }
 
@@ -96,6 +137,19 @@ const { Content } = await render(entry);
     <div class="prose">
       <Content />
     </div>
+
+    {
+      showcase === 'harp' && (
+        <div class="figure">
+          <h2 class="h-sub">Earlier work, in the browser: waypoint laps and takeover</h2>
+          <p class="measure demo-note">
+            A small browser model of the behavior from PRs #2, #5, and #6: repeated laps over a waypoint route, speed that ramps up and
+            slows into each target, and a takeover that stops at once. Click the floor to add waypoints.
+          </p>
+          <RouteField id={`${entry.id}-route`} />
+        </div>
+      )
+    }
 
     <nav class="pager ui" aria-label="More work">
       <a href={`/work/${prev.id}/`} rel="prev"><span class="quiet">Previous</span>{prev.data.title}</a>
@@ -123,6 +177,34 @@ const { Content } = await render(entry);
   .project-head {
     align-items: end;
     margin-top: 12px;
+  }
+
+  .project-head .kicker {
+    margin-bottom: 10px;
+  }
+
+  .h-sub {
+    margin: 0 0 12px;
+    font-size: clamp(1.25rem, 2.2vw, 1.5rem);
+  }
+
+  .intro-block {
+    margin-top: 40px;
+    row-gap: 20px;
+  }
+
+  .intro-block p + .h-sub {
+    margin-top: 28px;
+  }
+
+  .side-specs {
+    grid-template-columns: minmax(0, 1fr);
+    align-self: start;
+  }
+
+  .demo-note {
+    margin-bottom: 16px;
+    color: var(--ink-soft);
   }
 
   h1 {
