@@ -1,0 +1,211 @@
+---
+import poster from '../assets/harp/replay-poster.jpg';
+
+interface Props {
+  /** Caption shown under the video. */
+  caption?: boolean;
+}
+
+const { caption = true } = Astro.props;
+---
+
+<figure class="replay" data-replay>
+  <div class="replay-frame frame">
+    <video
+      data-replay-video
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster={poster.src}
+      width="1600"
+      height="900"
+      aria-label="Replay of a recorded simulation: HARP's Unitree G1 humanoid walks down a hallway past seven moving pedestrians to a goal marker, steering around them using LiDAR tracks."
+    >
+      <source src="/media/harp-crowd-replay-960.mp4" type="video/mp4" media="(max-width: 700px)" />
+      <source src="/media/harp-crowd-replay.mp4" type="video/mp4" />
+    </video>
+    <button type="button" class="replay-toggle" data-replay-toggle aria-pressed="false">
+      <svg viewBox="0 0 16 16" aria-hidden="true" class="icon-pause"><rect x="3" y="2" width="3.5" height="12" rx="1"></rect><rect x="9.5" y="2" width="3.5" height="12" rx="1"></rect></svg>
+      <svg viewBox="0 0 16 16" aria-hidden="true" class="icon-play"><path d="M4 2.5 L13.5 8 L4 13.5 Z"></path></svg>
+      <span data-replay-label>Pause</span>
+    </button>
+    <ul class="legend ui" aria-label="Legend">
+      <li><span class="swatch sw-path"></span>Robot path</li>
+      <li><span class="swatch sw-track"></span>LiDAR track</li>
+      <li><span class="swatch sw-goal"></span>Goal</li>
+    </ul>
+  </div>
+  {
+    caption && (
+      <figcaption class="replay-caption">
+        <strong>Recorded run, replayed.</strong> A native MuJoCo Unitree G1 on HARP's GR00T walking policy, steered by my NMPC filter
+        through a building with seven moving pedestrians. It reached the goal with zero contacts in 64.7 s. The controller sees only its
+        LiDAR tracks; walls are cut away to 0.9 m for visibility, and playback runs at 2.5×.
+      </figcaption>
+    )
+  }
+</figure>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-replay]')) {
+    const video = root.querySelector<HTMLVideoElement>('[data-replay-video]')!;
+    const toggle = root.querySelector<HTMLButtonElement>('[data-replay-toggle]')!;
+    const label = root.querySelector('[data-replay-label]')!;
+    let userPaused = reduce.matches;
+
+    const sync = () => {
+      const paused = video.paused;
+      toggle.setAttribute('aria-pressed', String(paused));
+      toggle.classList.toggle('is-paused', paused);
+      label.textContent = paused ? 'Play' : 'Pause';
+    };
+
+    const tryPlay = () => {
+      if (!userPaused) video.play().catch(() => sync());
+    };
+
+    toggle.addEventListener('click', () => {
+      if (video.paused) {
+        userPaused = false;
+        video.play().catch(() => {});
+      } else {
+        userPaused = true;
+        video.pause();
+      }
+    });
+    video.addEventListener('play', sync);
+    video.addEventListener('pause', sync);
+
+    // Play only while on screen, and never on its own under reduced motion.
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) tryPlay();
+      else video.pause();
+    }, { threshold: 0.25 }).observe(video);
+    sync();
+  }
+</script>
+
+<style>
+  .replay {
+    margin: 0;
+  }
+
+  .replay-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #eceff0;
+  }
+
+  video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .replay-toggle {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 14px 0 12px;
+    border: 1.5px solid #1c2b4b;
+    border-radius: 999px;
+    background: rgb(246 248 246 / 0.92);
+    color: #1c2b4b;
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+
+  .replay-toggle svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
+
+  .replay-toggle .icon-play,
+  .replay-toggle.is-paused .icon-pause {
+    display: none;
+  }
+
+  .replay-toggle.is-paused .icon-play {
+    display: block;
+  }
+
+  .legend {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin: 0;
+    padding: 7px 12px;
+    list-style: none;
+    border-radius: 999px;
+    background: rgb(246 248 246 / 0.92);
+    color: #1c2b4b;
+    font-size: 0.875rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+  }
+
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+  }
+
+  .sw-path {
+    height: 4px;
+    border-radius: 2px;
+    background: #c0283a;
+  }
+
+  .sw-track {
+    background: rgb(240 214 74 / 0.85);
+    border: 1px solid #c9a51c;
+  }
+
+  .sw-goal {
+    border: 3px solid #1c2b4b;
+    background: #f6f8f6;
+  }
+
+  .replay-caption {
+    margin-top: 12px;
+    font-size: 0.96875rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 82ch;
+  }
+
+  .replay-caption strong {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    color: var(--ink);
+  }
+
+  @media (max-width: 560px) {
+    .legend {
+      display: none;
+    }
+  }
+</style>
