@@ -1,0 +1,108 @@
+---
+import Epigraph from './Epigraph.astro';
+import { contact, person } from '../data/profile';
+---
+
+<footer class="site-footer" id="contact">
+  <div class="wrap">
+    <div class="row footer-head">
+      <div>
+        <h2>Get in touch</h2>
+        <p class="lede">Questions about the work, or a role in robotics or AI? Email me.</p>
+      </div>
+      <Epigraph quote="footer" />
+    </div>
+
+    <div class="row footer-body">
+      <ul class="contact">
+        <li><span class="k">Email</span><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
+        <li><span class="k">Phone</span><a href={contact.phoneHref}>{contact.phone}</a></li>
+        <li><span class="k">Based in</span><span>{contact.location}</span></li>
+        <li><span class="k">LinkedIn</span><a href={contact.linkedin}>linkedin.com/in/phanhlam</a></li>
+        <li><span class="k">GitHub</span><a href={contact.github}>github.com/gitLamHoang</a></li>
+      </ul>
+      <div class="cv">
+        <a class="btn btn-primary" href={contact.resume} download="Harvey_Phan_Resume.pdf">Download {contact.resumeLabel} (PDF)</a>
+      </div>
+    </div>
+
+    <div class="fine">
+      <p>Legal name: {person.legalName}. Papers are listed under the published author name.</p>
+      <p>Quotes are Harvey Specter's, from <cite>Suits</cite> (USA Network). This site is not affiliated with the show.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: clamp(72px, 10vw, 128px);
+    padding-block: 48px 40px;
+    border-top: 1.5px solid var(--ink);
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+  }
+
+  .footer-head {
+    align-items: end;
+  }
+
+  .footer-head h2 {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+  }
+
+  .lede {
+    margin-top: 10px;
+    max-width: 52ch;
+    color: var(--graphite);
+  }
+
+  .footer-body {
+    margin-top: 32px;
+    align-items: start;
+  }
+
+  .contact {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 4px 32px;
+  }
+
+  .contact li {
+    display: flex;
+    flex-direction: column;
+    padding-block: 8px;
+    border-top: 1px solid var(--grid);
+  }
+
+  .contact .k {
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    color: var(--graphite);
+  }
+
+  .contact a {
+    overflow-wrap: anywhere;
+  }
+
+  .cv {
+    padding-top: 8px;
+  }
+
+  .fine {
+    margin-top: 40px;
+    display: grid;
+    gap: 4px;
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    color: var(--graphite);
+  }
+
+  @media (max-width: 900px) {
+    .footer-head :global(.epigraph),
+    .cv {
+      margin-top: 20px;
+    }
+  }
+</style>
