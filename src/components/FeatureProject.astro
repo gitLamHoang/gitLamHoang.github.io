@@ -1,0 +1,170 @@
+---
+// The current headline project on the home page: HARP's predictive crowd navigation.
+import type { CollectionEntry } from 'astro:content';
+import Marked from './Marked.astro';
+import Pipeline from './Pipeline.astro';
+import RunExplorer from './RunExplorer.astro';
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+}
+
+const { entry } = Astro.props;
+const { title, org, role, dates, overview, contribution, claim, result, highlight, limit, links, specs } = entry.data;
+const href = `/work/${entry.id}/`;
+---
+
+<article class="feature" aria-labelledby={`p-${entry.id}`}>
+  <div class="top">
+    <div class="text">
+      <p class="kicker">{org}</p>
+      <h3 id={`p-${entry.id}`}><a href={href}>{title}</a></h3>
+      <p class="meta ui">{role}, {dates}</p>
+      <p class="overview">{overview}</p>
+      <p class="contribution"><span class="label-ui">My part.</span> {contribution}</p>
+    </div>
+    <div class="evidence">
+      <dl class="triple">
+        <div><dt>Claim</dt><dd>{claim}</dd></div>
+        <div><dt>Result</dt><dd><Marked text={result} highlight={highlight} /></dd></div>
+      </dl>
+      <p class="limit"><span class="limit-label">Limit</span>{' '}{limit}</p>
+      {
+        specs && (
+          <dl class="specs">
+            {specs.map((s) => (
+              <div>
+                <dt>{s.label}</dt>
+                <dd>{s.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+      <ul class="link-row">
+        <li><a href={href}>Full write-up</a></li>
+        {links.slice(0, 2).map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+  </div>
+
+  <div class="block">
+    <h4 class="block-title">How the controller decides</h4>
+    <Pipeline />
+  </div>
+
+  <div class="block">
+    <h4 class="block-title">Scrub the recorded run</h4>
+    <RunExplorer />
+  </div>
+</article>
+
+<style>
+  .feature {
+    padding-block: 40px 48px;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 24px clamp(28px, 4vw, 56px);
+  }
+
+  @media (max-width: 900px) {
+    .top {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  h3 {
+    margin-top: 6px;
+    font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.14em;
+  }
+
+  .meta {
+    margin-top: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--graphite);
+  }
+
+  .overview {
+    margin-top: 14px;
+  }
+
+  .contribution {
+    margin-top: 10px;
+    color: var(--ink-soft);
+  }
+
+  .evidence {
+    padding: 20px 22px 18px;
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+    align-self: start;
+  }
+
+  .triple {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .triple div {
+    display: grid;
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  dt {
+    padding-top: 0.2em;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--graphite);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .limit {
+    margin-top: 14px;
+  }
+
+  .specs {
+    margin-top: 16px;
+  }
+
+  .link-row {
+    margin-top: 8px;
+  }
+
+  .block {
+    margin-top: 40px;
+  }
+
+  .block-title {
+    margin-bottom: 14px;
+    font-size: 1.3125rem;
+  }
+
+  @media (max-width: 480px) {
+    .triple div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+  }
+</style>
