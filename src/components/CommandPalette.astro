@@ -1,0 +1,437 @@
+---
+// ⌘K / Ctrl+K command palette: jump to any section, write-up, paper, or demo, and run quick actions.
+// A native <dialog> handles focus trapping and Escape; the list is a listbox driven by aria-activedescendant.
+import { getCollection } from 'astro:content';
+import { contact, papers } from '../data/profile';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+
+interface Item {
+  group: string;
+  label: string;
+  hint?: string;
+  href?: string;
+  action?: string;
+  keywords?: string;
+}
+
+const items: Item[] = [
+  ...[
+    ['Work', '/#work', 'projects ledger'],
+    ['Research', '/#research', 'papers math'],
+    ['Experience', '/#experience', 'roles jobs'],
+    ['People I have met', '/#people', 'people'],
+    ['Education and honors', '/#education', 'school scores awards'],
+    ['Get in touch', '/#contact', 'contact email phone'],
+  ].map(([label, href, keywords]) => ({ group: 'Sections', label, href, keywords })),
+  ...work.map((w) => ({
+    group: 'Write-ups',
+    label: w.data.title,
+    hint: w.data.org,
+    href: `/work/${w.id}/`,
+    keywords: `${w.id.replace(/-/g, ' ')} ${w.data.stack?.join(' ') ?? ''} ${w.data.role}`,
+  })),
+  ...papers.map((p) => ({
+    group: 'Papers',
+    label: p.title.split(':')[0],
+    hint: p.journal,
+    href: `https://doi.org/${p.doi}`,
+    keywords: 'paper doi',
+  })),
+  { group: 'Demos', label: 'Steer the robot through a crowd', hint: 'Live lab on this site', href: '/#home-crowd-lab-caption', keywords: 'mpc lab simulation' },
+  { group: 'Demos', label: 'NYC taxi demand explorer', hint: 'External demo', href: 'https://gitlamhoang.github.io/nyc-mobility-intelligence/', keywords: 'map forecast' },
+  { group: 'Demos', label: 'Pharmaceutical date review workspace', hint: 'External demo', href: 'https://gitlamhoang.github.io/pharma-ocr-date-rag/', keywords: 'pfizer ocr' },
+  { group: 'Actions', label: 'Copy email address', hint: contact.email, action: 'copy-email', keywords: 'mail' },
+  { group: 'Actions', label: "Download Harvey Phan's Resume", hint: 'PDF', action: 'resume', keywords: 'cv pdf' },
+  { group: 'Actions', label: 'Switch light or dark theme', action: 'theme', keywords: 'dark light mode' },
+  { group: 'Actions', label: 'Open GitHub', hint: 'github.com/gitLamHoang', href: contact.github, keywords: 'code' },
+  { group: 'Actions', label: 'Open LinkedIn', hint: 'linkedin.com/in/phanhlam', href: contact.linkedin, keywords: 'profile' },
+];
+---
+
+<dialog class="palette" data-palette aria-label="Command palette">
+  <div class="palette-box">
+    <div class="palette-input">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M13 13 L17.5 17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+      <input
+        type="text"
+        data-palette-input
+        placeholder="Jump to a section, write-up, paper, or action"
+        aria-label="Search"
+        role="combobox"
+        aria-expanded="true"
+        aria-controls="palette-list"
+        aria-autocomplete="list"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd>Esc</kbd>
+    </div>
+    <ul id="palette-list" role="listbox" class="palette-list" data-palette-list aria-label="Results">
+      {
+        items.map((it, i) => (
+          <li
+            role="option"
+            id={`pal-${i}`}
+            aria-selected="false"
+            data-group={it.group}
+            data-href={it.href}
+            data-action={it.action}
+            data-label={it.label.toLowerCase()}
+            data-text={`${it.label} ${it.hint ?? ''} ${it.keywords ?? ''} ${it.group}`.toLowerCase()}
+          >
+            <span class="pi-group">{it.group}</span>
+            <span class="pi-label">{it.label}</span>
+            {it.hint && <span class="pi-hint">{it.hint}</span>}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="palette-empty" data-palette-empty hidden>No match. Try "mpc", "paper", or "email".</p>
+    <p class="palette-foot ui"><kbd>↑</kbd><kbd>↓</kbd> to move <kbd>Enter</kbd> to open <kbd>⌘K</kbd> to toggle</p>
+  </div>
+</dialog>
+<p class="toast ui" data-toast role="status" aria-live="polite"></p>
+
+<script>
+  import { contact } from '../data/profile';
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-palette]');
+  if (dialog) {
+    const input = dialog.querySelector<HTMLInputElement>('[data-palette-input]')!;
+    const options = [...dialog.querySelectorAll<HTMLLIElement>('[role="option"]')];
+    const empty = dialog.querySelector<HTMLElement>('[data-palette-empty]')!;
+    const toast = document.querySelector<HTMLElement>('[data-toast]')!;
+    let visible = options;
+    let active = 0;
+
+    const say = (msg: string) => {
+      toast.textContent = msg;
+      toast.classList.add('is-on');
+      window.setTimeout(() => toast.classList.remove('is-on'), 2200);
+    };
+
+    const wordStart = (text: string, at: number) => at === 0 || /[\s(,-]/.test(text[at - 1]);
+
+    /**
+     * Rank: label prefix, then a whole substring of the label, then of the keywords, then a
+     * subsequence of the label only (so stray letters across keywords do not match).
+     */
+    const score = (label: string, text: string, q: string): number => {
+      if (!q) return 1;
+      if (label.startsWith(q)) return 400;
+      const li = label.indexOf(q);
+      if (li >= 0) return 300 + (wordStart(label, li) ? 50 : 0) - li * 0.1;
+      const ti = text.indexOf(q);
+      if (ti >= 0) return 200 + (wordStart(text, ti) ? 50 : 0) - ti * 0.05;
+      let i = 0;
+      let gaps = 0;
+      let last = -1;
+      for (let k = 0; k < label.length && i < q.length; k++) {
+        if (label[k] === q[i]) {
+          if (last >= 0 && k - last > 1) gaps++;
+          last = k;
+          i++;
+        }
+      }
+      return i === q.length && q.length >= 2 && gaps <= 1 ? 100 - gaps * 20 : 0;
+    };
+
+    const highlight = () => {
+      for (const o of options) o.setAttribute('aria-selected', 'false');
+      visible.forEach((o, i) => o.setAttribute('aria-selected', String(i === active)));
+      const cur = visible[active];
+      if (cur) {
+        input.setAttribute('aria-activedescendant', cur.id);
+        cur.scrollIntoView({ block: 'nearest' });
+      } else input.removeAttribute('aria-activedescendant');
+    };
+
+    const filter = () => {
+      const q = input.value.trim().toLowerCase();
+      const ranked = options
+        .map((o, i) => ({ o, i, s: score(o.dataset.label ?? '', o.dataset.text ?? '', q) }))
+        .filter((r) => r.s > 0)
+        .sort((a, b) => (q ? b.s - a.s || a.i - b.i : a.i - b.i));
+      for (const o of options) o.hidden = true;
+      visible = ranked.map((r) => r.o);
+      if (!q) visible = [...options];
+      const list = dialog.querySelector('[data-palette-list]')!;
+      for (const o of visible) {
+        o.hidden = false;
+        list.appendChild(o);
+      }
+      // Group labels only on the first item of each group, and only when not searching.
+      let prev = '';
+      for (const o of visible) {
+        o.classList.toggle('first-of-group', !q && o.dataset.group !== prev);
+        prev = o.dataset.group ?? '';
+      }
+      empty.hidden = visible.length > 0;
+      active = 0;
+      highlight();
+    };
+
+    const run = async (o: HTMLLIElement | undefined) => {
+      if (!o) return;
+      const action = o.dataset.action;
+      dialog.close();
+      if (action === 'copy-email') {
+        try {
+          await navigator.clipboard.writeText(contact.email);
+          say(`Copied ${contact.email}`);
+        } catch {
+          window.location.href = `mailto:${contact.email}`;
+        }
+      } else if (action === 'resume') {
+        const a = document.createElement('a');
+        a.href = contact.resume;
+        a.download = 'Harvey_Phan_Resume.pdf';
+        a.click();
+      } else if (action === 'theme') {
+        document.querySelector<HTMLButtonElement>('[data-theme-toggle]')?.click();
+      } else if (o.dataset.href) {
+        const url = new URL(o.dataset.href, window.location.href);
+        if (url.origin === window.location.origin) window.location.href = url.href;
+        else window.open(url.href, '_blank', 'noopener');
+      }
+    };
+
+    const open = () => {
+      if (dialog.open) return;
+      input.value = '';
+      filter();
+      dialog.showModal();
+      input.focus();
+    };
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (dialog.open) dialog.close();
+        else open();
+      }
+    });
+    for (const b of document.querySelectorAll('[data-palette-open]')) b.addEventListener('click', open);
+
+    input.addEventListener('input', filter);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        active = Math.min(visible.length - 1, active + 1);
+        highlight();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        active = Math.max(0, active - 1);
+        highlight();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        run(visible[active]);
+      }
+    });
+    for (const o of options) {
+      o.addEventListener('click', () => run(o));
+      o.addEventListener('mousemove', () => {
+        const i = visible.indexOf(o);
+        if (i !== active && i >= 0) {
+          active = i;
+          highlight();
+        }
+      });
+    }
+    // Click on the backdrop closes.
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  }
+</script>
+
+<style>
+  .palette {
+    width: min(640px, calc(100vw - 32px));
+    max-height: min(560px, calc(100vh - 96px));
+    margin: 12vh auto auto;
+    padding: 0;
+    border: 1.5px solid var(--ink);
+    border-radius: 10px;
+    background: var(--paper-raised);
+    color: var(--ink);
+    box-shadow: 0 24px 60px -20px rgb(15 22 40 / 0.45);
+    overflow: hidden;
+  }
+
+  .palette::backdrop {
+    background: rgb(18 27 41 / 0.42);
+    backdrop-filter: blur(3px);
+  }
+
+  .palette[open] {
+    animation: palette-in 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  @keyframes palette-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.985);
+    }
+  }
+
+  .palette-box {
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+  }
+
+  .palette-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .palette-input svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--graphite);
+  }
+
+  .palette-input input {
+    flex: 1;
+    min-width: 0;
+    min-height: 36px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-text);
+    font-size: 1.125rem;
+  }
+
+  kbd {
+    display: inline-block;
+    min-width: 1.6em;
+    padding: 1px 6px;
+    border: 1px solid var(--grid);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    font-family: var(--font-ui);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--graphite);
+    background: var(--paper);
+  }
+
+  .palette-list {
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    overflow-y: auto;
+  }
+
+  .palette-list li[hidden] {
+    display: none;
+  }
+
+  .palette-list li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 2px 16px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .pi-group {
+    display: none;
+    grid-column: 1 / -1;
+    margin: 6px 0 2px;
+    font-family: var(--font-ui);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--graphite);
+  }
+
+  .palette-list li.first-of-group .pi-group {
+    display: block;
+  }
+
+  .pi-label {
+    font-family: var(--font-ui);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .pi-hint {
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    color: var(--graphite);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 16rem;
+  }
+
+  .palette-list li[aria-selected='true'] {
+    background: color-mix(in srgb, var(--hl) 34%, transparent);
+    box-shadow: inset 3px 0 0 var(--pen);
+  }
+
+  .palette-empty {
+    padding: 18px;
+    color: var(--graphite);
+  }
+
+  .palette-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 9px 14px;
+    border-top: 1px solid var(--grid);
+    font-size: 0.875rem;
+    color: var(--graphite);
+  }
+
+  .palette-foot kbd + kbd {
+    margin-left: -2px;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 40;
+    margin: 0;
+    padding: 10px 16px;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper-raised);
+    color: var(--ink);
+    font-weight: 600;
+    transform: translate(-50%, 16px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  .toast.is-on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  @media (max-width: 560px) {
+    .pi-hint {
+      display: none;
+    }
+
+    .palette-foot {
+      display: none;
+    }
+  }
+</style>
