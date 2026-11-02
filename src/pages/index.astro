@@ -241,6 +241,18 @@ const [balancing, macro] = papers;
     border-radius: 50%;
     background: var(--pen);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--pen) 22%, transparent);
+    animation: live 2.4s ease-out infinite;
+  }
+
+  /* A slow live pulse on the current-work dot. Global reduced-motion rules stop it. */
+  @keyframes live {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--pen) 45%, transparent);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 9px color-mix(in srgb, var(--pen) 0%, transparent);
+    }
   }
 
   .name {
