@@ -14,14 +14,18 @@ interface Props {
   /** Page name; the home page leaves it out and gets the bare site title. */
   title?: string;
   description?: string;
+  /** Site-relative link-preview image; defaults to the site card. */
+  image?: string;
+  /** Extra schema.org objects for this page. */
+  structured?: Record<string, unknown>[];
 }
 
-const { title, description = person.description } = Astro.props;
+const { title, description = person.description, image = '/og.png', structured = [] } = Astro.props;
 const pageTitle = title ? `${title} | ${person.siteTitle}` : person.siteTitle;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL('/og.png', Astro.site);
+const ogImage = new URL(image, Astro.site);
 
-const jsonLd = {
+const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: person.name,
@@ -31,6 +35,7 @@ const jsonLd = {
   affiliation: { '@type': 'CollegeOrUniversity', name: 'Stanford University' },
   sameAs: [contact.linkedin, contact.github],
 };
+const jsonLd = structured.length ? [personLd, ...structured] : personLd;
 ---
 
 <!doctype html>
@@ -38,10 +43,13 @@ const jsonLd = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#eef2ef" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121b29" media="(prefers-color-scheme: dark)" />
@@ -51,6 +59,7 @@ const jsonLd = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={title ? `${title}, by ${person.name}` : `${person.siteTitle}: ${person.name}'s portfolio`} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />

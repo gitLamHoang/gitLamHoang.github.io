@@ -1,0 +1,14 @@
+{
+  "name": "Harvey's Hub",
+  "short_name": "Harvey's Hub",
+  "description": "Harvey Phan's portfolio: crowd navigation for humanoid robots, applied machine learning, and research.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#eef2ef",
+  "theme_color": "#1c2b4b",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "/apple-touch-icon.png", "type": "image/png", "sizes": "180x180" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}

@@ -16,9 +16,21 @@ const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.
 const featured = work.find((w) => w.data.showcase === 'harp')!;
 const rest = work.filter((w) => w !== featured);
 const [balancing, macro] = papers;
+
+// schema.org records for the two papers, so search engines can cite them.
+const scholarly = papers.map((p) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: p.title,
+  author: p.authors.replace(/, and | and /g, ', ').split(', ').map((name) => ({ '@type': 'Person', name })),
+  isPartOf: { '@type': 'Periodical', name: p.journal },
+  datePublished: '2025',
+  identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: p.doi },
+  url: `https://doi.org/${p.doi}`,
+}));
 ---
 
-<Base>
+<Base structured={scholarly}>
   <section class="hero wrap" aria-labelledby="hero-name">
     <div class="hero-grid">
       <div class="hero-text">
