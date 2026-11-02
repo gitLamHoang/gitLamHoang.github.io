@@ -29,17 +29,18 @@ interface Props {
 const { entry, prev, next } = Astro.props;
 const { title, summary, org, role, dates, stack, overview, contribution, claim, result, highlight, limit, specs, links, figure, showcase } =
   entry.data;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+const toc = headings.filter((h) => h.depth === 2);
 ---
 
-<Base title={title} description={summary}>
+<Base title={title} description={summary} image={`/og/${entry.id}.png`}>
   <article class="project wrap">
     <p class="back ui"><a href="/#work">All work</a></p>
 
     <header class="row project-head">
       <div>
         <p class="kicker">{org}</p>
-        <h1>{title}</h1>
+        <h1 style={`view-transition-name: title-${entry.id}`}>{title}</h1>
         <p class="summary">{summary}</p>
       </div>
       <div class="facts ui">
@@ -121,7 +122,7 @@ const { Content } = await render(entry);
 
     {
       figure && (
-        <figure class="figure shot">
+        <figure class="figure shot" style={`view-transition-name: figure-${entry.id}`}>
           {figure.href ? (
             <a href={figure.href} class="shot-link">
               <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280]} sizes="(max-width: 1200px) 100vw, 1100px" />
@@ -134,8 +135,24 @@ const { Content } = await render(entry);
       )
     }
 
-    <div class="prose">
-      <Content />
+    <div class="prose-grid">
+      <div class="prose">
+        <Content />
+      </div>
+      {
+        toc.length > 1 && (
+          <nav class="toc ui" aria-label="On this page" data-toc>
+            <p class="toc-title">On this page</p>
+            <ul>
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
     </div>
 
     {
@@ -158,9 +175,111 @@ const { Content } = await render(entry);
   </article>
 </Base>
 
+<script>
+  // Mark the section being read in the table of contents.
+  const toc = document.querySelector('[data-toc]');
+  if (toc) {
+    const links = new Map(
+      [...toc.querySelectorAll<HTMLAnchorElement>('a')].map((a) => [decodeURIComponent(a.hash.slice(1)), a]),
+    );
+    const heads = [...links.keys()].map((id) => document.getElementById(id)).filter((h): h is HTMLElement => !!h);
+    const mark = () => {
+      let current = heads[0];
+      for (const h of heads) if (h.getBoundingClientRect().top < window.innerHeight * 0.35) current = h;
+      for (const [id, a] of links) a.toggleAttribute('aria-current', id === current?.id);
+    };
+    let queued = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          mark();
+        });
+      },
+      { passive: true },
+    );
+    mark();
+  }
+</script>
+
 <style>
   .project {
     padding-top: clamp(20px, 4vw, 40px);
+  }
+
+  .prose-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 68ch) minmax(0, 15rem);
+    justify-content: space-between;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: 96px;
+    margin-top: 56px;
+    padding-left: 14px;
+    border-left: 1.5px solid var(--grid);
+  }
+
+  .toc-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--graphite);
+  }
+
+  .toc ul {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc a {
+    position: relative;
+    display: block;
+    padding: 5px 0;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--graphite);
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    color: var(--ink);
+  }
+
+  .toc a[aria-current] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* the robot marker sits on the rail next to the current section */
+  .toc a[aria-current]::before {
+    content: '';
+    position: absolute;
+    left: -20.5px;
+    top: 50%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--pen);
+    box-shadow: 0 0 0 3px var(--paper);
+    transform: translateY(-50%);
+  }
+
+  @media (max-width: 1000px) {
+    .prose-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .toc {
+      display: none;
+    }
   }
 
   .back {
