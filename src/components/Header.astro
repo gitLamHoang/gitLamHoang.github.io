@@ -10,6 +10,7 @@ const nav = [
 ];
 ---
 
+<div class="header-shell">
 <header class="site-header wrap">
   <a class="wordmark" href="/" aria-label={`${person.siteTitle}, home`}>
     <svg class="wordmark-glyph" viewBox="0 0 24 24" aria-hidden="true">
@@ -26,14 +27,77 @@ const nav = [
   </nav>
   <ThemeToggle />
 </header>
+  <!-- The page as a route: a red line fills as you scroll, with the robot marker at its tip. -->
+  <div class="route-progress" aria-hidden="true"><span class="line"></span><span class="tip"></span></div>
+</div>
 
 <style>
+  .header-shell {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--paper) 84%, transparent);
+    backdrop-filter: blur(10px) saturate(1.15);
+    -webkit-backdrop-filter: blur(10px) saturate(1.15);
+    border-bottom: 1px solid color-mix(in srgb, var(--grid) 80%, transparent);
+  }
+
+  .route-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    pointer-events: none;
+  }
+
+  .route-progress .line {
+    position: absolute;
+    inset: 0;
+    background: var(--pen);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation: route-grow linear both;
+    animation-timeline: scroll(root);
+  }
+
+  .route-progress .tip {
+    position: absolute;
+    top: -4px;
+    left: 0;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--pen);
+    box-shadow: 0 0 0 3px var(--paper);
+    animation: route-tip linear both;
+    animation-timeline: scroll(root);
+  }
+
+  @keyframes route-grow {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes route-tip {
+    to {
+      transform: translateX(calc(100vw - 14px));
+    }
+  }
+
+  @supports not (animation-timeline: scroll()) {
+    .route-progress {
+      display: none;
+    }
+  }
+
   .site-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 4px 24px;
-    padding-block: 18px;
+    padding-block: 12px;
   }
 
   nav {
@@ -83,6 +147,11 @@ const nav = [
   }
 
   @media (max-width: 640px) {
+    /* Two-row header on phones: let it scroll away instead of covering the page. */
+    .header-shell {
+      position: static;
+    }
+
     .site-header {
       padding-block: 12px 4px;
     }
