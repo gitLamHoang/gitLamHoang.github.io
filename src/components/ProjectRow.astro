@@ -17,7 +17,7 @@ const href = `/work/${entry.id}/`;
 <article class="project" aria-labelledby={`p-${entry.id}`}>
   <div class="text">
     <p class="kicker">{org}</p>
-    <h3 id={`p-${entry.id}`}><a href={href}>{title}</a></h3>
+    <h3 id={`p-${entry.id}`} style={`view-transition-name: title-${entry.id}`}><a href={href}>{title}</a></h3>
     <p class="meta ui">{role}, {dates}</p>
     <p class="overview">{overview}</p>
     <p class="contribution"><span class="label-ui">My part.</span> {contribution}</p>
@@ -33,7 +33,13 @@ const href = `/work/${entry.id}/`;
   </div>
   {
     figure && (
-      <a class:list={['media frame', `fit-${figure.fit}`]} href={href} tabindex="-1" aria-hidden="true">
+      <a
+        class:list={['media frame', `fit-${figure.fit}`]}
+        href={href}
+        tabindex="-1"
+        aria-hidden="true"
+        style={`view-transition-name: figure-${entry.id}`}
+      >
         <Image src={figure.src} alt="" widths={[480, 720, 960]} sizes="(max-width: 900px) 100vw, 520px" />
       </a>
     )

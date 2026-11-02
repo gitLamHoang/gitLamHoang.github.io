@@ -18,7 +18,7 @@ const href = `/work/${entry.id}/`;
   <div class="top">
     <div class="text">
       <p class="kicker">{org}</p>
-      <h3 id={`p-${entry.id}`}><a href={href}>{title}</a></h3>
+      <h3 id={`p-${entry.id}`} style={`view-transition-name: title-${entry.id}`}><a href={href}>{title}</a></h3>
       <p class="meta ui">{role}, {dates}</p>
       <p class="overview">{overview}</p>
       <p class="contribution"><span class="label-ui">My part.</span> {contribution}</p>

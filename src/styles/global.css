@@ -425,3 +425,114 @@ mark.hl {
   background: var(--paper-raised);
   overflow: hidden;
 }
+
+/* ---------- page transitions ---------- */
+
+/* Same-origin page loads cross-fade; project titles and figures morph into their write-ups. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(*) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* ---------- typographic polish ---------- */
+
+:where(p, li, dd, figcaption, blockquote) {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--hl-mark);
+  color: var(--ink);
+}
+
+/* ---------- print: the page becomes a clean CV ---------- */
+
+@media print {
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --paper: #fff;
+    --paper-raised: #fff;
+    --grid: #c9cfcc;
+    --ink: #000;
+    --ink-soft: #111;
+    --graphite: #333;
+    --graphite-soft: #555;
+    --pen: #9e1b2c;
+    --hl-mark: rgb(240 214 74 / 0.55);
+  }
+
+  @page {
+    margin: 14mm 14mm 16mm;
+  }
+
+  body {
+    background: #fff !important;
+    font-size: 10.5pt;
+    line-height: 1.45;
+  }
+
+  .header-shell,
+  .skip-link,
+  .theme-toggle,
+  .cta,
+  .replay,
+  [data-explorer],
+  [data-route],
+  .site-footer .cv,
+  .pager,
+  .toc {
+    display: none !important;
+  }
+
+  .section {
+    padding-top: 16pt;
+  }
+
+  .section-head,
+  .project,
+  .feature,
+  .paper,
+  .role,
+  .facts li,
+  .people li,
+  .method li,
+  figure {
+    break-inside: avoid;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* Print where each external link goes. */
+  main a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-family: var(--font-ui);
+    font-size: 0.78em;
+    font-weight: 400;
+    color: #555;
+    overflow-wrap: anywhere;
+  }
+
+  .media:hover img,
+  .shot:hover img {
+    transform: none;
+  }
+}
