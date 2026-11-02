@@ -14,6 +14,7 @@ npm run dev       # http://localhost:4321
 npm test          # route model and balancing-matrix tests
 npm run check     # Astro and TypeScript diagnostics
 npm run build     # static site in dist/
+npm run check:links  # every internal link and #anchor in dist/ must resolve
 ```
 
 Pushing to `main` runs the tests and type check, builds the site, and deploys it to GitHub Pages (`.github/workflows/deploy.yml`).
@@ -28,7 +29,7 @@ Pushing to `main` runs the tests and type check, builds the site, and deploys it
 | HARP replay video and explorer data | `public/media/`, `src/data/harp-crowd-run.json`, built by `scripts/replay/` |
 | IM²C certificates, people photos | `public/certificates/`, `src/assets/immc/`, `src/assets/people/` |
 | Resume PDF | `public/Harvey_Phan_Resume.pdf`, built from `resume/harvey_phan_resume.tex` |
-| Link preview image | `public/og.png`, built by `node scripts/og.mjs` |
+| Link preview cards and app icons | `public/og.png`, `public/og/<slug>.png`, `public/*icon*.png`, all built by `node scripts/og.mjs` |
 
 Project frontmatter is checked by the schema in `src/content.config.ts`. `highlight` must be an exact substring of `result`, and it should only mark a number that came out of an evaluation. Each entry lists its `sources`.
 
@@ -49,11 +50,14 @@ cp /tmp/resume/harvey_phan_resume.pdf public/Harvey_Phan_Resume.pdf
 ## How it's built
 
 - [Astro](https://astro.build) 7, static output, no UI framework.
-- `src/components/HeroVideo.astro`: the recorded HARP crowd run, replayed in MuJoCo from the run's own logs (`scripts/replay/`).
+- `src/components/HeroVideo.astro`: the recorded HARP crowd run, replayed in MuJoCo from the run's own logs (`scripts/replay/`), with a live overlay (sim time, planner mode, distance to goal, mode strip) synced to the video frame from the same log.
 - `src/components/RunExplorer.astro`: the same run from above, with a time scrubber and the robot path colored by planner mode.
 - `src/components/Pipeline.astro`: the NMPC avoidance layer as a signal chain.
 - `src/lib/route-model.ts`: the browser waypoint model on the HARP page (speed ramp, slow-down near each target, manual takeover). `src/scripts/route-field.ts` draws it.
 - `src/components/BalancingMethod.astro`: the HNUE paper's matrix method, typeset with KaTeX at build time (no math JavaScript ships). `src/lib/balancing.ts` and its tests check every identity the panel shows, in exact BigInt arithmetic.
+- Cross-document view transitions morph project titles and figures into their write-ups; write-ups get a sticky table of contents.
+- A print stylesheet turns the home page into a clean CV with link URLs written out.
+- Quality gates: unit tests, `astro check`, and the link checker run in CI before deploy. Last local audit: axe-core 0 violations in both themes; Lighthouse mobile 97 / 100 / 100 / 100, desktop 98 / 100 / 100 / 100.
 - Fonts: Source Serif 4, Barlow Semi Condensed, IBM Plex Mono, self-hosted through Fontsource.
 - Design notes: `docs/superpowers/specs/`. Wireframes: `wireframes/`.
 

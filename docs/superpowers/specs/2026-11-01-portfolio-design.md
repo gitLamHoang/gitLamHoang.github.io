@@ -218,3 +218,13 @@ Also added: a "People I've met" section from Harvey's photos (names and titles a
 - The balancing-numbers widget that stepped through matrix powers is replaced by a typeset derivation of the method: definition, recurrence, the B-matrix and Theorem 2.1, determinant, addition formula, eigenvalues, closed form, and divisibility. Long equations have a two-line form on phones. Unit tests check each identity.
 - Research entries carry a citation card (journal, issue, role, DOI) in the margin column; IM²C carries team, country, result, and organizers.
 - Wide figures (the EEG chart) fit inside their frame instead of being cropped; the featured project stacks below 1100 px so its spec sheet keeps several columns.
+
+## Revision 5 (depth pass)
+
+- Hero replay is instrumented: a HUD reads simulation time, planner mode, and distance to goal from the run log in step with the decoded video frame (`requestVideoFrameCallback`, falling back to animation frames), and a mode-colored strip with a playhead runs along the bottom edge. Without JavaScript the video keeps native controls and the overlay stays hidden.
+- Cross-document view transitions: project titles and figures morph into their write-ups, the header holds still, and the replay glides onto the HARP page. Disabled under reduced motion.
+- Write-ups have a sticky table of contents with the current section marked by the robot dot.
+- Per-project link-preview cards, schema.org ScholarlyArticle records for both papers, app icons, a web manifest, and `color-scheme`.
+- Print stylesheet, typographic polish (`text-wrap: pretty`, highlighter selection), and a footer colophon.
+- Robustness: a link checker over `dist/` runs in CI; stylesheets are inlined. VP9 and AV1 encodes of the replay were tried and dropped: neither beat the H.264 file by a useful margin.
+- Audit: axe-core 0 violations in light and dark; Lighthouse mobile 97 / 100 / 100 / 100, desktop 98 / 100 / 100 / 100.
