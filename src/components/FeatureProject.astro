@@ -3,7 +3,7 @@
 import type { CollectionEntry } from 'astro:content';
 import Marked from './Marked.astro';
 import Pipeline from './Pipeline.astro';
-import RunExplorer from './RunExplorer.astro';
+import LabTabs from './LabTabs.astro';
 
 interface Props {
   entry: CollectionEntry<'work'>;
@@ -54,8 +54,8 @@ const href = `/work/${entry.id}/`;
   </div>
 
   <div class="block">
-    <h4 class="block-title">Scrub the recorded run</h4>
-    <RunExplorer />
+    <h4 class="block-title">See it work</h4>
+    <LabTabs id="home-crowd" />
   </div>
 </article>
 

@@ -6,7 +6,7 @@ import Marked from '../../components/Marked.astro';
 import RouteField from '../../components/RouteField.astro';
 import HeroVideo from '../../components/HeroVideo.astro';
 import Pipeline from '../../components/Pipeline.astro';
-import RunExplorer from '../../components/RunExplorer.astro';
+import LabTabs from '../../components/LabTabs.astro';
 
 export async function getStaticPaths() {
   const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
@@ -113,8 +113,8 @@ const toc = headings.filter((h) => h.depth === 2);
             <Pipeline />
           </div>
           <div class="figure">
-            <h2 class="h-sub">Scrub the recorded run</h2>
-            <RunExplorer />
+            <h2 class="h-sub">See it work</h2>
+            <LabTabs id={`${entry.id}-crowd`} />
           </div>
         </>
       )

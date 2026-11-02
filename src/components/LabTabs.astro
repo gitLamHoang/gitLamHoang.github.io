@@ -1,0 +1,151 @@
+---
+// Two views of the crowd-navigation work in one tabbed panel: a live lab you can steer, and the
+// recorded native G1 run. ARIA tabs with arrow-key, Home, and End navigation.
+import CrowdLab from './CrowdLab.astro';
+import RunExplorer from './RunExplorer.astro';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+const tabs = [
+  { key: 'lab', label: 'Steer through a crowd', note: 'Live model in your browser' },
+  { key: 'run', label: 'Scrub the recorded run', note: 'Native G1 trial, from the log' },
+];
+---
+
+<div class="labtabs" data-tabs>
+  <div class="tablist" role="tablist" aria-label="Crowd navigation, two views">
+    {
+      tabs.map((t, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`${id}-tab-${t.key}`}
+          aria-controls={`${id}-panel-${t.key}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          class="tab"
+        >
+          <span class="tab-label">{t.label}</span>
+          <span class="tab-note">{t.note}</span>
+        </button>
+      ))
+    }
+  </div>
+  <div role="tabpanel" id={`${id}-panel-lab`} aria-labelledby={`${id}-tab-lab`} class="panel">
+    <CrowdLab id={`${id}-lab`} />
+  </div>
+  <div role="tabpanel" id={`${id}-panel-run`} aria-labelledby={`${id}-tab-run`} class="panel" hidden>
+    <RunExplorer />
+  </div>
+</div>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-tabs]')) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const select = (tab: HTMLButtonElement, focus = false) => {
+      for (const t of tabs) {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+      }
+      if (focus) tab.focus();
+      // Canvas and SVG views measure themselves on resize; tell them they are visible now.
+      window.dispatchEvent(new Event('resize'));
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (e) => {
+        const next =
+          e.key === 'ArrowRight' ? tabs[(i + 1) % tabs.length]
+          : e.key === 'ArrowLeft' ? tabs[(i - 1 + tabs.length) % tabs.length]
+          : e.key === 'Home' ? tabs[0]
+          : e.key === 'End' ? tabs[tabs.length - 1]
+          : null;
+        if (next) {
+          e.preventDefault();
+          select(next, true);
+        }
+      });
+    });
+  }
+</script>
+
+<style>
+  .tablist {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 18px;
+    border-bottom: 1.5px solid var(--ink);
+  }
+
+  .tab {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-height: 56px;
+    padding: 10px 18px 12px 0;
+    border: 0;
+    background: transparent;
+    color: var(--graphite);
+    font-family: var(--font-ui);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .tab-label {
+    font-size: clamp(1.1875rem, 2vw, 1.4375rem);
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  .tab-note {
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .tab:hover {
+    color: var(--ink);
+  }
+
+  .tab[aria-selected='true'] {
+    color: var(--ink);
+  }
+
+  /* the selected tab is underlined in red pen, sitting on the rule */
+  .tab[aria-selected='true']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 18px;
+    bottom: -1.5px;
+    height: 4px;
+    background: var(--pen);
+  }
+
+  .tab[aria-selected='true'] .tab-label::before {
+    content: '';
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 9px;
+    border-radius: 50%;
+    background: var(--pen);
+    vertical-align: 0.12em;
+  }
+
+  @media (max-width: 560px) {
+    .tab {
+      padding-right: 10px;
+    }
+
+    .tab-note {
+      font-size: 0.875rem;
+    }
+  }
+</style>
