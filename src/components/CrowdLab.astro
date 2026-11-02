@@ -1,0 +1,255 @@
+---
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+---
+
+<figure class="lab" data-lab aria-labelledby={`${id}-caption`}>
+  <div class="lab-bar">
+    <div class="group" role="group" aria-label="Simulation">
+      <button type="button" class="btn btn-primary" data-lab-act="run" aria-pressed="false">Pause</button>
+      <button type="button" class="btn" data-lab-act="reset">Reset</button>
+      <button type="button" class="btn" data-lab-act="add">Add a person</button>
+    </div>
+    <div class="group" role="group" aria-label="Crowd">
+      <span class="ui quiet">Crowd</span>
+      <button type="button" class="btn" data-scenario="headon" aria-pressed="true">Head-on</button>
+      <button type="button" class="btn" data-scenario="crossing" aria-pressed="false">Crossing</button>
+      <button type="button" class="btn" data-scenario="dense" aria-pressed="false">Dense</button>
+    </div>
+  </div>
+
+  <div class="lab-stage frame" data-lab-stage>
+    <canvas data-lab-canvas role="img" aria-label="A robot crossing a hallway of walking people. Candidate trajectories fan out ahead of it, and the chosen one is drawn in red."></canvas>
+    <p class="lab-hint ui" data-lab-hint>Click to add a person. Drag to set where they walk.</p>
+    <noscript><p class="lab-noscript">This lab needs JavaScript.</p></noscript>
+  </div>
+
+  <div class="lab-panel">
+    <dl class="lab-read">
+      <div><dt>Planner</dt><dd><span class="mode-chip m-follow" data-lab-read="mode">Follow</span></dd></div>
+      <div><dt>Speed</dt><dd class="mono" data-lab-read="speed">0.00 m/s</dd></div>
+      <div><dt>Clearance</dt><dd class="mono" data-lab-read="clear">n/a</dd></div>
+      <div><dt>Candidates</dt><dd class="mono" data-lab-read="evaluated">0</dd></div>
+      <div><dt>Solve time</dt><dd class="mono" data-lab-read="ms">0.0 ms</dd></div>
+      <div><dt>Crossings</dt><dd class="mono" data-lab-read="score">0, 0 contacts</dd></div>
+    </dl>
+    <div class="lab-knobs">
+      <label class="knob">
+        <span class="ui">Horizon</span>
+        <input type="range" min="1" max="4" step="0.5" value="3" data-lab-knob="horizon" />
+        <output class="mono" data-lab-out="horizon">3.0 s</output>
+      </label>
+      <label class="knob">
+        <span class="ui">Safety margin</span>
+        <input type="range" min="0" max="0.5" step="0.05" value="0.25" data-lab-knob="margin" />
+        <output class="mono" data-lab-out="margin">0.25 m</output>
+      </label>
+      <label class="check ui">
+        <input type="checkbox" checked data-lab-knob="candidates" />
+        Show candidate trajectories
+      </label>
+    </div>
+  </div>
+
+  <figcaption id={`${id}-caption`} class="lab-caption">
+    <strong>Try the idea.</strong> A browser model of predictive crowd avoidance, written for this site: every 0.2 s the planner rolls
+    out about 140 velocity commands against constant-velocity forecasts of each person, rejects any that touch someone or a wall, scores
+    the rest on progress, clearance, and smoothness, then refines around the best. People here never yield. It shows the method; it is
+    not HARP's controller code or robot data.
+  </figcaption>
+</figure>
+
+<script>
+  import { initCrowdLabs } from '../scripts/crowd-lab.ts';
+  initCrowdLabs();
+</script>
+
+<style>
+  .lab {
+    margin: 0;
+  }
+
+  .lab-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px 20px;
+    margin-bottom: 10px;
+  }
+
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lab-stage {
+    position: relative;
+    touch-action: none;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    cursor: crosshair;
+  }
+
+  .lab-hint {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    margin: 0;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper-raised) 88%, transparent);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--graphite);
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+
+  .lab-hint.is-hidden {
+    opacity: 0;
+  }
+
+  .lab-noscript {
+    padding: 24px;
+  }
+
+  .lab-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 16px 32px;
+    margin-top: 14px;
+    align-items: start;
+  }
+
+  .lab-read {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid var(--grid);
+  }
+
+  .lab-read div {
+    padding: 8px 10px 8px 0;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .lab-read dt {
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--graphite);
+  }
+
+  .lab-read dd {
+    margin: 2px 0 0;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mode-chip {
+    display: inline-block;
+    min-width: 5.4rem;
+    padding: 1px 8px;
+    border-radius: 3px;
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--mc);
+  }
+
+  .mode-chip.m-evade {
+    color: #1c2b4b;
+  }
+
+  .m-follow { --mc: #1c2b4b; }
+  .m-evade { --mc: #d9a90b; }
+  .m-yield { --mc: #c0283a; }
+  .m-blocked { --mc: #5d6776; }
+
+  .lab-knobs {
+    display: grid;
+    gap: 10px;
+  }
+
+  .knob {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) 4.2rem;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .knob .ui {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .knob input {
+    width: 100%;
+    accent-color: var(--pen);
+    min-height: 32px;
+  }
+
+  .knob output {
+    font-size: 0.9375rem;
+    text-align: right;
+  }
+
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--pen);
+  }
+
+  .lab-caption {
+    margin-top: 14px;
+    font-size: 0.96875rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 92ch;
+  }
+
+  .lab-caption strong {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    color: var(--ink);
+  }
+
+  @media (max-width: 900px) {
+    .lab-panel {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .lab-read {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .knob {
+      grid-template-columns: 6.2rem minmax(0, 1fr) 3.8rem;
+    }
+
+    .lab-hint {
+      display: none;
+    }
+  }
+</style>
