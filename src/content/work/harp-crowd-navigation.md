@@ -8,9 +8,9 @@ order: 1
 overview: HARP, the Humanoid Athletic Robotics Project at Stanford Student Robotics, is building a Unitree G1 humanoid that can work in human spaces, walking naturally, getting around obstacles, finding people, and approaching them. Every command reaches the motors through HARP's safety harness and runs in MuJoCo first; walking comes from NVIDIA's GR00T locomotion policy.
 contribution: I lead navigation for the Human Perception & Social Interaction Team. My current work is a predictive avoidance layer between the route planner and the walking policy. It turns raw LiDAR into tracked, forecast obstacles, then uses a nonlinear model predictive controller (NMPC) to choose the G1's body-frame velocity request five times a second. Before this I built the team's waypoint routes, manual takeover, odometry route recorder, and speed and turn ramping.
 claim: A sampled-and-refined NMPC can steer a walking G1 through moving, non-yielding pedestrians without contact, using only its own LiDAR tracks and never simulator ground truth.
-result: 7 of 7 native G1 crowd trials with zero contacts across adversarial and mixed crowds, static pillars, and 1.5× pedestrian flow, up from 2 of 5 before the least-intrusion fallback. 115 local tests pass.
+result: 'Earlier planner, commit 94c78f6: 7 of 7 native G1 crowd trials with zero contacts across five scenarios (one adversarial seed run three times), up from 2 of 5 before the least-intrusion fallback; 115 local tests passed at that commit. After the Nov 1 rework, the planner currently passes 7 of 9 trials, with 137 local tests.'
 highlight: 7 of 7 native G1 crowd trials with zero contacts
-limit: Simulation with synthetic crowds only; the Foxy, Nav2, and HIM integration and real hardware are not yet validated. In the newer building world, mixed crowds reach the goal on some seeds, and adversarial crowds still cause contacts.
+limit: Simulation with synthetic crowds only; the Foxy, Nav2, and HIM integration and real hardware are not yet validated. In the reworked suite, 2 of 9 trials still end in one contact each, both with a non-yielding walker.
 stack: [Python, ROS 2, MuJoCo, SciPy (SLSQP), NumPy, Nav2, Docker]
 specs:
   - label: Control rate
@@ -41,7 +41,7 @@ links:
 showcase: harp
 sources:
   - HARP branch lam/predictive-avoidance (context/predictive-avoidance.md, context/native-crowd.md, submission/harp/SFM_NMPC_REFERENCE.md, predictive_mpc.py)
-  - 'Local HARP runs, crowd-least-intrusion-20261101T083948Z (7/7 suite) and building-suite-20261101T092032Z (replayed run, building-mixed-seed3)'
+  - 'Local HARP runs: crowd-least-intrusion-20261101T083948Z (7 of 7 suite, earlier planner of commit 94c78f6; 115 tests recorded at edaa07f), g1-final-20261101T115643Z (7 of 9 suite after the Nov 1 rework; context/predictive-avoidance.md reports 137 local tests), and building-suite-20261101T092032Z (replayed run, building-mixed-seed3, recorded before the rework)'
   - HARP PR #2, #5, #6, #7 descriptions
   - HARP social-interaction README (team context)
 ---
@@ -67,12 +67,13 @@ The NMPC is an independent implementation informed by the velocity-block objecti
 
 | Check | Result |
 |---|---|
-| Native G1 crowd suite (seven pedestrians, GR00T walker) | 7 of 7 pass with zero contacts: adversarial seeds 2 and 3, mixed seeds 1 and 2 (with pillars), and 1.5× flow; 26.4 to 43.7 s to goal |
+| Native G1 crowd suite, earlier planner (commit 94c78f6) | 7 of 7 pass with zero contacts across five scenarios: adversarial seed 2 (three runs), adversarial seed 3, mixed seed 1, mixed seed 2 with pillars, and 1.5× flow seed 4; 26.4 to 43.7 s to goal |
 | Before the least-intrusion fallback | 2 of 5 pass; every traced contact began with the planner frozen |
-| Longest standstill in the passing suite | 2.70 s or less |
-| Local tests | 115 pass, including live ROS DDS input loss and recovery |
-| Planar MuJoCo scenarios | 4 of 4 pass (ideal odometry, circular footprints) |
-| Replayed building run (mixed crowd, seed 3) | Goal reached in 64.7 s, 0.18 m from target, zero contacts, longest standstill 2.05 s |
+| Longest standstill in the 7 of 7 suite | 2.70 s or less |
+| Native G1 crowd suite, after the Nov 1 rework | 7 of 9 pass; open-floor adversarial seed 2 and building adversarial seed 3 each end in one contact with a non-yielding walker, and the rest pass in 17.9 to 45.1 s |
+| Local tests | 115 passed at commit edaa07f, including live ROS DDS input loss and recovery; the branch now reports 137 |
+| Planar MuJoCo scenarios | 4 of 4 passed at commit edaa07f (ideal odometry, circular footprints) |
+| Replayed building run (mixed crowd, seed 3, recorded before the Nov 1 rework) | Goal reached in 64.7 s, 0.18 m from target, zero contacts, longest standstill 2.05 s |
 
 Trials pass only with zero contacts, arrival, a stable G1, every pedestrian observed moving, early progress, and no standstill over 8 s, so waiting until the crowd leaves cannot pass.
 
@@ -86,10 +87,10 @@ Trials pass only with zero contacts, arrival, a stable G1, every pedestrian obse
 ## Limits
 
 - All results are from simulation. The crowds are synthetic kinematic agents, not articulated humans or recorded human data.
-- Seven passing runs do not establish robustness to arbitrary crowds; more seeds, denser flow, and occupied goals are untested.
-- The building world with doorways and a hallway is in progress. Some seeds time out, and adversarial crowds still produce contacts there.
+- The earlier planner's seven passing runs do not establish robustness to arbitrary crowds; more seeds, denser flow, and occupied goals remain untested.
+- After the Nov 1 rework, 2 of 9 trials end in one contact each, both with a non-yielding walker: on the open floor, one standing on the path walks at the robot; in the building world with doorways and a hallway, one walks into the robot while it moves away.
 - The full Docker, Foxy, Nav2, and HIM stack and physical deployment remain unvalidated.
 
 ## Team context
 
-The G1 platform, HARP's safety harness and simulator, NVIDIA's GR00T walking policy, and the Nav2 setup are team and partner infrastructure; teammates moved the stack onto the harness. The video and the run explorer on this page replay a recorded native MuJoCo trial; walls are cut away to 0.9 m in the video so the robot stays visible.
+The G1 platform, HARP's safety harness and simulator, NVIDIA's GR00T walking policy, and the Nav2 setup are team and partner infrastructure; teammates moved the stack onto the harness. The video and the run explorer on this page replay a native MuJoCo trial recorded before the Nov 1 rework; walls are cut away to 0.9 m in the video so the robot stays visible.
