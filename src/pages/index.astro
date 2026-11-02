@@ -16,6 +16,8 @@ const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.
 const featured = work.find((w) => w.data.showcase === 'harp')!;
 const rest = work.filter((w) => w !== featured);
 const [balancing, macro] = papers;
+const current = experience.filter((r) => r.dates.includes('present'));
+const past = experience.filter((r) => !r.dates.includes('present'));
 
 // schema.org records for the two papers, so search engines can cite them.
 const scholarly = papers.map((p) => ({
@@ -137,26 +139,37 @@ const scholarly = papers.map((p) => ({
       </div>
       <Epigraph quote="experience" />
     </header>
-    <ol class="roles">
+    <div class="route-roles">
       {
-        experience.map((r) => (
-          <li class="role row">
-            <div>
-              <p class="org">{r.org}</p>
-              <p class="role-title">{r.title}</p>
-              {r.context && <p class="role-context">{r.context}</p>}
-              {r.detail && <p class="role-detail">{r.detail}</p>}
-              {r.work && (
-                <p class="role-link ui">
-                  <a href={`/work/${r.work}/`}>See the project</a>
-                </p>
-              )}
-            </div>
-            <p class="ui role-dates">{r.dates}</p>
-          </li>
+        [
+          { label: 'Now', roles: current },
+          { label: 'Before', roles: past },
+        ].map((leg) => (
+          <section class="leg" aria-label={leg.label === 'Now' ? 'Current roles' : 'Earlier roles'}>
+            <h3 class="leg-title ui">{leg.label}</h3>
+            <ol class="roles">
+              {leg.roles.map((r) => (
+                <li class:list={['role', { 'is-current': leg.label === 'Now' }]}>
+                  <p class="ui role-dates">{r.dates}</p>
+                  <span class="wp" aria-hidden="true" />
+                  <div class="role-body">
+                    <p class="org">{r.org}</p>
+                    <p class="role-title">{r.title}</p>
+                    {r.context && <p class="role-context">{r.context}</p>}
+                    {r.detail && <p class="role-detail">{r.detail}</p>}
+                    {r.work && (
+                      <p class="role-link ui">
+                        <a href={`/work/${r.work}/`}>See the project</a>
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
         ))
       }
-    </ol>
+    </div>
   </section>
 
   <section class="section wrap" id="people" aria-labelledby="people-title">
@@ -374,6 +387,30 @@ const scholarly = papers.map((p) => ({
     }
   }
 
+  /* Experience: waypoints on a route, in two legs (now and before), side by side on wide screens. */
+  .route-roles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--col-gap);
+  }
+
+  @media (max-width: 1000px) {
+    .route-roles {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .leg + .leg {
+      margin-top: 12px;
+    }
+  }
+
+  .leg-title {
+    padding-top: 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--graphite);
+  }
+
   .roles {
     margin: 0;
     padding: 0;
@@ -381,8 +418,43 @@ const scholarly = papers.map((p) => ({
   }
 
   .role {
-    padding-block: 20px;
-    border-bottom: 1px solid var(--grid);
+    position: relative;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 0 14px;
+    padding-block: 10px 14px;
+  }
+
+  /* The route: a line through every waypoint. */
+  .role::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 9px;
+    width: 2px;
+    background: var(--grid);
+  }
+
+  .wp {
+    position: relative;
+    z-index: 1;
+    grid-row: 1;
+    grid-column: 1;
+    width: 14px;
+    height: 14px;
+    margin: 5px 0 0 3px;
+    border: 2px solid var(--route);
+    border-radius: 50%;
+    background: var(--paper);
+  }
+
+  .is-current .wp {
+    background: var(--route);
+  }
+
+  .role-body {
+    grid-column: 2;
   }
 
   .org {
@@ -420,16 +492,14 @@ const scholarly = papers.map((p) => ({
   }
 
   .role-dates {
+    grid-column: 2;
     font-size: 1rem;
     font-weight: 600;
-    padding-top: 4px;
     color: var(--graphite);
   }
 
   @media (max-width: 900px) {
     .role-dates {
-      order: -1;
-      padding-top: 0;
       font-size: 0.9375rem;
     }
   }
