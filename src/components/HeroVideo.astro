@@ -1,5 +1,9 @@
 ---
+// The recorded HARP crowd run, replayed, with a live instrument overlay: simulation time, planner
+// mode, and distance to goal, read frame by frame from the run's own log (the same data as the
+// run explorer). Without JavaScript the video keeps native controls and the overlay stays hidden.
 import poster from '../assets/harp/replay-poster.jpg';
+import run from '../data/harp-crowd-run.json';
 
 interface Props {
   /** Caption shown under the video. */
@@ -7,6 +11,15 @@ interface Props {
 }
 
 const { caption = true } = Astro.props;
+
+const frames = run.frames;
+const strip: { mode: string; x: number; w: number }[] = [];
+frames.forEach((f, i) => {
+  const cur = strip[strip.length - 1];
+  if (cur && cur.mode === f.m) cur.w += 1;
+  else strip.push({ mode: f.m, x: i, w: 1 });
+});
+const duration = frames[frames.length - 1].t;
 ---
 
 <figure class="replay" data-replay>
@@ -16,6 +29,7 @@ const { caption = true } = Astro.props;
       muted
       loop
       playsinline
+      controls
       preload="metadata"
       poster={poster.src}
       width="1600"
@@ -25,6 +39,13 @@ const { caption = true } = Astro.props;
       <source src="/media/harp-crowd-replay-960.mp4" type="video/mp4" media="(max-width: 700px)" />
       <source src="/media/harp-crowd-replay.mp4" type="video/mp4" />
     </video>
+
+    <dl class="hud mono" aria-hidden="true">
+      <div><dt>Sim time</dt><dd><span data-hud="time">0.0</span> / {duration.toFixed(1)} s</dd></div>
+      <div><dt>Planner</dt><dd><span class="mode-chip m-follow" data-hud="mode">Follow</span></dd></div>
+      <div><dt>To goal</dt><dd><span data-hud="goal">9.00</span> m</dd></div>
+    </dl>
+
     <button type="button" class="replay-toggle" data-replay-toggle aria-pressed="false">
       <svg viewBox="0 0 16 16" aria-hidden="true" class="icon-pause"><rect x="3" y="2" width="3.5" height="12" rx="1"></rect><rect x="9.5" y="2" width="3.5" height="12" rx="1"></rect></svg>
       <svg viewBox="0 0 16 16" aria-hidden="true" class="icon-play"><path d="M4 2.5 L13.5 8 L4 13.5 Z"></path></svg>
@@ -35,36 +56,76 @@ const { caption = true } = Astro.props;
       <li><span class="swatch sw-track"></span>LiDAR track</li>
       <li><span class="swatch sw-goal"></span>Goal</li>
     </ul>
+
+    <svg class="strip" viewBox={`0 0 ${frames.length} 1`} preserveAspectRatio="none" aria-hidden="true">
+      {strip.map((b) => <rect x={b.x} y="0" width={b.w} height="1" class={`m-${b.mode}`}></rect>)}
+      <rect x="0" y="0" width="1.5" height="1" class="head" data-hud="head"></rect>
+    </svg>
   </div>
   {
     caption && (
       <figcaption class="replay-caption">
         <strong>Recorded run, replayed.</strong> A native MuJoCo Unitree G1 on HARP's GR00T walking policy, steered by my NMPC filter
         through a building with seven moving pedestrians. It reached the goal with zero contacts in 64.7 s. The controller sees only its
-        LiDAR tracks; walls are cut away to 0.9 m for visibility, and playback runs at 2.5×.
+        LiDAR tracks. The overlay and the colored strip along the bottom show the planner's mode from the run's log; walls are cut away
+        to 0.9 m for visibility, and playback runs at 2.5×.
       </figcaption>
     )
   }
 </figure>
 
 <script>
+  import run from '../data/harp-crowd-run.json';
+
+  const SPEED = 2.5; // playback speed the video was rendered at
+  const LABEL: Record<string, string> = { follow: 'Follow', evade: 'Evade', yield: 'Yield', blocked: 'Blocked', idle: 'Idle' };
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const frames = run.frames;
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-replay]')) {
     const video = root.querySelector<HTMLVideoElement>('[data-replay-video]')!;
     const toggle = root.querySelector<HTMLButtonElement>('[data-replay-toggle]')!;
     const label = root.querySelector('[data-replay-label]')!;
+    const time = root.querySelector('[data-hud="time"]')!;
+    const mode = root.querySelector<HTMLElement>('[data-hud="mode"]')!;
+    const goal = root.querySelector('[data-hud="goal"]')!;
+    const head = root.querySelector<SVGRectElement>('[data-hud="head"]')!;
     let userPaused = reduce.matches;
+    let last = -1;
+
+    // Scripted controls replace the native ones.
+    video.controls = false;
+    root.dataset.live = '';
+
+    const draw = () => {
+      const i = Math.max(0, Math.min(frames.length - 1, Math.round(video.currentTime * SPEED * run.hz)));
+      if (i === last) return;
+      last = i;
+      const f = frames[i];
+      time.textContent = f.t.toFixed(1);
+      goal.textContent = Math.hypot(run.goal[0] - f.r[0], run.goal[1] - f.r[1]).toFixed(2);
+      if (mode.dataset.mode !== f.m) {
+        mode.dataset.mode = f.m;
+        mode.className = `mode-chip m-${f.m}`;
+        mode.textContent = LABEL[f.m] ?? f.m;
+      }
+      head.setAttribute('x', String(i));
+    };
+
+    // Follow the decoded frame when the browser can tell us, otherwise the animation clock.
+    const rvfc = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+    const tick = () => {
+      draw();
+      if (video.paused) return;
+      if (rvfc) video.requestVideoFrameCallback(tick);
+      else requestAnimationFrame(tick);
+    };
 
     const sync = () => {
       const paused = video.paused;
       toggle.setAttribute('aria-pressed', String(paused));
       toggle.classList.toggle('is-paused', paused);
       label.textContent = paused ? 'Play' : 'Pause';
-    };
-
-    const tryPlay = () => {
-      if (!userPaused) video.play().catch(() => sync());
     };
 
     toggle.addEventListener('click', () => {
@@ -76,14 +137,23 @@ const { caption = true } = Astro.props;
         video.pause();
       }
     });
-    video.addEventListener('play', sync);
+    video.addEventListener('play', () => {
+      sync();
+      tick();
+    });
     video.addEventListener('pause', sync);
+    video.addEventListener('seeked', draw);
+    video.addEventListener('loadeddata', draw);
 
     // Play only while on screen, and never on its own under reduced motion.
-    new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) tryPlay();
-      else video.pause();
-    }, { threshold: 0.25 }).observe(video);
+    new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!userPaused) video.play().catch(() => sync());
+        } else video.pause();
+      },
+      { threshold: 0.25 },
+    ).observe(video);
     sync();
   }
 </script>
@@ -97,6 +167,7 @@ const { caption = true } = Astro.props;
     position: relative;
     aspect-ratio: 16 / 9;
     background: #eceff0;
+    view-transition-name: harp-replay;
   }
 
   video {
@@ -106,11 +177,109 @@ const { caption = true } = Astro.props;
     object-fit: cover;
   }
 
+  /* The overlay only appears once the script drives it. */
+  .hud,
+  .strip,
+  .replay-toggle,
+  .legend {
+    display: none;
+  }
+
+  [data-live] .hud,
+  [data-live] .strip {
+    display: block;
+  }
+
+  [data-live] .replay-toggle,
+  [data-live] .legend {
+    display: flex;
+  }
+
+  .hud {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid rgb(28 43 75 / 0.18);
+    border-radius: 6px;
+    background: rgb(246 248 246 / 0.9);
+    color: #1c2b4b;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    min-width: 13.5rem;
+  }
+
+  .hud div {
+    display: grid;
+    grid-template-columns: 5.2rem auto;
+    align-items: center;
+    gap: 8px;
+    padding-block: 2px;
+  }
+
+  .hud dt {
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #3f4957;
+  }
+
+  .hud dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mode-chip {
+    display: inline-block;
+    min-width: 5.4rem;
+    padding: 1px 8px;
+    border-radius: 3px;
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--mc);
+    transition: background-color 160ms ease;
+  }
+
+  .mode-chip.m-evade {
+    color: #1c2b4b;
+  }
+
+  /* Planner-mode colors, shared with the run explorer. */
+  .m-follow { --mc: #1c2b4b; }
+  .m-evade { --mc: #d9a90b; }
+  .m-yield { --mc: #c0283a; }
+  .m-blocked { --mc: #5d6776; }
+  .m-idle { --mc: #b8c3bf; }
+
+  .strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 6px;
+  }
+
+  .strip rect {
+    fill: var(--mc);
+  }
+
+  .strip .head {
+    fill: #fff;
+    stroke: #1c2b4b;
+    stroke-width: 0.6;
+    vector-effect: non-scaling-stroke;
+  }
+
   .replay-toggle {
     position: absolute;
     right: 12px;
-    bottom: 12px;
-    display: inline-flex;
+    bottom: 18px;
     align-items: center;
     gap: 6px;
     min-height: 40px;
@@ -144,8 +313,7 @@ const { caption = true } = Astro.props;
   .legend {
     position: absolute;
     left: 12px;
-    bottom: 12px;
-    display: flex;
+    bottom: 18px;
     flex-wrap: wrap;
     gap: 4px 14px;
     margin: 0;
@@ -203,9 +371,42 @@ const { caption = true } = Astro.props;
     color: var(--ink);
   }
 
+  @media (max-width: 760px) {
+    .hud {
+      top: 8px;
+      left: 8px;
+      padding: 5px 9px;
+      min-width: 0;
+      font-size: 0.8125rem;
+    }
+
+    .hud div {
+      grid-template-columns: 4.4rem auto;
+    }
+
+    .hud dt,
+    .mode-chip {
+      font-size: 0.8125rem;
+    }
+
+    .mode-chip {
+      min-width: 4.6rem;
+    }
+
+    .hud div:first-child {
+      display: none;
+    }
+  }
+
   @media (max-width: 560px) {
     .legend {
-      display: none;
+      display: none !important;
+    }
+
+    .replay-toggle {
+      min-height: 36px;
+      bottom: 14px;
+      right: 8px;
     }
   }
 </style>
