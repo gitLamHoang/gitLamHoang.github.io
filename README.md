@@ -53,6 +53,8 @@ cp /tmp/resume/harvey_phan_resume.pdf public/Harvey_Phan_Resume.pdf
 - `src/components/HeroVideo.astro`: the recorded HARP crowd run, replayed in MuJoCo from the run's own logs (`scripts/replay/`), with a live overlay (sim time, planner mode, distance to goal, mode strip) synced to the video frame from the same log.
 - `src/components/RunExplorer.astro`: the same run from above, with a time scrubber and the robot path colored by planner mode.
 - `src/components/Pipeline.astro`: the NMPC avoidance layer as a signal chain.
+- `src/components/CrowdLab.astro` and `src/lib/crowd-mpc.ts`: a live crowd-avoidance lab. A sampling MPC (about 150 rollouts per plan, constant-velocity forecasts, hard collision rejection, local refinement, least-intrusion fallback) re-plans at 5 Hz on a canvas; people can be added by click or drag. Closed-loop tests run each crowd for 120 simulated seconds. It illustrates the method and is not HARP's controller code.
+- `src/components/CommandPalette.astro`: ⌘K / Ctrl+K palette for sections, write-ups, papers, demos, and actions (copy email, download CV, switch theme).
 - `src/lib/route-model.ts`: the browser waypoint model on the HARP page (speed ramp, slow-down near each target, manual takeover). `src/scripts/route-field.ts` draws it.
 - `src/components/BalancingMethod.astro`: the HNUE paper's matrix method, typeset with KaTeX at build time (no math JavaScript ships). `src/lib/balancing.ts` and its tests check every identity the panel shows, in exact BigInt arithmetic.
 - Cross-document view transitions morph project titles and figures into their write-ups; write-ups get a sticky table of contents.

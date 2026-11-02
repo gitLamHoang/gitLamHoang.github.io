@@ -228,3 +228,10 @@ Also added: a "People I've met" section from Harvey's photos (names and titles a
 - Print stylesheet, typographic polish (`text-wrap: pretty`, highlighter selection), and a footer colophon.
 - Robustness: a link checker over `dist/` runs in CI; stylesheets are inlined. VP9 and AV1 encodes of the replay were tried and dropped: neither beat the H.264 file by a useful margin.
 - Audit: axe-core 0 violations in light and dark; Lighthouse mobile 97 / 100 / 100 / 100, desktop 98 / 100 / 100 / 100.
+
+## Revision 6 (interaction pass)
+
+- Header route line now follows scroll position from a small script, so it moves in every browser (the CSS scroll-timeline version only moved in some).
+- Crowd lab: a browser model of predictive crowd avoidance in a tab beside the recorded-run explorer. Sampling MPC with constant-velocity forecasts, a first-order response model with acceleration limits, hard rejection of contact and walls, comfort-margin and smoothness costs, pattern-search refinement, and a least-intrusion fallback; re-plans at 5 Hz. Horizon and margin are adjustable; people are added by click or drag. Tests cover rollout limits, avoidance, walls, the blocked fallback, determinism, and 120 s closed loops (6 crossings, 0 contacts, in each preset crowd). Labeled as an illustration, not HARP code.
+- Command palette (⌘K / Ctrl+K) on a native dialog with listbox semantics; ranking prefers label prefixes and substrings.
+- Audit after the pass: axe-core 0 violations with the palette open and closed; Lighthouse mobile 96 / 100 / 100 / 100.
