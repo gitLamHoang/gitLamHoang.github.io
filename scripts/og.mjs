@@ -105,7 +105,11 @@ for (const file of (await readdir(dir)).filter((f) => f.endsWith('.md'))) {
   await card({
     kicker: field(md, 'org'),
     titleLines: lines,
-    titleSize: lines.length > 2 ? 62 : 70,
+    // Avenir Next Condensed Bold runs about 0.43 em per character; keep the title clear of the screenshot.
+    titleSize: Math.min(
+      lines.length > 2 ? 62 : 70,
+      Math.floor((shot.x - 86) / (0.43 * Math.max(...lines.map((l) => l.length)))),
+    ),
     sub: field(md, 'result'),
     caption: fig ? 'From the project' : 'Recorded MuJoCo run, replayed',
     image,
