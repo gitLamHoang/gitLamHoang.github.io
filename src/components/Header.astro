@@ -25,11 +25,43 @@ const nav = [
       <li><a href={contact.resume} download="Harvey_Phan_Resume.pdf">Resume<span class="pdf">&nbsp;(PDF)</span></a></li>
     </ul>
   </nav>
+  <button type="button" class="palette-btn" data-palette-open aria-label="Open the command palette" aria-keyshortcuts="Meta+K Control+K">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M13 13 L17.5 17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+    <span class="pb-label">Jump to</span>
+    <kbd data-kbd>⌘K</kbd>
+  </button>
   <ThemeToggle />
 </header>
   <!-- The page as a route: a red line fills as you scroll, with the robot marker at its tip. -->
-  <div class="route-progress" aria-hidden="true"><span class="line"></span><span class="tip"></span></div>
+  <div class="route-progress" aria-hidden="true" data-route-progress><span class="line"></span><span class="tip"></span></div>
 </div>
+
+<script>
+  // Show Ctrl+K instead of ⌘K off Apple platforms.
+  if (!/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
+    for (const k of document.querySelectorAll('[data-kbd]')) k.textContent = 'Ctrl K';
+  }
+</script>
+
+<script>
+  // Driven by scroll position in JavaScript so it moves in every browser, not only those with
+  // CSS scroll-driven animations. Hidden until the script runs.
+  const bar = document.querySelector<HTMLElement>('[data-route-progress]');
+  if (bar) {
+    const root = document.documentElement;
+    // One style write per scroll event; browsers already align scroll events to frames.
+    const update = () => {
+      const max = root.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      bar.style.setProperty('--p', p.toFixed(4));
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    new ResizeObserver(update).observe(document.body);
+    update();
+    bar.dataset.ready = '';
+  }
+</script>
 
 <style>
   .header-shell {
@@ -44,12 +76,18 @@ const nav = [
   }
 
   .route-progress {
+    --p: 0;
     position: absolute;
     left: 0;
     right: 0;
     bottom: -1px;
     height: 3px;
     pointer-events: none;
+    display: none;
+  }
+
+  .route-progress[data-ready] {
+    display: block;
   }
 
   .route-progress .line {
@@ -57,9 +95,7 @@ const nav = [
     inset: 0;
     background: var(--pen);
     transform-origin: 0 50%;
-    transform: scaleX(0);
-    animation: route-grow linear both;
-    animation-timeline: scroll(root);
+    transform: scaleX(var(--p));
   }
 
   .route-progress .tip {
@@ -71,26 +107,45 @@ const nav = [
     border-radius: 50%;
     background: var(--pen);
     box-shadow: 0 0 0 3px var(--paper);
-    animation: route-tip linear both;
-    animation-timeline: scroll(root);
+    transform: translateX(calc(var(--p) * (100vw - 14px)));
   }
 
-  @keyframes route-grow {
-    to {
-      transform: scaleX(1);
-    }
+  .palette-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 8px 0 12px;
+    border: 1.5px solid var(--grid);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
   }
 
-  @keyframes route-tip {
-    to {
-      transform: translateX(calc(100vw - 14px));
-    }
+  .palette-btn:hover {
+    border-color: var(--ink);
   }
 
-  @supports not (animation-timeline: scroll()) {
-    .route-progress {
-      display: none;
-    }
+  .palette-btn svg {
+    width: 16px;
+    height: 16px;
+    color: var(--graphite);
+  }
+
+  .palette-btn kbd {
+    padding: 1px 6px;
+    border: 1px solid var(--grid);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    font-family: var(--font-ui);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--graphite);
+    background: var(--paper);
   }
 
   .site-header {
@@ -175,6 +230,22 @@ const nav = [
 
     .pdf {
       display: none;
+    }
+
+    .palette-btn {
+      margin-left: auto;
+      min-width: 44px;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .palette-btn .pb-label,
+    .palette-btn kbd {
+      display: none;
+    }
+
+    .site-header :global(.theme-toggle) {
+      margin-left: 0;
     }
   }
 </style>
