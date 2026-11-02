@@ -26,6 +26,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npx astro check
+      - run: npm run build
+      - run: npm run check:links
 
   build:
     needs: check
