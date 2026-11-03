@@ -3,7 +3,7 @@ title: Predictive crowd navigation for a humanoid robot
 summary: A LiDAR-to-velocity avoidance layer with multi-object tracking, crowd forecasting, and nonlinear MPC that steers HARP's walking Unitree G1 through people who do not yield.
 org: HARP, Stanford Student Robotics
 role: Software Engineer Lead, Human Perception & Social Interaction Team
-dates: Oct. 2026 to present
+dates: Oct 2026 - Present
 order: 1
 overview: HARP, the Humanoid Athletic Robotics Project at Stanford Student Robotics, is building a Unitree G1 humanoid that can work in human spaces, walking naturally, getting around obstacles, finding people, and approaching them. Every command reaches the motors through HARP's safety harness and runs in MuJoCo first; walking comes from NVIDIA's GR00T locomotion policy.
 contribution: I lead navigation for the Human Perception & Social Interaction Team. My current work is a predictive avoidance layer between the route planner and the walking policy. It turns raw LiDAR into tracked, forecast obstacles, then uses a nonlinear model predictive controller (NMPC) to choose the G1's body-frame velocity request five times a second. Before this I built the team's waypoint routes, manual takeover, odometry route recorder, and speed and turn ramping.

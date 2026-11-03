@@ -16,8 +16,8 @@ const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.
 const featured = work.find((w) => w.data.showcase === 'harp')!;
 const rest = work.filter((w) => w !== featured);
 const [balancing, macro] = papers;
-const current = experience.filter((r) => r.dates.includes('present'));
-const past = experience.filter((r) => !r.dates.includes('present'));
+const current = experience.filter((r) => r.dates.includes('Present'));
+const past = experience.filter((r) => !r.dates.includes('Present'));
 
 // schema.org records for the two papers, so search engines can cite them.
 const scholarly = papers.map((p) => ({

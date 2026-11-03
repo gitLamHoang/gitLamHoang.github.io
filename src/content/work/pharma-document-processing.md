@@ -3,7 +3,7 @@ title: Document intelligence for pharmaceutical supply chains
 summary: An OCR, retrieval, and classification pipeline for pharmaceutical vendor files, benchmarked across OCR engines, LLMs, and chunking strategies, with a public continuation that settles ambiguous dates from evidence in the same recall notice.
 org: Pfizer
 role: AI Engineer Apprentice
-dates: Jun. to Sep. 2026, public continuation 2026
+dates: Jun 2026 - Sep 2026, public continuation 2026
 order: 2
 overview: Pharmaceutical supply chains run on vendor paperwork, scanned files whose fields must be read, checked, and routed to the right team. The project asked how far an OCR, retrieval, and LLM pipeline can automate that intake, and where it breaks.
 contribution: As an AI Engineer Apprentice at Pfizer, I built the end-to-end Python and Docker pipeline, benchmarked OCR and LLM choices, reviewed outputs by hand to diagnose failures, and delivered a demo interface and a technical report with deployment recommendations. I then built a public continuation on 60 real MHRA recall and defect notices that keeps every extracted date traceable to its source cell, and added a resolver that reads a document's date order from its own unambiguous dates.
