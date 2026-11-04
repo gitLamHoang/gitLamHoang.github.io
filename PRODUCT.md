@@ -31,7 +31,7 @@ Every result comes with how it was measured and what it can't do yet. Harvey's R
 
 ## Capabilities and Constraints
 
-- Pages: home, one write-up per project (`/work/<slug>`), 404. Command palette (⌘K), light and dark themes, print-as-CV stylesheet, per-project link-preview cards.
+- Pages: home, one write-up per project (`/work/<slug>`), the crowd lab (`/lab`), 404. Command palette (⌘K), dark only (decided 2026-11-03), print-as-CV stylesheet, per-project link-preview cards.
 - Interactive pieces: HARP replay with log-synced overlay, recorded-run explorer, live crowd-navigation lab (a browser model of the method, not HARP's controller code), balancing-matrix method panel.
 - Decided 2026-11-03: the crowd lab and run explorer move off the home page to their own page; the home page keeps the replay.
 - Decided 2026-11-03: the HARP entry gets updated to the latest simulation run and technical state from Harvey's HARP checkout.

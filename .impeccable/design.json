@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-03T19:30:00Z",
+  "title": "Design System: Harvey's Hub",
+  "extensions": {
+    "colorMeta": {
+      "accent": { "role": "primary", "displayName": "Measured Gold", "canonical": "#e5c04a", "tonalRamp": ["oklch(25% 0.04 92)", "oklch(36% 0.07 92)", "oklch(48% 0.10 92)", "oklch(60% 0.12 92)", "oklch(72% 0.13 92)", "oklch(82% 0.13 92)", "oklch(89% 0.09 92)", "oklch(95% 0.04 92)"] },
+      "accent-ink": { "role": "neutral", "displayName": "Accent Ink", "canonical": "#000000" },
+      "ground": { "role": "neutral", "displayName": "Ground Black", "canonical": "#000000", "tonalRamp": ["#000000", "#181818", "#1f1f1f", "#272727", "#313131", "#8a8a8a", "#9b9b9b", "#ffffff"] },
+      "surface-1": { "role": "neutral", "displayName": "Panel Grey", "canonical": "#181818" },
+      "surface-2": { "role": "neutral", "displayName": "Inset Grey", "canonical": "#1f1f1f" },
+      "surface-3": { "role": "neutral", "displayName": "Hover Grey", "canonical": "#272727" },
+      "surface-4": { "role": "neutral", "displayName": "Strong Edge", "canonical": "#313131" },
+      "border": { "role": "neutral", "displayName": "Border", "canonical": "#272727" },
+      "border-strong": { "role": "neutral", "displayName": "Strong Edge Border", "canonical": "#313131" },
+      "text": { "role": "neutral", "displayName": "White", "canonical": "#ffffff" },
+      "text-2": { "role": "neutral", "displayName": "Quiet Grey", "canonical": "#9b9b9b" },
+      "text-3": { "role": "neutral", "displayName": "Faint Grey", "canonical": "#8a8a8a" }
+    },
+    "typographyMeta": {
+      "heading-1": { "displayName": "Heading 1", "purpose": "Home hero heading, in the text gradient. 2.25rem/2.5rem under 768px." },
+      "heading-2": { "displayName": "Heading 2", "purpose": "Section titles; top heading of write-ups, lab, and 404 in the gradient. 1.875rem/2.25rem under 768px." },
+      "heading-3": { "displayName": "Heading 3", "purpose": "The gold case-file stat. 1.5rem/2rem under 768px." },
+      "heading-5": { "displayName": "Heading 5", "purpose": "Panel and project titles." },
+      "heading-6": { "displayName": "Heading 6", "purpose": "Organisation names, smaller panel titles." },
+      "title-1": { "displayName": "Title 1", "purpose": "Hero subheading and page summaries." },
+      "title-2": { "displayName": "Title 2", "purpose": "Section ledes and the organisations row." },
+      "title-4": { "displayName": "Title 4", "purpose": "Tabs and field labels in Quiet Grey." },
+      "body-2": { "displayName": "Body 2", "purpose": "Role titles and emphasised lines." },
+      "body-3": { "displayName": "Body 3", "purpose": "Running text at a 36rem measure." },
+      "body-6": { "displayName": "Body 6", "purpose": "Bylines and secondary detail at a 30rem measure." },
+      "button-md": { "displayName": "Button", "purpose": "Button labels." },
+      "caption-2": { "displayName": "Caption 2", "purpose": "Dates, meta lines, hints." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The one easing: weighted, decelerating into place." },
+      { "name": "dur-fade", "value": "300ms", "purpose": "Colour, background, border, and hover-lift transitions." },
+      { "name": "dur-move", "value": "500ms", "purpose": "Tab cross-fade with 8px rise, menu items, toggle bars, tagline words." },
+      { "name": "dur-reveal", "value": "700ms", "purpose": "Scroll reveal: rise 32px and fade in, once." },
+      { "name": "menu-stagger", "value": "60ms", "purpose": "Delay per item in the phone menu." },
+      { "name": "page-transition", "value": "200ms out, 300ms in after 120ms", "purpose": "Cross-document view transition fade; off under reduced motion." },
+      { "name": "press", "value": "scale(0.98)", "purpose": "Active state on buttons, tabs, and icon buttons." }
+    ],
+    "breakpoints": [
+      { "name": "phone-narrow", "value": "640px" },
+      { "name": "media-stack", "value": "700px" },
+      { "name": "md", "value": "768px" },
+      { "name": "section-stack", "value": "900px" },
+      { "name": "casefile-stack", "value": "1000px" }
+    ],
+    "layout": {
+      "pageMax": "1312px",
+      "gutter": "24px; 48px from 768px",
+      "sectionGap": "96px; 64px under 768px",
+      "measure": "36rem running text; 30rem captions"
+    },
+    "materials": [
+      { "name": "nav-pill-blur", "value": "background: rgb(24 24 24 / 0.72); -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);", "purpose": "Floating nav. Unprefixed declaration must follow the -webkit- one or the minifier drops it." },
+      { "name": "menu-blur", "value": "background: rgb(0 0 0 / 0.9); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);", "purpose": "Full-screen phone menu." },
+      { "name": "hero-gradient", "value": "background: linear-gradient(90deg, #ffffff 0%, #9b9b9b 100%); background-clip: text; color: transparent;", "purpose": "Each page's top heading only; sanctioned by the pin. Prints black." },
+      { "name": "focus-ring", "value": "outline: 2px solid #ffffff; outline-offset: 2px; border-radius: 6px;", "purpose": "Every focusable element." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action in a group, such as Download resume.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\"><svg viewBox=\"0 0 256 256\" width=\"18\" height=\"18\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z\"/></svg>Download resume</a>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 12px; border: 1px solid #313131; border-radius: 12px; background: #1f1f1f; color: #ffffff; font-family: 'Geist Variable', 'Geist', system-ui, sans-serif; font-size: 1rem; line-height: 1.5rem; font-weight: 600; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color 300ms cubic-bezier(0.22,1,0.36,1), border-color 300ms cubic-bezier(0.22,1,0.36,1), transform 300ms cubic-bezier(0.22,1,0.36,1); } .ds-btn-primary { background: #ffffff; border-color: #ffffff; color: #000000; } .ds-btn-primary:hover { background: #e6e6e6; transform: translateY(-1px); } .ds-btn:active { transform: scale(0.98); } .ds-btn:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Any other action, such as Email me.",
+      "html": "<a class=\"ds-btn2\" href=\"#\"><svg viewBox=\"0 0 256 256\" width=\"18\" height=\"18\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z\"/></svg>Email me</a>",
+      "css": ".ds-btn2 { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 12px; border: 1px solid #313131; border-radius: 12px; background: #1f1f1f; color: #ffffff; font-family: 'Geist Variable', 'Geist', system-ui, sans-serif; font-size: 1rem; line-height: 1.5rem; font-weight: 600; text-decoration: none; transition: background-color 300ms cubic-bezier(0.22,1,0.36,1), transform 300ms cubic-bezier(0.22,1,0.36,1); } .ds-btn2:hover { background: #272727; transform: translateY(-1px); } .ds-btn2:active { transform: scale(0.98); } .ds-btn2:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Floating Pill Nav",
+      "kind": "nav",
+      "refersTo": "nav-pill",
+      "description": "Fixed, centred, blurred pill with brand, links, and a small Resume button.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\" href=\"#\">Harvey Phan</a><a class=\"ds-link ds-current\" href=\"#\">Work</a><a class=\"ds-link\" href=\"#\">Research</a><a class=\"ds-link\" href=\"#\">Experience</a><a class=\"ds-cv\" href=\"#\">Resume</a></nav>",
+      "css": ".ds-nav { display: inline-flex; align-items: center; gap: 4px; padding: 4px 4px 4px 16px; border: 1px solid #272727; border-radius: 9999px; background: rgb(24 24 24 / 0.72); -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%); font-family: 'Geist Variable', 'Geist', system-ui, sans-serif; font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; } .ds-brand { margin-right: 12px; color: #ffffff; text-decoration: none; } .ds-link { display: inline-flex; align-items: center; min-height: 36px; padding: 8px 12px; border-radius: 9999px; color: #9b9b9b; text-decoration: none; transition: color 300ms cubic-bezier(0.22,1,0.36,1), background-color 300ms cubic-bezier(0.22,1,0.36,1); } .ds-link:hover, .ds-current { color: #ffffff; background: #272727; } .ds-link:focus-visible, .ds-cv:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; } .ds-cv { display: inline-flex; align-items: center; min-height: 36px; margin-left: 4px; padding: 4px 12px; border-radius: 9999px; background: #ffffff; color: #000000; font-weight: 600; text-decoration: none; }"
+    },
+    {
+      "name": "Case File Tabs",
+      "kind": "chip",
+      "refersTo": "tab",
+      "description": "Segmented control on an Inset Grey track; the selected tab is white.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button class=\"ds-tab\" role=\"tab\" aria-selected=\"true\">Crowd navigation</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">Pharma documents</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">EEG states</button></div>",
+      "css": ".ds-tabs { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 12px; background: #1f1f1f; } .ds-tab { min-height: 40px; padding: 8px 16px; border: 0; border-radius: 8px; background: transparent; color: #9b9b9b; font-family: 'Geist Variable', 'Geist', system-ui, sans-serif; font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; cursor: pointer; transition: color 300ms cubic-bezier(0.22,1,0.36,1), background-color 300ms cubic-bezier(0.22,1,0.36,1), transform 300ms cubic-bezier(0.22,1,0.36,1); } .ds-tab[aria-selected='false']:hover { color: #ffffff; background: #272727; } .ds-tab[aria-selected='true'] { background: #ffffff; color: #000000; } .ds-tab:active { transform: scale(0.98); } .ds-tab:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Panel with Evidence",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "16px panel with an 8px shell; the gold stat sits beside its Claim and Limit.",
+      "html": "<article class=\"ds-panel\"><div class=\"ds-media\"></div><div class=\"ds-facts\"><h3 class=\"ds-h5\">Predictive crowd navigation for a humanoid robot</h3><p class=\"ds-stat\"><span class=\"ds-figure\">3 of 4</span><span class=\"ds-quiet\">unseen worlds reached by the game core</span></p><dl class=\"ds-ev\"><dt>Claim</dt><dd>Planning with the crowd as players gets the G1 to goals.</dd><dt>Limit</dt><dd>Simulation only; not yet run on the robot.</dd></dl></div></article>",
+      "css": ".ds-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 8px; border: 1px solid #272727; border-radius: 16px; background: #181818; color: #ffffff; font-family: 'Geist Variable', 'Geist', system-ui, sans-serif; } .ds-media { min-height: 160px; border-radius: 8px; background: #1f1f1f; } .ds-facts { display: grid; gap: 16px; padding: 12px 16px 8px 0; } .ds-h5 { margin: 0; font-size: 1.5rem; line-height: 2rem; font-weight: 600; letter-spacing: -0.015em; } .ds-stat { display: grid; gap: 4px; margin: 0; } .ds-figure { color: #e5c04a; font-size: 2.25rem; line-height: 2.5rem; font-weight: 600; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; } .ds-quiet { color: #9b9b9b; font-size: 0.875rem; line-height: 1.25rem; } .ds-ev { display: grid; gap: 4px; margin: 0; } .ds-ev dt { color: #9b9b9b; font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; } .ds-ev dd { margin: 0 0 12px; font-size: 1rem; line-height: 1.5rem; }"
+    },
+    {
+      "name": "Panel Inset",
+      "kind": "card",
+      "refersTo": "panel-inset",
+      "description": "An 8px inset on Inset Grey nested inside a 16px panel, as in the method panel.",
+      "html": "<div class=\"ds-outer\"><div class=\"ds-inset\"><p class=\"ds-t\">The method</p><p class=\"ds-b\">Encode the recurrence in a 2 by 2 matrix whose powers carry the sequence.</p></div></div>",
+      "css": ".ds-outer { padding: 8px; border: 1px solid #272727; border-radius: 16px; background: #181818; } .ds-inset { padding: 24px; border: 1px solid #272727; border-radius: 8px; background: #1f1f1f; color: #ffffff; font-family: 'Geist Variable', 'Geist', system-ui, sans-serif; } .ds-t { margin: 0; font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; } .ds-b { margin: 8px 0 0; max-width: 30rem; color: #9b9b9b; font-size: 0.875rem; line-height: 1.25rem; }"
+    },
+    {
+      "name": "Hero Heading",
+      "kind": "custom",
+      "refersTo": "heading-1",
+      "description": "Two-line top heading in the white to grey text gradient, with a Quiet Grey subheading.",
+      "html": "<div class=\"ds-hero\"><h1 class=\"ds-h1\">Navigation software<br>for humanoid robots.</h1><p class=\"ds-sub\">Harvey Phan, Stanford CS. I lead navigation on HARP's Unitree G1.</p></div>",
+      "css": ".ds-hero { max-width: 680px; font-family: 'Geist Variable', 'Geist', system-ui, sans-serif; } .ds-h1 { margin: 0; font-size: 3.75rem; line-height: 3.75rem; font-weight: 600; letter-spacing: -0.035em; background: linear-gradient(90deg, #ffffff 0%, #9b9b9b 100%); -webkit-background-clip: text; background-clip: text; color: transparent; } .ds-sub { margin: 24px 0 0; color: #9b9b9b; font-size: 1.25rem; line-height: 1.75rem; font-weight: 500; letter-spacing: -0.01em; }"
+    },
+    {
+      "name": "Tagline Reveal",
+      "kind": "custom",
+      "refersTo": "heading-2",
+      "description": "Words start at 28% white and light to white one by one on scroll.",
+      "html": "<p class=\"ds-tag\"><span class=\"ds-w on\">Every</span> <span class=\"ds-w on\">result</span> <span class=\"ds-w on\">on</span> <span class=\"ds-w\">this</span> <span class=\"ds-w\">site</span> <span class=\"ds-w\">comes</span> <span class=\"ds-w\">with</span> <span class=\"ds-w\">its</span> <span class=\"ds-w\">limit.</span></p>",
+      "css": ".ds-tag { max-width: 680px; margin: 0; font-family: 'Geist Variable', 'Geist', system-ui, sans-serif; font-size: 3rem; line-height: 3rem; font-weight: 600; letter-spacing: -0.03em; } .ds-w { color: rgb(255 255 255 / 0.28); transition: color 500ms cubic-bezier(0.22,1,0.36,1); } .ds-w.on { color: #ffffff; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Case File",
+    "overview": "The site is a case file opened on black: flat dark surfaces stacked in a fixed order, each holding evidence, and one gold mark reserved for numbers that came out of a measurement. The world is elayadesign's landing-page-design system (Part B), pinned by the owner on 2026-11-03 and run under impeccable's process. It is Geist alone, named text styles on the Tailwind scale, spacing from a fixed 2 to 96 px token set, Tailwind radii with nested-radius math, full 1px borders, a floating blurred pill nav, and a white to grey gradient on each page's top heading.\n\nDensity is calm and wide: a 1312 px page, 96 px between sections, and panels that hold content with an 8 px shell so media sits inside with the nested radius. Motion is weighted and decelerating (`cubic-bezier(0.22, 1, 0.36, 1)`): content rises 32 px and fades in once, tabs cross-fade with an 8 px rise, and the tagline lights word by word. Everything honours `prefers-reduced-motion`.\n\nThe site is dark only. Print is the one exception: the print stylesheet turns the page into a clean black-on-white CV. Rejected worlds (the IBM Carbon \"report and instrument\" pass and the \"launch film\" graphite cinema pass) are not to return.",
+    "keyCharacteristics": [
+      "Flat black ground (#000000) with three stepped surfaces and full 1px borders; no shadows.",
+      "One face, Geist, used only through named text styles.",
+      "Spacing only from the 2 to 96 px token set.",
+      "Gold appears only on measured figures, and every figure sits beside its limit.",
+      "Floating blurred pill nav; panels nested at 16 px outside, 8 px inside."
+    ],
+    "rules": [
+      { "name": "The Measured Gold Rule", "body": "Gold (#E5C04A) marks only a number that came out of an evaluation. Not links, not icons, not headings, not decoration, not hover states.", "section": "colors" },
+      { "name": "The Number With Its Limit Rule", "body": "A measured figure never appears without its limit in the same view (PRODUCT.md principle 1). On the home page every case-file tab's limit ends above 900 px.", "section": "colors" },
+      { "name": "The Dark Only Rule", "body": "There is one theme, dark. Do not add a light theme or a theme toggle; only print flips to black on white.", "section": "colors" },
+      { "name": "The Named Style Rule", "body": "Text is set only through the named styles (heading-1 to heading-6, title-1 to title-5, body-1 to body-6, button-lg/md/sm, caption-1 to caption-5). No ad hoc sizes.", "section": "typography" },
+      { "name": "The Upright Rule", "body": "Nothing is italic. `em`, `i`, and `cite` render upright, including the Specter quotes.", "section": "typography" },
+      { "name": "The Copy Is Harvey's Rule", "body": "Dates are written like LinkedIn (\"Jun 2026 - Sep 2026\"), and project titles are set exactly as Harvey wrote them. The system does not restyle or rewrite either.", "section": "typography" },
+      { "name": "The Fixed Spacing Rule", "body": "Every margin, padding, and gap comes from the 2 to 96 px tokens (2, 4, 8, 12, 16, 24, 32, 40, 48, 64, 80, 96). No values between steps.", "section": "layout" },
+      { "name": "The Tonal Step Rule", "body": "To lift something, move it one surface step up and give it a full border. Never add a drop shadow.", "section": "elevation" },
+      { "name": "The Blur Order Rule", "body": "Write `-webkit-backdrop-filter` first and the unprefixed `backdrop-filter` after it; the production minifier drops the unprefixed one otherwise. Do not give the nav its own view-transition name, or the blur stops seeing the page.", "section": "elevation" },
+      { "name": "The Nested Radius Rule", "body": "Inner radius = outer radius minus padding: 16 px panel, 8 px padding, 8 px inner. The method inset nested in the research panel is sanctioned by the pin and follows the same math.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do set every page's top heading in the white to grey text gradient (#ffffff to #9b9b9b, left to right); that heading is the only gradient on the site.",
+      "Do keep gold (#E5C04A) for measured figures, and place each figure's limit in the same view.",
+      "Do take every space from the 2 to 96 px tokens and every radius from the Tailwind set, with inner radius = outer minus padding.",
+      "Do set figures in tabular numerals.",
+      "Do write dates like LinkedIn (\"Jun 2026 - Sep 2026\") and keep project titles as written.",
+      "Do reveal content once, rising 32 px over 700 ms on the weighted ease, and drop the movement under reduced motion."
+    ],
+    "donts": [
+      "Don't add a second typeface, italics, or sizes outside the named styles.",
+      "Don't add drop shadows; lift with a surface step and a border.",
+      "Don't use gold on links, icons, headings, hovers, carets, or decoration.",
+      "Don't add a light theme or a theme toggle.",
+      "Don't put a gradient anywhere but the top heading's text: no gradient fills, borders, or backgrounds.",
+      "Don't add eyebrows or kicker labels above headings."
+    ]
+  }
+}
