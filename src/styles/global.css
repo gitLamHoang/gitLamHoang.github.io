@@ -16,7 +16,7 @@
   /* text and the one accent */
   --text: #ffffff;
   --text-2: #9b9b9b;
-  --text-3: #6f6f6f;
+  --text-3: #8a8a8a;
   --accent: #e5c04a;
   --accent-ink: #000000;
 
@@ -424,6 +424,16 @@ mark.hl {
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
+}
+
+/* Running text keeps a readable measure in Geist (about 75 characters). */
+.measure {
+  max-width: 36rem;
+}
+
+figcaption,
+.body-6 {
+  max-width: 30rem;
 }
 
 /* ---------- shared bits the instruments and write-ups still use ---------- */

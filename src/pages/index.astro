@@ -66,9 +66,8 @@ const scholarly = papers.map((p) => ({
 
     <article class="panel paper" aria-labelledby="paper-balancing" data-reveal>
       <div class="paper-text">
-        <p class="caption-2 text-2">{balancing.journal}, {balancing.issue}</p>
         <h3 id="paper-balancing" class="heading-5">Balancing numbers by the matrix method</h3>
-        <p class="body-6 text-2">{balancing.authors}</p>
+        <p class="body-6 text-2 byline">{balancing.authors}. {balancing.journal}, {balancing.issue}.</p>
         <div class="qa">
           <h4 class="title-4 text-2">The question</h4>
           <p class="body-3">{balancing.overview}</p>
@@ -88,9 +87,8 @@ const scholarly = papers.map((p) => ({
 
     <div class="pair">
       <article class="panel paper-small" aria-labelledby="paper-macro" data-reveal>
-        <p class="caption-2 text-2">{macro.journal}, {macro.issue}</p>
         <h3 id="paper-macro" class="heading-5">Deep learning against econometrics for inflation, GDP, and unemployment</h3>
-        <p class="body-6 text-2">Published as &ldquo;{macro.title}.&rdquo; {macro.authors}.</p>
+        <p class="body-6 text-2 byline">Published as &ldquo;{macro.title}.&rdquo; {macro.authors}. {macro.journal}, {macro.issue}.</p>
         <div class="qa">
           <h4 class="title-4 text-2">The question</h4>
           <p class="body-3">{macro.overview}</p>
@@ -105,9 +103,8 @@ const scholarly = papers.map((p) => ({
       </article>
 
       <article class="panel paper-small" aria-labelledby="immc-title" data-reveal>
-        <p class="caption-2 text-2">COMAP and NeoUnion ESC Organization</p>
         <h3 id="immc-title" class="heading-5">{immc.title}</h3>
-        <p class="body-6 text-2">Hanoi-Amsterdam High School for the Gifted, representing Vietnam</p>
+        <p class="body-6 text-2 byline">COMAP and NeoUnion ESC Organization. Hanoi-Amsterdam High School for the Gifted, representing Vietnam.</p>
         <div class="qa">
           <h4 class="title-4 text-2">The challenge</h4>
           <p class="body-3">{immc.overview}</p>
@@ -311,6 +308,11 @@ const scholarly = papers.map((p) => ({
   .qa {
     display: grid;
     gap: var(--space-50);
+  }
+
+  .byline {
+    margin-top: calc(-1 * var(--space-75));
+    margin-bottom: var(--space-75);
   }
 
   .pair {

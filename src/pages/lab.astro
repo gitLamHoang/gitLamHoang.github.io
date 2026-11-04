@@ -20,12 +20,12 @@ import RouteField from '../components/RouteField.astro';
       <p><a class="btn" href="/work/harp-crowd-navigation/">Read the HARP write-up</a></p>
     </header>
 
-    <section class="block panel" aria-labelledby="lab-crowd">
+    <section class="block" aria-labelledby="lab-crowd">
       <h2 id="lab-crowd" class="heading-5">Steer through a crowd, or scrub the recorded run</h2>
       <LabTabs id="lab-crowd" />
     </section>
 
-    <section class="block panel" aria-labelledby="lab-route">
+    <section class="block" aria-labelledby="lab-route">
       <h2 id="lab-route" class="heading-5">Earlier work: waypoint laps and takeover</h2>
       <p class="note body-6 text-2">
         A small browser model of the behavior from PRs #2, #5, and #6: repeated laps over a waypoint route, speed that ramps up and
@@ -49,8 +49,7 @@ import RouteField from '../components/RouteField.astro';
   }
 
   .block {
-    margin-top: var(--space-600);
-    padding: var(--space-400) var(--space-300);
+    margin-top: var(--space-800);
   }
 
   .block h2 {
@@ -58,7 +57,7 @@ import RouteField from '../components/RouteField.astro';
   }
 
   .note {
-    max-width: 65ch;
+    max-width: 30rem;
     margin-bottom: var(--space-300);
   }
 </style>

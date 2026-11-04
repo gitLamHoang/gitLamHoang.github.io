@@ -60,12 +60,12 @@ const short: Record<string, string> = {
                 )}
               </div>
               <div class="facts">
-                <p class="caption-2 text-2">
-                  {org}. {role}, {dates}
-                </p>
                 <h3 class="heading-5">
                   <a href={href}>{title}</a>
                 </h3>
+                <p class="caption-2 text-2 meta">
+                  {org}. {role}, {dates}
+                </p>
                 {stat && (
                   <p class="stat">
                     <span class="heading-2 tnum">{stat.value}</span>
@@ -294,6 +294,10 @@ const short: Record<string, string> = {
     gap: var(--space-200);
     padding-top: var(--space-100);
     padding-right: var(--space-200);
+  }
+
+  .facts .meta {
+    margin-top: calc(-1 * var(--space-100));
   }
 
   .facts h3 a {
