@@ -1,0 +1,65 @@
+---
+// The tagline moment: one large statement, its words lighting from muted to full in reading order
+// as each crosses a line just below the middle of the screen. Plain full-colour text without
+// script or under reduced motion.
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+const words = text.split(' ');
+---
+
+<section class="tagline wrap" aria-label="What this site does" data-tagline>
+  <p class="heading-1">
+    {words.map((w) => <span class="w">{w} </span>)}
+  </p>
+</section>
+
+<script>
+  const roots = document.querySelectorAll<HTMLElement>('[data-tagline]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  if (!reduce.matches) {
+    for (const root of roots) {
+      const words = [...root.querySelectorAll<HTMLElement>('.w')];
+      root.dataset.live = '';
+      let queued = false;
+      const update = () => {
+        queued = false;
+        const line = innerHeight * 0.62;
+        for (const w of words) w.classList.toggle('on', w.getBoundingClientRect().top < line);
+      };
+      const ask = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(update);
+      };
+      // Only listen while the statement is near the screen.
+      new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          addEventListener('scroll', ask, { passive: true });
+          ask();
+        } else removeEventListener('scroll', ask);
+      }).observe(root);
+    }
+  }
+</script>
+
+<style>
+  .tagline {
+    padding-block: var(--space-900);
+  }
+
+  p {
+    max-width: 680px;
+  }
+
+  [data-live] .w {
+    color: rgb(255 255 255 / 0.28);
+    transition: color var(--dur-move) var(--ease);
+  }
+
+  [data-live] .w.on {
+    color: var(--text);
+  }
+</style>
