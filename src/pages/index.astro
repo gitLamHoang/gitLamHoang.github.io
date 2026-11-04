@@ -3,18 +3,15 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Epigraph from '../components/Epigraph.astro';
 import Film from '../components/Film.astro';
-import Affiliations from '../components/Affiliations.astro';
-import FeatureProject from '../components/FeatureProject.astro';
-import ProjectRow from '../components/ProjectRow.astro';
+import Work from '../components/Work.astro';
+import Marquee from '../components/Marquee.astro';
 import BalancingMethod from '../components/BalancingMethod.astro';
 import Certificates from '../components/Certificates.astro';
 import People from '../components/People.astro';
 import Marked from '../components/Marked.astro';
-import { contact, education, experience, honors, immc, papers, person, scores, tools } from '../data/profile';
+import { education, experience, honors, immc, papers, scores, tools } from '../data/profile';
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
-const featured = work.find((w) => w.data.showcase === 'harp')!;
-const rest = work.filter((w) => w !== featured);
 const [balancing, macro] = papers;
 const current = experience.filter((r) => r.dates.includes('Present'));
 const past = experience.filter((r) => !r.dates.includes('Present'));
@@ -35,116 +32,90 @@ const scholarly = papers.map((p) => ({
 <Base structured={scholarly}>
   <Film />
 
-  <Affiliations />
-
   <section class="section wrap" id="work" aria-labelledby="work-title">
-    <header class="row section-head">
-      <div>
-        <h2 id="work-title">Work</h2>
-        <p class="lede">What each project set out to do, what I built, what was measured, and the main limit, stated plainly.</p>
-      </div>
+    <header class="section-head" data-enter>
+      <h2 id="work-title">Work</h2>
+      <p class="lede">What each project set out to do, my part in it, what was measured, and its main limit.</p>
       <Epigraph quote="work" />
     </header>
-    <FeatureProject entry={featured} />
-    {rest.map((entry) => <ProjectRow entry={entry} />)}
+    <Work entries={work} />
   </section>
 
+  <Marquee />
+
   <section class="section wrap" id="research" aria-labelledby="research-title">
-    <header class="row section-head">
-      <div>
-        <h2 id="research-title">Research</h2>
-        <p class="lede">Two co-authored papers and an international modeling competition. These ones do play the odds.</p>
-      </div>
+    <header class="section-head" data-enter>
+      <h2 id="research-title">Research</h2>
+      <p class="lede">Two co-authored papers and an international modeling competition. These ones do play the odds.</p>
       <Epigraph quote="research" />
     </header>
 
-    <article class="paper">
-      <div class="row">
-        <div class="paper-main">
-          <p class="kicker">Hanoi National University of Education</p>
-          <h3>{balancing.title}</h3>
-          <p class="cite ui">{balancing.authors}</p>
-          <p class="abstract"><span class="label-ui">The question.</span> {balancing.overview}</p>
-          <p class="abstract"><span class="label-ui">What it shows.</span> {balancing.findings}</p>
-        </div>
-        <dl class="side-card">
-          <div><dt>Published in</dt><dd>{balancing.journal}</dd></div>
-          <div><dt>Issue</dt><dd>{balancing.issue}</dd></div>
-          <div><dt>Role</dt><dd>{balancing.role}</dd></div>
-          <div><dt>DOI</dt><dd><a href={`https://doi.org/${balancing.doi}`}>{balancing.doi}</a></dd></div>
-        </dl>
+    <article class="paper" aria-labelledby="paper-balancing">
+      <div class="paper-text" data-enter>
+        <h3 id="paper-balancing">Balancing numbers by the matrix method</h3>
+        <p class="cite">{balancing.authors}. {balancing.journal}, {balancing.issue}.</p>
+        <p><span class="label-ui">The question</span> {balancing.overview}</p>
+        <p><span class="label-ui">What it shows</span> {balancing.findings}</p>
+        <p class="doi"><span class="label-ui">{balancing.role}</span> <a href={`https://doi.org/${balancing.doi}`}>doi.org/{balancing.doi}</a></p>
       </div>
-      <BalancingMethod />
+      <div class="paper-figure">
+        <BalancingMethod />
+      </div>
     </article>
 
-    <article class="paper row">
-      <div class="paper-main">
-        <p class="kicker">Journal of Basic and Applied Research International</p>
-        <h3>{macro.title}</h3>
-        <p class="cite ui">{macro.authors}</p>
-        <p class="abstract"><span class="label-ui">The question.</span> {macro.overview}</p>
-        <p class="abstract"><span class="label-ui">What it shows.</span> <Marked text={macro.findings} highlight={macro.highlight} /></p>
+    <article class="paper paper-flip" aria-labelledby="paper-macro">
+      <div class="paper-text" data-enter>
+        <h3 id="paper-macro">Deep learning against econometrics for inflation, GDP, and unemployment</h3>
+        <p class="cite">Published as &ldquo;{macro.title}.&rdquo; {macro.authors}. {macro.journal}, {macro.issue}.</p>
+        <p><span class="label-ui">The question</span> {macro.overview}</p>
       </div>
-      <dl class="side-card">
-        <div><dt>Published in</dt><dd>{macro.journal}</dd></div>
-        <div><dt>Issue</dt><dd>{macro.issue}</dd></div>
-        <div><dt>Role</dt><dd>{macro.role}</dd></div>
-        <div><dt>DOI</dt><dd><a href={`https://doi.org/${macro.doi}`}>{macro.doi}</a></dd></div>
-      </dl>
+      <div class="paper-text" data-enter>
+        <p><span class="label-ui">What it shows</span> <Marked text={macro.findings} highlight={macro.highlight} /></p>
+        <p class="doi"><span class="label-ui">{macro.role}</span> <a href={`https://doi.org/${macro.doi}`}>doi.org/{macro.doi}</a></p>
+      </div>
     </article>
 
-    <article class="paper immc" aria-labelledby="immc-title">
-      <div class="row">
-        <div class="paper-main">
-          <p class="kicker">COMAP and NeoUnion, international</p>
-          <h3 id="immc-title">{immc.title}</h3>
-          <p class="abstract"><span class="label-ui">The challenge.</span> {immc.overview}</p>
-          <p class="abstract"><span class="label-ui">Our work.</span> {immc.work}</p>
-          <p class="abstract result"><strong>{immc.result}</strong></p>
-        </div>
-        <dl class="side-card">
-          <div><dt>Team</dt><dd>Hanoi-Amsterdam High School for the Gifted</dd></div>
-          <div><dt>Representing</dt><dd>Vietnam</dd></div>
-          <div><dt>Result</dt><dd>Honorable Mention, 2024 and 2025</dd></div>
-          <div><dt>Organizers</dt><dd>COMAP and NeoUnion ESC Organization</dd></div>
-        </dl>
+    <article class="paper" aria-labelledby="immc-title">
+      <div class="paper-text" data-enter>
+        <h3 id="immc-title">{immc.title}</h3>
+        <p class="cite">COMAP and NeoUnion ESC Organization. Hanoi-Amsterdam High School for the Gifted, representing Vietnam.</p>
+        <p><span class="label-ui">The challenge</span> {immc.overview}</p>
+        <p><span class="label-ui">Our work</span> {immc.work}</p>
+        <p class="immc-result">{immc.result}</p>
       </div>
-      <Certificates />
+      <div class="paper-figure">
+        <Certificates />
+      </div>
     </article>
   </section>
 
   <section class="section wrap" id="experience" aria-labelledby="experience-title">
-    <header class="row section-head">
-      <div>
-        <h2 id="experience-title">Experience</h2>
-        <p class="lede">Teams and organizations, most recent first.</p>
-      </div>
+    <header class="section-head" data-enter>
+      <h2 id="experience-title">Experience</h2>
+      <p class="lede">Teams and organizations, most recent first.</p>
       <Epigraph quote="experience" />
     </header>
-    <div class="route-roles">
+    <div class="legs">
       {
         [
           { label: 'Now', roles: current },
           { label: 'Before', roles: past },
         ].map((leg) => (
-          <section class="leg" aria-label={leg.label === 'Now' ? 'Current roles' : 'Earlier roles'}>
-            <h3 class="leg-title ui">{leg.label}</h3>
-            <ol class="roles">
+          <section class="leg" aria-labelledby={`leg-${leg.label}`}>
+            <h3 id={`leg-${leg.label}`} class="leg-title">{leg.label}</h3>
+            <ol class="roles" data-enter>
               {leg.roles.map((r) => (
-                <li class:list={['role', { 'is-current': leg.label === 'Now' }]}>
-                  <p class="ui role-dates">{r.dates}</p>
-                  <span class="wp" aria-hidden="true" />
-                  <div class="role-body">
-                    <p class="org">{r.org}</p>
-                    <p class="role-title">{r.title}</p>
-                    {r.context && <p class="role-context">{r.context}</p>}
-                    {r.detail && <p class="role-detail">{r.detail}</p>}
-                    {r.work && (
-                      <p class="role-link ui">
-                        <a href={`/work/${r.work}/`}>See the project</a>
-                      </p>
-                    )}
-                  </div>
+                <li class="role">
+                  <p class="role-dates tnum">{r.dates}</p>
+                  <p class="org">{r.org}</p>
+                  <p class="role-title">{r.title}</p>
+                  {r.context && <p class="role-note">{r.context}</p>}
+                  {r.detail && <p class="role-note">{r.detail}</p>}
+                  {r.work && (
+                    <p class="role-link">
+                      <a href={`/work/${r.work}/`}>See the project</a>
+                    </p>
+                  )}
                 </li>
               ))}
             </ol>
@@ -155,24 +126,20 @@ const scholarly = papers.map((p) => ({
   </section>
 
   <section class="section wrap" id="people" aria-labelledby="people-title">
-    <header class="row section-head">
-      <div>
-        <h2 id="people-title">People I've met</h2>
-        <p class="lede">Leaders in product and venture I have had the chance to meet.</p>
-      </div>
+    <header class="section-head" data-enter>
+      <h2 id="people-title">People I've met</h2>
+      <p class="lede">Leaders in product and venture I have had the chance to meet.</p>
       <Epigraph quote="people" />
     </header>
     <People />
   </section>
 
   <section class="section wrap" id="education" aria-labelledby="education-title">
-    <header class="row section-head">
-      <div>
-        <h2 id="education-title">Education and honors</h2>
-      </div>
+    <header class="section-head" data-enter>
+      <h2 id="education-title">Education and honors</h2>
       <Epigraph quote="honors" />
     </header>
-    <div class="facts">
+    <div class="facts" data-enter>
       <div>
         <h3>Education</h3>
         <ul>
@@ -211,260 +178,127 @@ const scholarly = papers.map((p) => ({
 </Base>
 
 <style>
-  .hero {
-    padding-top: clamp(20px, 4vw, 48px);
-  }
+  /* ---------- research: figure beside its text, mirrored from Work ---------- */
 
-  .hero-grid {
+  .paper {
     display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.25fr);
-    gap: 32px clamp(32px, 4vw, 60px);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(32px, 4vw, 72px);
     align-items: start;
   }
 
-  @media (max-width: 1100px) {
-    .hero-grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
+  .paper + .paper {
+    margin-top: var(--section);
   }
 
-  .now {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 14px 6px 12px;
-    border: 1.5px solid var(--ink);
-    border-radius: 999px;
-    background: var(--paper-raised);
-    font-size: 0.96875rem;
-    font-weight: 600;
-    line-height: 1.3;
+  .paper .paper-figure {
+    order: -1;
   }
 
-  .dot {
-    flex: none;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--pen);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--pen) 22%, transparent);
-    animation: live 2.4s ease-out infinite;
+  .paper-flip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* A slow live pulse on the current-work dot. Global reduced-motion rules stop it. */
-  @keyframes live {
-    0% {
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--pen) 45%, transparent);
-    }
-    70%,
-    100% {
-      box-shadow: 0 0 0 9px color-mix(in srgb, var(--pen) 0%, transparent);
-    }
+  .paper-flip .paper-text + .paper-text {
+    padding-top: clamp(0px, 8vw, 132px);
   }
 
-  .name {
-    margin-top: 22px;
-    font-size: clamp(3.25rem, 7.5vw, 5.75rem);
-    line-height: 0.92;
-    letter-spacing: -0.02em;
-  }
-
-  .statement {
-    margin-top: 18px;
-    max-width: 32ch;
-    font-size: clamp(1.375rem, 2.3vw, 1.75rem);
-    line-height: 1.3;
-    font-variation-settings: 'opsz' 40;
-    text-wrap: balance;
-  }
-
-  .intro {
-    margin-top: 14px;
-    max-width: 56ch;
-    color: var(--ink-soft);
-  }
-
-  .cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 22px;
-  }
-
-  .hero-text :global(.hero-quote) {
-    margin-top: 26px;
-  }
-
-  .hero-media {
-    padding-top: 6px;
-  }
-
-  .paper {
-    padding-block: 34px;
-    border-bottom: 1px solid var(--grid);
+  .paper-text {
+    display: grid;
+    gap: 16px;
   }
 
   .paper h3 {
-    margin-top: 6px;
-    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
-  }
-
-  .paper-main {
-    max-width: 74ch;
+    font-size: var(--step-lead);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    max-width: 26ch;
   }
 
   .cite {
+    color: var(--muted);
+    font-size: var(--step-small);
+    margin-bottom: 12px;
+  }
+
+  .paper-text .label-ui {
+    margin-right: 0.35em;
+  }
+
+  .doi {
     margin-top: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--graphite);
+    font-size: var(--step-small);
   }
 
-  .abstract {
-    margin-top: 12px;
-  }
-
-  .result strong {
-    font-family: var(--font-ui);
-    font-size: 1.125rem;
-    font-weight: 600;
-  }
-
-  /* Citation card in the margin column of each research entry. */
-  .side-card {
-    align-self: start;
-    margin: 4px 0 0;
-    padding: 4px 16px;
-    border: 1px solid var(--grid);
-    border-left: 3px solid var(--pen);
-    border-radius: var(--radius);
-    background: var(--paper-raised);
-  }
-
-  .side-card div {
-    padding: 9px 0;
-  }
-
-  .side-card div + div {
-    border-top: 1px solid var(--grid);
-  }
-
-  .side-card dt {
-    font-family: var(--font-ui);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--graphite);
-  }
-
-  .side-card dd {
-    margin: 2px 0 0;
-    font-size: 0.96875rem;
-    line-height: 1.4;
+  .doi a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     overflow-wrap: anywhere;
   }
 
-  @media (max-width: 900px) {
-    .side-card {
-      margin-top: 16px;
-    }
-  }
-
-  /* Experience: waypoints on a route, in two legs (now and before), side by side on wide screens. */
-  .route-roles {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 var(--col-gap);
+  .immc-result {
+    font-weight: 500;
   }
 
   @media (max-width: 1000px) {
-    .route-roles {
+    .paper {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .leg + .leg {
-      margin-top: 12px;
+    .paper .paper-figure {
+      order: 0;
     }
   }
 
+  /* ---------- experience: now and before ---------- */
+
+  .legs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(40px, 6vw, 112px);
+  }
+
   .leg-title {
-    padding-top: 22px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--graphite);
+    font-size: var(--step-lead);
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
   }
 
   .roles {
+    display: grid;
+    gap: 36px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .role {
-    position: relative;
-    display: grid;
-    grid-template-columns: 20px minmax(0, 1fr);
-    gap: 0 14px;
-    padding-block: 10px 14px;
-  }
-
-  /* The route: a line through every waypoint. */
-  .role::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 9px;
-    width: 2px;
-    background: var(--grid);
-  }
-
-  .wp {
-    position: relative;
-    z-index: 1;
-    grid-row: 1;
-    grid-column: 1;
-    width: 14px;
-    height: 14px;
-    margin: 5px 0 0 3px;
-    border: 2px solid var(--route);
-    border-radius: 50%;
-    background: var(--paper);
-  }
-
-  .is-current .wp {
-    background: var(--route);
-  }
-
-  .role-body {
-    grid-column: 2;
+  .role-dates {
+    color: var(--muted);
+    font-size: var(--step-small);
   }
 
   .org {
-    font-family: var(--font-ui);
-    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    margin-top: 6px;
+    font-size: var(--step-lead);
     font-weight: 600;
-    line-height: 1.15;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .role-title {
     margin-top: 4px;
-    font-weight: 600;
+    font-weight: 500;
   }
 
-  .role-context,
-  .role-detail {
-    margin-top: 2px;
-    font-size: 1rem;
-    color: var(--ink-soft);
-  }
-
-  .role-context {
-    color: var(--graphite);
+  .role-note {
+    margin-top: 6px;
+    color: var(--muted);
   }
 
   .role-link {
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: var(--step-small);
+    font-weight: 500;
   }
 
   .role-link a {
@@ -473,54 +307,49 @@ const scholarly = papers.map((p) => ({
     min-height: 44px;
   }
 
-  .role-dates {
-    grid-column: 2;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--graphite);
-  }
-
-  @media (max-width: 900px) {
-    .role-dates {
-      font-size: 0.9375rem;
+  @media (max-width: 760px) {
+    .legs {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
+
+
+  /* ---------- education and honors ---------- */
+
   .facts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-    gap: 28px var(--col-gap);
-    padding-top: 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px clamp(32px, 4vw, 72px);
   }
 
   .facts h3 {
-    font-size: 1.3125rem;
-    padding-bottom: 8px;
-    border-bottom: 1.5px solid var(--ink);
+    font-size: var(--step-lead);
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
   }
 
   .facts ul {
+    display: grid;
+    gap: 16px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .facts li {
-    display: flex;
-    flex-direction: column;
-    padding-block: 10px;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-bottom: 1px solid var(--grid);
+  .facts strong {
+    display: block;
+    font-weight: 500;
   }
 
-  .facts li strong {
-    font-family: var(--font-ui);
-    font-weight: 600;
-    font-size: 1.0625rem;
+  .facts span {
+    display: block;
+    color: var(--muted);
   }
 
-  .facts li span {
-    color: var(--ink-soft);
+  @media (max-width: 900px) {
+    .facts {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 </style>
