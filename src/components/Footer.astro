@@ -1,115 +1,218 @@
 ---
+// The close of every page: one solid card on a still from the film, then a single quiet line.
+import { Image } from 'astro:assets';
 import Epigraph from './Epigraph.astro';
+import still from '../assets/harp/film-end.jpg';
 import { contact, person } from '../data/profile';
 
 const built = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Los_Angeles' });
+const year = new Date().getFullYear();
 const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
 ---
 
 <footer class="site-footer" id="contact">
-  <div class="wrap">
-    <div class="row footer-head">
-      <div>
-        <h2>Get in touch</h2>
-        <p class="lede">Questions about the work, or a role in robotics or AI? Email me.</p>
-      </div>
-      <Epigraph quote="footer" />
+  <div class="scene">
+    <Image class="still" src={still} alt="" widths={[960, 1600]} sizes="100vw" loading="lazy" />
+    <div class="card" data-enter>
+      <h2>Get in touch</h2>
+      <p class="lede">Questions about the work, or a role in robotics or AI? Email me.</p>
+      <dl class="contact">
+        <div><dt>Email</dt><dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd></div>
+        <div><dt>Phone</dt><dd><a href={contact.phoneHref}>{contact.phone}</a></dd></div>
+        <div><dt>Based in</dt><dd>{contact.location}</dd></div>
+        <div><dt>LinkedIn</dt><dd><a href={contact.linkedin}>linkedin.com/in/phanhlam</a></dd></div>
+        <div><dt>GitHub</dt><dd><a href={contact.github}>github.com/gitLamHoang</a></dd></div>
+      </dl>
+      <a class="btn cv" href={contact.resume} download="Harvey_Phan_Resume.pdf">Download {contact.resumeLabel} (PDF)</a>
     </div>
+  </div>
 
-    <div class="row footer-body">
-      <ul class="contact">
-        <li><span class="k">Email</span><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
-        <li><span class="k">Phone</span><a href={contact.phoneHref}>{contact.phone}</a></li>
-        <li><span class="k">Based in</span><span>{contact.location}</span></li>
-        <li><span class="k">LinkedIn</span><a href={contact.linkedin}>linkedin.com/in/phanhlam</a></li>
-        <li><span class="k">GitHub</span><a href={contact.github}>github.com/gitLamHoang</a></li>
-      </ul>
-      <div class="cv">
-        <a class="btn btn-primary" href={contact.resume} download="Harvey_Phan_Resume.pdf">Download {contact.resumeLabel} (PDF)</a>
-      </div>
-    </div>
-
+  <div class="wrap close">
+    <Epigraph quote="footer" />
     <div class="fine">
       <p>Legal name: {person.legalName}. Papers are listed under the published author name.</p>
       <p>Quotes are Harvey Specter's, from <cite>Suits</cite> (USA Network). This site is not affiliated with the show.</p>
-      <p class="colophon">
+      <p>
         Built with Astro, a MuJoCo replay of a recorded HARP run, and KaTeX. Every number traces to a source.
         <a href={source}>Source on GitHub</a>. Updated {built}.
       </p>
     </div>
+    <p class="line">
+      <span>{person.siteTitle}, {person.name}'s portfolio</span>
+      <span class="links"><a href="/#work">Work</a><a href="/#research">Research</a><a href="/lab/">Crowd lab</a></span>
+      <span>{year}</span>
+    </p>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    margin-top: clamp(72px, 10vw, 128px);
-    padding-block: 48px 40px;
-    border-top: 1.5px solid var(--ink);
-    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    margin-top: var(--section);
   }
 
-  .footer-head {
-    align-items: end;
+  .scene {
+    position: relative;
+    display: grid;
+    min-height: min(80svh, 720px);
+    padding: clamp(48px, 6vw, 72px) var(--margin);
+    overflow: hidden;
   }
 
-  .footer-head h2 {
-    font-size: clamp(2rem, 4.2vw, 3rem);
+  .still {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% 50%;
+  }
+
+  .card {
+    position: relative;
+    align-self: start;
+    justify-self: end;
+    width: min(100%, 27rem);
+    padding: 32px;
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .card :focus-visible {
+    outline-color: var(--bg);
+  }
+
+  .card h2 {
+    font-size: var(--step-head);
   }
 
   .lede {
-    margin-top: 10px;
-    max-width: 52ch;
-    color: var(--graphite);
-  }
-
-  .footer-body {
-    margin-top: 32px;
-    align-items: start;
+    margin-top: 14px;
+    font-size: var(--step-lead);
+    line-height: 1.28;
   }
 
   .contact {
-    margin: 0;
-    padding: 0;
-    list-style: none;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-    gap: 4px 32px;
+    gap: 2px;
+    margin: 28px 0;
   }
 
-  .contact li {
-    display: flex;
-    flex-direction: column;
-    padding-block: 8px;
-    border-top: 1px solid var(--grid);
+  .contact div {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 44px;
   }
 
-  .contact .k {
-    font-family: var(--font-ui);
-    font-size: 0.9375rem;
-    color: var(--graphite);
+  .contact dt {
+    color: #4a5059;
+    font-size: var(--step-small);
+    font-weight: 500;
   }
 
-  .contact a {
+  .contact dd {
+    margin: 0;
     overflow-wrap: anywhere;
   }
 
+  .contact a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
   .cv {
-    padding-top: 8px;
+    width: 100%;
+    min-height: 52px;
+    background: var(--bg);
+    color: var(--ink);
+    white-space: normal;
+    text-align: center;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cv:hover {
+      background: #000;
+    }
+  }
+
+  .close {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 32px clamp(32px, 5vw, 96px);
+    padding-top: clamp(56px, 7vw, 96px);
   }
 
   .fine {
-    margin-top: 40px;
     display: grid;
-    gap: 4px;
-    font-family: var(--font-ui);
-    font-size: 0.9375rem;
-    color: var(--graphite);
+    gap: 8px;
+    color: var(--muted);
+    font-size: var(--step-small);
   }
 
-  @media (max-width: 900px) {
-    .footer-head :global(.epigraph),
-    .cv {
-      margin-top: 20px;
+  .line {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px 24px;
+    align-items: center;
+    margin-top: clamp(64px, 10vw, 160px);
+    padding-bottom: 28px;
+    color: var(--muted);
+    font-size: var(--step-small);
+  }
+
+  .line span:last-child {
+    justify-self: end;
+  }
+
+  .links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
+  }
+
+  @media (max-width: 760px) {
+    .scene {
+      min-height: 0;
+      padding: 50svh var(--margin) 0;
+    }
+
+    .still {
+      height: 62svh;
+      bottom: auto;
+    }
+
+    .card {
+      justify-self: stretch;
+      width: auto;
+      padding: 24px 20px;
+    }
+
+    .contact div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding-block: 6px;
+    }
+
+    .close {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .line {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+    }
+
+    .line span:last-child {
+      justify-self: start;
     }
   }
 </style>
