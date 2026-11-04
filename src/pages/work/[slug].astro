@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Marked from '../../components/Marked.astro';
 import HeroVideo from '../../components/HeroVideo.astro';
+import Icon from '../../components/Icon.astro';
 import Pipeline from '../../components/Pipeline.astro';
 
 export async function getStaticPaths() {
@@ -25,7 +26,7 @@ interface Props {
 }
 
 const { entry, prev, next } = Astro.props;
-const { title, summary, org, role, dates, stack, overview, contribution, claim, result, highlight, limit, specs, links, figure, showcase } =
+const { title, summary, org, role, dates, stack, overview, contribution, claim, result, highlight, stat, limit, specs, links, figure, showcase } =
   entry.data;
 const { Content, headings } = await render(entry);
 const toc = headings.filter((h) => h.depth === 2);
@@ -33,19 +34,17 @@ const toc = headings.filter((h) => h.depth === 2);
 
 <Base title={title} description={summary} image={`/og/${entry.id}.png`}>
   <article class="project wrap">
-    <p class="back"><a href="/#work">All work</a></p>
-
-    <header class="project-head" data-enter>
-      <h1 style={`view-transition-name: title-${entry.id}`}>{title}</h1>
-      <p class="summary">{summary}</p>
-      <p class="facts">
+    <header class="project-head">
+      <h1 class="heading-2 hero-gradient">{title}</h1>
+      <p class="summary title-1 text-2">{summary}</p>
+      <p class="facts caption-2 text-2">
         {org}. {role}, {dates}{stack && <span class="stack">. {stack.join(', ')}</span>}
       </p>
     </header>
 
     {
       showcase === 'harp' && (
-        <div class="figure">
+        <div class="figure panel">
           <HeroVideo />
         </div>
       )
@@ -53,7 +52,7 @@ const toc = headings.filter((h) => h.depth === 2);
 
     {
       figure && (
-        <figure class="figure shot" style={`view-transition-name: figure-${entry.id}`}>
+        <figure class="figure shot panel">
           {figure.href ? (
             <a href={figure.href} class="shot-link">
               <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280, 1600]} sizes="(max-width: 1440px) 100vw, 1376px" />
@@ -61,25 +60,25 @@ const toc = headings.filter((h) => h.depth === 2);
           ) : (
             <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280, 1600]} sizes="(max-width: 1440px) 100vw, 1376px" />
           )}
-          <figcaption>{figure.caption}</figcaption>
+          <figcaption class="caption-2 text-2">{figure.caption}</figcaption>
         </figure>
       )
     }
 
     <div class="intro-block">
-      <div class="measure" data-enter>
-        <h2 class="h-sub">The project</h2>
-        <p>{overview}</p>
-        <h2 class="h-sub">My part</h2>
-        <p>{contribution}</p>
+      <div class="measure" data-reveal>
+        <h2 class="heading-5">The project</h2>
+        <p class="body-3">{overview}</p>
+        <h2 class="heading-5">My part</h2>
+        <p class="body-3">{contribution}</p>
       </div>
       {
         specs && (
-          <dl class="specs side-specs" data-enter>
+          <dl class="specs side-specs panel" data-reveal>
             {specs.map((sp) => (
               <div>
                 <dt>{sp.label}</dt>
-                <dd>{sp.value}</dd>
+                <dd class="body-6">{sp.value}</dd>
               </div>
             ))}
           </dl>
@@ -87,18 +86,26 @@ const toc = headings.filter((h) => h.depth === 2);
       }
     </div>
 
-    <dl class="evidence" data-enter>
+    <dl class="evidence panel" data-reveal>
+      {
+        stat && (
+          <div class="stat">
+            <dt class="heading-2 tnum">{stat.value}</dt>
+            <dd class="body-6 text-2">{stat.label}</dd>
+          </div>
+        )
+      }
       <div>
-        <dt>Claim</dt>
-        <dd>{claim}</dd>
+        <dt class="title-4 text-2">Claim</dt>
+        <dd class="body-3">{claim}</dd>
       </div>
       <div>
-        <dt>Result</dt>
-        <dd><Marked text={result} highlight={highlight} /></dd>
+        <dt class="title-4 text-2">Result</dt>
+        <dd class="body-3"><Marked text={result} highlight={highlight} /></dd>
       </div>
       <div>
-        <dt>Limit</dt>
-        <dd>{limit}</dd>
+        <dt class="title-4 text-2">Limit</dt>
+        <dd class="body-3">{limit}</dd>
       </div>
     </dl>
 
@@ -107,7 +114,7 @@ const toc = headings.filter((h) => h.depth === 2);
         <ul class="link-row project-links">
           {links.map((l) => (
             <li>
-              <a href={l.href}>{l.label}</a>
+              <a href={l.href}>{l.label} <Icon name="arrowUpRight" /></a>
             </li>
           ))}
         </ul>
@@ -117,9 +124,9 @@ const toc = headings.filter((h) => h.depth === 2);
     {
       showcase === 'harp' && (
         <div class="figure">
-          <h2 class="h-sub">How the controller decides</h2>
+          <h2 class="heading-5 h-sub">How the controller decides</h2>
           <Pipeline />
-          <p class="lab-link"><a class="btn" href="/lab/">Open the crowd lab</a></p>
+          <p class="lab-link"><a class="btn" href="/lab/">Open the crowd lab <Icon name="arrowRight" /></a></p>
         </div>
       )
     }
@@ -131,7 +138,7 @@ const toc = headings.filter((h) => h.depth === 2);
       {
         toc.length > 1 && (
           <nav class="toc" aria-label="On this page" data-toc>
-            <p class="toc-title">On this page</p>
+            <p class="toc-title title-4 text-2">On this page</p>
             <ul>
               {toc.map((h) => (
                 <li>
@@ -145,8 +152,8 @@ const toc = headings.filter((h) => h.depth === 2);
     </div>
 
     <nav class="pager" aria-label="More work">
-      <a href={`/work/${prev.id}/`} rel="prev"><span>Previous</span>{prev.data.title}</a>
-      <a href={`/work/${next.id}/`} rel="next" class="next"><span>Next</span>{next.data.title}</a>
+      <a class="panel heading-6" href={`/work/${prev.id}/`} rel="prev"><span class="caption-1 text-2">Previous</span>{prev.data.title}</a>
+      <a class="panel heading-6 next" href={`/work/${next.id}/`} rel="next"><span class="caption-1 text-2">Next</span>{next.data.title}</a>
     </nav>
   </article>
 </Base>
@@ -183,45 +190,22 @@ const toc = headings.filter((h) => h.depth === 2);
 
 <style>
   .project {
-    padding-top: clamp(16px, 3vw, 32px);
-  }
-
-  .back {
-    font-size: var(--step-small);
-    font-weight: 500;
-  }
-
-  .back a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
+    padding-top: calc(var(--space-900) + var(--space-600));
   }
 
   .project-head {
     display: grid;
-    gap: 18px;
-    margin-top: clamp(24px, 4vw, 56px);
-  }
-
-  h1 {
-    max-width: 18ch;
-    font-size: var(--step-head);
-    line-height: 0.98;
-  }
-
-  .summary {
-    max-width: 48ch;
-    font-size: var(--step-lead);
-    line-height: 1.3;
-  }
-
-  .facts {
-    color: var(--muted);
-    font-size: var(--step-small);
+    gap: var(--space-300);
+    max-width: 680px;
   }
 
   .figure {
-    margin-top: clamp(48px, 6vw, 88px);
+    margin-top: var(--space-600);
+  }
+
+  .figure.panel,
+  .shot {
+    padding: var(--space-75);
   }
 
   .shot img {
@@ -229,65 +213,75 @@ const toc = headings.filter((h) => h.depth === 2);
     max-height: 820px;
     object-fit: cover;
     object-position: top;
-    background: #fff;
+    border-radius: var(--radius-lg);
+    background: #ffffff;
   }
 
   .shot figcaption {
-    margin-top: 14px;
-    color: var(--muted);
-    font-size: var(--step-small);
-  }
-
-  .h-sub {
-    margin: 0 0 14px;
-    font-size: var(--step-lead);
-    letter-spacing: -0.02em;
+    padding: var(--space-100) var(--space-75) var(--space-50);
   }
 
   .intro-block {
     display: grid;
-    grid-template-columns: minmax(0, 68ch) minmax(0, 22rem);
+    grid-template-columns: minmax(0, 65ch) minmax(0, 22rem);
     justify-content: space-between;
-    gap: 48px;
-    margin-top: clamp(56px, 7vw, 104px);
+    gap: var(--space-600);
+    margin-top: var(--space-900);
   }
 
-  .intro-block p + .h-sub {
-    margin-top: 40px;
+  .measure {
+    display: grid;
+    gap: var(--space-200);
+    align-content: start;
+  }
+
+  .measure p + h2 {
+    margin-top: var(--space-400);
   }
 
   .side-specs {
-    grid-template-columns: minmax(0, 1fr);
     align-self: start;
-    padding: 24px;
-    background: var(--surface);
+    padding: var(--space-300);
   }
 
   .evidence {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px clamp(24px, 3vw, 48px);
-    margin: clamp(48px, 6vw, 88px) 0 0;
-    padding: clamp(24px, 3vw, 40px);
-    background: var(--surface);
+    gap: var(--space-300) var(--space-600);
+    margin: var(--space-600) 0 0;
+    padding: var(--space-400);
   }
 
-  .evidence dt {
-    color: var(--muted);
-    font-size: var(--step-small);
-    font-weight: 500;
+  .evidence .stat {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-50);
+  }
+
+  .evidence .stat dt {
+    color: var(--accent);
   }
 
   .evidence dd {
-    margin: 6px 0 0;
+    margin-top: var(--space-50);
   }
 
   .project-links {
-    margin-top: 16px;
+    margin-top: var(--space-200);
+  }
+
+  .project-links :global(.icon),
+  .lab-link :global(.icon) {
+    width: 16px;
+    height: 16px;
+  }
+
+  .h-sub {
+    margin-bottom: var(--space-300);
   }
 
   .lab-link {
-    margin-top: 20px;
+    margin-top: var(--space-300);
   }
 
   @media (max-width: 1000px) {
@@ -301,83 +295,85 @@ const toc = headings.filter((h) => h.depth === 2);
 
   .prose-grid {
     display: grid;
-    grid-template-columns: minmax(0, 68ch) minmax(0, 15rem);
+    grid-template-columns: minmax(0, 65ch) minmax(0, 15rem);
     justify-content: space-between;
-    gap: 48px;
+    gap: var(--space-600);
     align-items: start;
-    margin-top: clamp(40px, 5vw, 72px);
-  }
-
-  .prose {
-    max-width: 68ch;
+    margin-top: var(--space-800);
   }
 
   .prose :global(h2) {
-    margin-top: 64px;
-    font-size: var(--step-lead);
-    letter-spacing: -0.02em;
+    margin-top: var(--space-700);
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
   }
 
   .prose :global(h2:first-child) {
     margin-top: 0;
   }
 
-  .prose :global(p),
-  .prose :global(ul),
-  .prose :global(table) {
-    margin-top: 16px;
+  .prose :global(h3) {
+    margin-top: var(--space-500);
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
   }
 
-  .prose :global(ul) {
-    padding-left: 1.2em;
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol),
+  .prose :global(table) {
+    margin-top: var(--space-200);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.25em;
   }
 
   .prose :global(li + li) {
-    margin-top: 8px;
+    margin-top: var(--space-75);
   }
 
   .prose :global(li::marker) {
-    color: var(--muted);
+    color: var(--text-3);
   }
 
   .prose :global(strong) {
     font-weight: 600;
   }
 
-  /* Real tables keep quiet row lines. */
+  /* Real tables keep their row lines. */
   .prose :global(table) {
     width: 100%;
     border-collapse: collapse;
-    font-size: var(--step-small);
-    font-variant-numeric: lining-nums tabular-nums;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-variant-numeric: tabular-nums;
   }
 
   .prose :global(th),
   .prose :global(td) {
-    padding: 12px 16px 12px 0;
+    padding: var(--space-100) var(--space-200) var(--space-100) 0;
     text-align: left;
     vertical-align: top;
-    border-bottom: 1px solid var(--grid);
+    border-bottom: 1px solid var(--border);
   }
 
   .prose :global(th) {
-    color: var(--muted);
+    color: var(--text-2);
     font-weight: 500;
   }
 
   .toc {
     position: sticky;
-    top: 96px;
-  }
-
-  .toc-title {
-    color: var(--muted);
-    font-size: var(--step-small);
-    font-weight: 500;
+    top: var(--space-900);
   }
 
   .toc ul {
-    margin: 8px 0 0;
+    margin: var(--space-75) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -385,22 +381,27 @@ const toc = headings.filter((h) => h.depth === 2);
   .toc a {
     display: flex;
     align-items: center;
-    min-height: 44px;
-    color: var(--muted);
-    font-size: var(--step-small);
+    min-height: 40px;
+    padding: var(--space-75) var(--space-100);
+    border-radius: var(--radius-lg);
+    color: var(--text-2);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     font-weight: 500;
-    line-height: 1.3;
     text-decoration: none;
-    transition: color var(--dur-ui) ease;
+    transition:
+      color var(--dur-fade) var(--ease),
+      background-color var(--dur-fade) var(--ease);
   }
 
   .toc a[aria-current] {
-    color: var(--ink);
+    color: var(--text);
+    background: var(--surface-2);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .toc a:hover {
-      color: var(--ink);
+      color: var(--text);
     }
   }
 
@@ -417,28 +418,18 @@ const toc = headings.filter((h) => h.depth === 2);
   .pager {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: var(--section);
+    gap: var(--space-300);
+    margin-top: var(--space-900);
   }
 
   .pager a {
     display: grid;
-    gap: 6px;
-    padding: clamp(20px, 3vw, 36px);
-    background: var(--surface);
-    font-size: var(--step-lead);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
+    gap: var(--space-75);
+    padding: var(--space-400) var(--space-300);
     text-decoration: none;
-    transition: background-color var(--dur-ui) ease;
-  }
-
-  .pager span {
-    color: var(--muted);
-    font-size: var(--step-small);
-    font-weight: 500;
-    letter-spacing: 0;
+    transition:
+      background-color var(--dur-fade) var(--ease),
+      transform var(--dur-fade) var(--ease);
   }
 
   .pager .next {
@@ -448,7 +439,12 @@ const toc = headings.filter((h) => h.depth === 2);
   @media (hover: hover) and (pointer: fine) {
     .pager a:hover {
       background: var(--surface-2);
+      transform: translateY(-2px);
     }
+  }
+
+  .pager a:active {
+    transform: scale(0.98);
   }
 
   @media (max-width: 640px) {
