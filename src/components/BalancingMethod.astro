@@ -83,65 +83,49 @@ const steps = [
 
 <style>
   .method {
-    margin: 20px 0 0;
-    border: 1.5px solid var(--ink);
-    border-radius: var(--radius);
-    background: var(--paper-raised);
-  }
-
-  .method-head {
-    padding: 18px 22px 16px;
-    border-bottom: 1px solid var(--grid);
+    margin: 0;
+    padding: clamp(20px, 2.6vw, 36px);
+    background: var(--surface);
   }
 
   .method-title {
-    font-family: var(--font-ui);
-    font-size: 1.25rem;
+    font-size: var(--step-lead);
     font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   .method-idea {
-    margin-top: 6px;
-    color: var(--ink-soft);
+    margin-top: 8px;
+    color: var(--muted);
   }
 
   ol {
-    margin: 0;
+    display: grid;
+    gap: 22px;
+    margin: 28px 0 0;
     padding: 0;
     list-style: none;
-    counter-reset: step;
   }
 
   li {
     display: grid;
-    grid-template-columns: 9.5rem minmax(0, 1.5fr) minmax(0, 1fr);
-    align-items: center;
-    gap: 4px 28px;
-    padding: 10px 22px;
-    counter-increment: step;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 2px 24px;
+    align-items: baseline;
   }
 
   .step-body {
-    display: contents;
-  }
-
-  li + li {
-    border-top: 1px solid var(--grid);
+    min-width: 0;
   }
 
   .step-label {
-    font-family: var(--font-ui);
-    font-size: 1.0625rem;
-    font-weight: 600;
-  }
-
-  .step-label::before {
-    content: counter(step) ' ';
-    color: var(--pen);
+    font-size: var(--step-small);
+    font-weight: 500;
+    color: var(--muted);
   }
 
   .eq :global(.katex-display) {
-    margin: 0.35em 0;
+    margin: 0 0 4px;
     text-align: left;
     overflow-x: auto;
     overflow-y: hidden;
@@ -150,64 +134,36 @@ const steps = [
 
   .eq :global(.katex-display > .katex) {
     text-align: left;
-    font-size: 1.12em;
+    font-size: 1.08em;
   }
 
-  /* Narrow screens get a two-line version of each long equation instead of a scrollbar. */
+  /* Narrower columns get a two-line version of each long equation instead of a scrollbar. */
   .eq-narrow {
     display: none;
   }
 
   .step-note {
-    font-size: 0.9375rem;
-    line-height: 1.45;
-    color: var(--graphite);
+    font-size: var(--step-small);
+    color: var(--muted);
   }
 
-  @media (max-width: 1000px) {
-    li {
-      grid-template-columns: 9.5rem minmax(0, 1fr);
-      align-items: start;
-    }
-
-    .step-label {
-      padding-top: 0.9em;
-    }
-
-    .step-note {
-      grid-column: 2;
-      padding-bottom: 4px;
-    }
-  }
-
-  @media (max-width: 640px) {
-    li {
-      grid-template-columns: minmax(0, 1fr);
-      padding: 12px 16px 14px;
-    }
-
-    .method-head {
-      padding: 16px;
-    }
-
-    .step-label {
-      padding-top: 0;
-    }
-
-    .step-note {
-      grid-column: 1;
-    }
-
-    .eq :global(.katex-display > .katex) {
-      font-size: 1em;
-    }
-
+  @media (max-width: 1280px) {
     .eq-wide {
       display: none;
     }
 
     .eq-narrow {
       display: block;
+    }
+  }
+
+  @media (max-width: 640px) {
+    li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .eq :global(.katex-display > .katex) {
+      font-size: 1em;
     }
   }
 </style>

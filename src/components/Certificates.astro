@@ -11,7 +11,7 @@ const images: Record<string, ImageMetadata> = { '2025': cert2025, '2024': cert20
   {
     immc.certificates.map((c) => (
       <li>
-        <a href={c.pdf} class="frame shot">
+        <a href={c.pdf} class="shot">
           <Image
             src={images[c.year]}
             alt={`IM²C ${c.year} Certificate of Achievement, Honorable Mention, Hanoi-Amsterdam High School for the Gifted, representing Vietnam.`}
@@ -19,9 +19,9 @@ const images: Record<string, ImageMetadata> = { '2025': cert2025, '2024': cert20
             sizes="(max-width: 700px) 100vw, 340px"
           />
         </a>
-        <p class="label ui">{c.label}</p>
+        <p class="label">{c.label}</p>
         <p class="team">{c.team}</p>
-        <p class="ui"><a href={c.pdf}>Certificate (PDF)</a></p>
+        <p class="pdf"><a href={c.pdf}>Certificate (PDF)</a></p>
       </li>
     ))
   }
@@ -30,9 +30,9 @@ const images: Record<string, ImageMetadata> = { '2025': cert2025, '2024': cert20
 <style>
   .certs {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-    gap: 20px 24px;
-    margin: 18px 0 0;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 32px 24px;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -45,32 +45,25 @@ const images: Record<string, ImageMetadata> = { '2025': cert2025, '2024': cert20
   .shot img {
     width: 100%;
     height: auto;
-    transition: transform 400ms ease;
-  }
-
-  .shot:hover img {
-    transform: scale(1.02);
   }
 
   .label {
-    margin-top: 10px;
-    font-weight: 600;
-    font-size: 1.0625rem;
-  }
-
-  .team {
-    margin-top: 2px;
-    font-size: 0.9375rem;
-    line-height: 1.45;
-    color: var(--graphite);
-  }
-
-  .ui:last-child {
-    font-size: 1rem;
+    margin-top: 14px;
     font-weight: 500;
   }
 
-  .ui:last-child a {
+  .team {
+    margin-top: 4px;
+    font-size: var(--step-small);
+    color: var(--muted);
+  }
+
+  .pdf {
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+
+  .pdf a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
