@@ -51,7 +51,7 @@ const scholarly = papers.map((p) => ({
   <CaseFile entries={work} />
 
   <section class="wrap orgs-band" aria-labelledby="orgs-title" data-reveal>
-    <div class="panel orgs-row">
+    <div class="orgs-row">
       <h2 id="orgs-title" class="title-4 text-2">Where I've worked, studied, and competed</h2>
       <ul class="orgs">
         {orgs.map((o) => <li class="title-2">{o}</li>)}
@@ -256,8 +256,8 @@ const scholarly = papers.map((p) => ({
 
   .orgs-row {
     display: grid;
-    gap: var(--space-200);
-    padding: var(--space-300);
+    gap: var(--space-100);
+    padding: var(--space-300) var(--space-300) 0;
   }
 
   .orgs {

@@ -18,7 +18,7 @@ OWN-WORLD: Elaya's system, exactly. Geist alone in named text styles on the Tail
 
 STORY: The visitor reads who Harvey is in one line, sees the HARP run playing inside the case file, flips the tabs to compare four projects in seconds, watches the tagline light up word by word, and opens the CV or emails.
 
-FIRST VIEWPORT: Floating pill nav at top centre. Gradient two-line headline and one-line subheading at 680 px on the left, Download resume and Email me on the right of the same block, an organizations line under it. The case-file panel starts above the fold: four tabs, HARP selected, the replay on the left, claim, gold result, and limit on the right.
+FIRST VIEWPORT: Floating pill nav at top centre. Gradient two-line headline and one-line subheading at 680 px on the left, Download resume and Email me on the right of the same block. The case-file panel starts above the fold: four tabs, HARP selected, the replay on the left, the gold stat, claim, and limit on the right, with every tab's limit ending above 900 px. The organizations line sits directly below the case file, not in the hero (amended after the finish review, 2026-11-03: with it in the hero, HARP's limit ended at 913 px, below the fold, and PRODUCT.md rule 1 keeps a number with its limit).
 
 FORM: Case file with tabs, dealt structure 6 of my seven, from the surface round. seed:bfe0609774af5011
 
