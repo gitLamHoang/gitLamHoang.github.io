@@ -15,6 +15,11 @@ stat:
   label: dates agree in a leave-one-out check, with 0 disagreements
 limit: The Pfizer code and data are internal. Every public notice is English and day-first, so the resolver is untested on real month-first documents, and its 118 suggestions still need human review.
 stack: [Python, Docker, Tesseract, PaddleOCR, Mistral, Phi-2, scikit-learn, TypeScript, SQL]
+method:
+  - "Built an end-to-end Python and Docker pipeline in three stages: OCR, retrieval, and classification of pharmaceutical vendor files."
+  - "Compared 4 OCR and LLM approaches across 6 chunking configurations, with Tesseract and PaddleOCR for OCR and Mistral and Phi-2 as the LLMs."
+  - "Reviewed 100+ outputs by hand to find where each approach fails, then delivered a demo interface and a technical report with deployment recommendations."
+  - "Public continuation on 60 MHRA recall and defect notices: every extracted date stays traceable to its source cell, and a resolver reads a notice's date order from its own unambiguous dates, abstaining when they conflict."
 specs:
   - label: Pipeline
     value: OCR, retrieval, classification

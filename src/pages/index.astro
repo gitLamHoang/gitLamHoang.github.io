@@ -5,20 +5,18 @@ import Epigraph from '../components/Epigraph.astro';
 import Poster from '../components/Poster.astro';
 import Spine from '../components/Spine.astro';
 import SectionShot from '../components/SectionShot.astro';
-import CaseFile from '../components/CaseFile.astro';
-import Tagline from '../components/Tagline.astro';
+import Projects from '../components/Projects.astro';
 import Icon from '../components/Icon.astro';
 import BalancingMethod from '../components/BalancingMethod.astro';
 import Certificates from '../components/Certificates.astro';
 import People from '../components/People.astro';
 import Marked from '../components/Marked.astro';
-import { affiliations, education, experience, honors, immc, papers, scores, tools } from '../data/profile';
+import { education, experience, honors, immc, papers, scores, tools } from '../data/profile';
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const [balancing, macro] = papers;
 const current = experience.filter((r) => r.dates.includes('Present'));
 const past = experience.filter((r) => !r.dates.includes('Present'));
-const orgs = affiliations.map((a) => a.name.replace('International Mathematical Modeling Challenge', 'IM²C'));
 
 // schema.org records for the two papers, so search engines can cite them.
 const scholarly = papers.map((p) => ({
@@ -37,83 +35,7 @@ const scholarly = papers.map((p) => ({
   <Poster />
   <Spine />
 
-  <CaseFile entries={work} />
-
-  <section class="wrap orgs-band" aria-labelledby="orgs-title" data-reveal>
-    <div class="orgs-row">
-      <h2 id="orgs-title" class="title-4 text-2">Where I've worked, studied, and competed</h2>
-      <ul class="orgs">
-        {orgs.map((o) => <li class="title-2">{o}</li>)}
-      </ul>
-    </div>
-  </section>
-
-  <Tagline text="Every result on this site comes with how it was measured, and what it can't do yet." />
-
-  <section class="section wrap" id="research" aria-labelledby="research-title">
-    <SectionShot kind="library" />
-    <header class="section-head" data-reveal>
-      <div>
-        <h2 id="research-title" class="heading-2">Research</h2>
-        <p class="lede title-2">Two coauthored papers and an international modeling competition. These ones do play the odds.</p>
-      </div>
-      <Epigraph quote="research" />
-    </header>
-
-    <article class="panel paper" aria-labelledby="paper-balancing" data-reveal>
-      <div class="paper-text">
-        <h3 id="paper-balancing" class="heading-5">Balancing numbers by the matrix method</h3>
-        <p class="body-6 text-2 byline">{balancing.authors}. {balancing.journal}, {balancing.issue}.</p>
-        <div class="qa">
-          <h4 class="title-4 text-2">The question</h4>
-          <p class="body-3">{balancing.overview}</p>
-        </div>
-        <div class="qa">
-          <h4 class="title-4 text-2">What it shows</h4>
-          <p class="body-3">{balancing.findings}</p>
-        </div>
-        <ul class="link-row">
-          <li><a href={`https://doi.org/${balancing.doi}`}>doi.org/{balancing.doi} <Icon name="arrowUpRight" /></a></li>
-        </ul>
-      </div>
-      <div class="paper-figure">
-        <BalancingMethod />
-      </div>
-    </article>
-
-    <div class="pair">
-      <article class="panel paper-small" aria-labelledby="paper-macro" data-reveal>
-        <h3 id="paper-macro" class="heading-5">Deep learning against econometrics for inflation, GDP, and unemployment</h3>
-        <p class="body-6 text-2 byline">Published as &ldquo;{macro.title}.&rdquo; {macro.authors}. {macro.journal}, {macro.issue}.</p>
-        <div class="qa">
-          <h4 class="title-4 text-2">The question</h4>
-          <p class="body-3">{macro.overview}</p>
-        </div>
-        <div class="qa">
-          <h4 class="title-4 text-2">What it shows</h4>
-          <p class="body-3"><Marked text={macro.findings} highlight={macro.highlight} /></p>
-        </div>
-        <ul class="link-row">
-          <li><a href={`https://doi.org/${macro.doi}`}>doi.org/{macro.doi} <Icon name="arrowUpRight" /></a></li>
-        </ul>
-      </article>
-
-      <article class="panel paper-small" aria-labelledby="immc-title" data-reveal>
-        <h3 id="immc-title" class="heading-5">{immc.title}</h3>
-        <p class="body-6 text-2 byline">COMAP and NeoUnion ESC Organization. Hanoi-Amsterdam High School for the Gifted, representing Vietnam.</p>
-        <div class="qa">
-          <h4 class="title-4 text-2">The challenge</h4>
-          <p class="body-3">{immc.overview}</p>
-        </div>
-        <div class="qa">
-          <h4 class="title-4 text-2">Our work</h4>
-          <p class="body-3">{immc.work}</p>
-        </div>
-        <p class="body-2">{immc.result}</p>
-        <Certificates />
-      </article>
-    </div>
-  </section>
+  <Projects entries={work} />
 
   <section class="section wrap" id="experience" aria-labelledby="experience-title">
     <SectionShot kind="palmdrive" />
@@ -171,16 +93,87 @@ const scholarly = papers.map((p) => ({
     <People />
   </section>
 
+  <section class="section wrap" id="research" aria-labelledby="research-title">
+    <SectionShot kind="library" />
+    <header class="section-head" data-reveal>
+      <div>
+        <h2 id="research-title" class="heading-2">Research</h2>
+        <p class="lede title-2">Two coauthored papers and an international modeling competition. These ones do play the odds.</p>
+      </div>
+      <Epigraph quote="research" />
+    </header>
+
+    <article class="panel paper" aria-labelledby="paper-balancing" data-reveal>
+      <div class="paper-head">
+        <h3 id="paper-balancing" class="heading-5">Balancing numbers by the matrix method</h3>
+        <p class="body-6 text-2">{balancing.authors}. {balancing.journal}, {balancing.issue}.</p>
+      </div>
+      <div class="qa-pair">
+        <div class="qa">
+          <h4 class="title-4 text-2">The question</h4>
+          <p class="body-3">{balancing.overview}</p>
+        </div>
+        <div class="qa">
+          <h4 class="title-4 text-2">What it shows</h4>
+          <p class="body-3">{balancing.findings}</p>
+        </div>
+      </div>
+      <BalancingMethod />
+      <ul class="link-row">
+        <li><a href={`https://doi.org/${balancing.doi}`}>doi.org/{balancing.doi} <Icon name="arrowUpRight" /></a></li>
+      </ul>
+    </article>
+
+    <article class="panel paper" aria-labelledby="paper-macro" data-reveal>
+      <div class="paper-head">
+        <h3 id="paper-macro" class="heading-5">Deep learning against econometrics for inflation, GDP, and unemployment</h3>
+        <p class="body-6 text-2">Published as &ldquo;{macro.title}.&rdquo; {macro.authors}. {macro.journal}, {macro.issue}.</p>
+      </div>
+      <div class="qa-pair">
+        <div class="qa">
+          <h4 class="title-4 text-2">The question</h4>
+          <p class="body-3">{macro.overview}</p>
+        </div>
+        <div class="qa">
+          <h4 class="title-4 text-2">What it shows</h4>
+          <p class="body-3"><Marked text={macro.findings} highlight={macro.highlight} /></p>
+        </div>
+      </div>
+      <ul class="link-row">
+        <li><a href={`https://doi.org/${macro.doi}`}>doi.org/{macro.doi} <Icon name="arrowUpRight" /></a></li>
+      </ul>
+    </article>
+
+    <article class="panel paper immc" aria-labelledby="immc-title" data-reveal>
+      <div class="immc-text">
+        <div class="paper-head">
+          <h3 id="immc-title" class="heading-5">{immc.title}</h3>
+          <p class="body-6 text-2">COMAP and NeoUnion ESC Organization. Hanoi-Amsterdam High School for the Gifted, representing Vietnam.</p>
+        </div>
+        <div class="qa">
+          <h4 class="title-4 text-2">The challenge</h4>
+          <p class="body-3">{immc.overview}</p>
+        </div>
+        <div class="qa">
+          <h4 class="title-4 text-2">Our work</h4>
+          <p class="body-3">{immc.work}</p>
+        </div>
+        <p class="body-2">{immc.result}</p>
+      </div>
+      <Certificates />
+    </article>
+  </section>
+
   <section class="section wrap" id="education" aria-labelledby="education-title">
     <SectionShot kind="tower" />
     <header class="section-head" data-reveal>
       <div>
-        <h2 id="education-title" class="heading-2">Education and honors</h2>
+        <h2 id="education-title" class="heading-2">Education, skills, and awards</h2>
       </div>
       <Epigraph quote="honors" />
     </header>
     <div class="facts">
-      <div class="panel fact-wide" data-reveal>
+      <div class="panel" data-reveal>
         <h3 class="title-2 text-2">Education</h3>
         <ul>
           {
@@ -192,8 +185,10 @@ const scholarly = papers.map((p) => ({
             ))
           }
         </ul>
-        <h3 class="title-2 text-2 tools-title">Tools</h3>
-        <ul class="tools">
+      </div>
+      <div class="panel" data-reveal>
+        <h3 class="title-2 text-2">Skills</h3>
+        <ul>
           {
             tools.map((t) => (
               <li>
@@ -205,7 +200,7 @@ const scholarly = papers.map((p) => ({
         </ul>
       </div>
       <div class="panel" data-reveal>
-        <h3 class="title-2 text-2">Honors and scores</h3>
+        <h3 class="title-2 text-2">Awards and scores</h3>
         <ul>
           {honors.map((h) => <li class="body-3">{h}</li>)}
           {scores.map((s) => <li class="body-3">{s}</li>)}
@@ -216,67 +211,46 @@ const scholarly = papers.map((p) => ({
 </Base>
 
 <style>
-  /* ---------- the organizations: one composed row of names ---------- */
-
-  .orgs-band {
-    margin-top: var(--space-300);
-  }
-
-  .orgs-row {
-    display: grid;
-    gap: var(--space-100);
-    padding: var(--space-300) var(--space-300) 0;
-  }
-
-  .orgs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-100) var(--space-400);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  /* ---------- research ---------- */
+  /* ---------- research: each paper full width, its question and finding side by side ---------- */
 
   .paper {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: var(--space-400);
-    padding: var(--space-300) 0 0;
+    gap: var(--space-300);
+    padding-top: var(--space-300);
   }
 
-  .paper-text,
-  .paper-small {
+  .paper + .paper {
+    margin-top: var(--space-600);
+  }
+
+  .paper-head {
     display: grid;
-    align-content: start;
-    gap: var(--space-200);
+    gap: var(--space-75);
+    max-width: 62rem;
   }
 
-  .paper-text {
-    padding: 0;
-  }
-
-  .paper-small {
-    padding: var(--space-300) 0 0;
+  .qa-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-300) var(--space-600);
   }
 
   .qa {
     display: grid;
+    align-content: start;
     gap: var(--space-50);
   }
 
-  .byline {
-    margin-top: calc(-1 * var(--space-75));
-    margin-bottom: var(--space-75);
+  /* The competition: its story on the left, the two certificates on the right. */
+  .immc {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-300) var(--space-600);
+    align-items: start;
   }
 
-  .pair {
+  .immc-text {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--space-300);
-    margin-top: var(--space-300);
-    align-items: start;
+    gap: var(--space-200);
   }
 
   .link-row :global(.icon) {
@@ -285,8 +259,8 @@ const scholarly = papers.map((p) => ({
   }
 
   @media (max-width: 1000px) {
-    .paper,
-    .pair {
+    .qa-pair,
+    .immc {
       grid-template-columns: minmax(0, 1fr);
     }
   }
@@ -374,12 +348,12 @@ const scholarly = papers.map((p) => ({
     }
   }
 
-  /* ---------- education and honors: one wide panel, one narrow ---------- */
+  /* ---------- education, skills, and awards: three columns, as on the resume ---------- */
 
   .facts {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: var(--space-300);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-300) var(--space-600);
     align-items: start;
   }
 
@@ -395,17 +369,8 @@ const scholarly = papers.map((p) => ({
     list-style: none;
   }
 
-  .tools {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .tools-title {
-    margin-top: var(--space-600);
-  }
-
-  @media (max-width: 900px) {
-    .facts,
-    .tools {
+  @media (max-width: 1000px) {
+    .facts {
       grid-template-columns: minmax(0, 1fr);
     }
   }

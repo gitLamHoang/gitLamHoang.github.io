@@ -8,10 +8,10 @@ import { contact, person } from '../data/profile';
 const path = Astro.url.pathname;
 const home = path === '/';
 const nav = [
-  { label: 'Work', href: '/#work', section: 'work', current: path.startsWith('/work/') },
-  { label: 'Research', href: '/#research', section: 'research', current: false },
+  { label: 'Projects', href: '/#work', section: 'work', current: path.startsWith('/work/') },
   { label: 'Experience', href: '/#experience', section: 'experience', current: false },
   { label: 'People', href: '/#people', section: 'people', current: false },
+  { label: 'Research', href: '/#research', section: 'research', current: false },
   { label: 'Lab', href: '/lab/', section: '', current: path.startsWith('/lab') },
 ];
 ---

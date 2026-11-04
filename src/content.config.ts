@@ -28,6 +28,8 @@ const work = defineCollection({
         stat: z.object({ value: z.string(), label: z.string() }).optional(),
         limit: z.string(),
         stack: z.array(z.string()).optional(),
+        /** How it was built: method and technical choices, one line each, as on the resume. */
+        method: z.array(z.string()).optional(),
         /** Short technical facts shown as a spec sheet. */
         specs: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
         links: z.array(link).default([]),

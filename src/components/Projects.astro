@@ -1,0 +1,274 @@
+---
+// Projects, set like the resume: one entry per project with its title, role, and dates, then how it
+// was built (the method, one line each), the measured result with its limit, the tools, and the
+// links, with the work itself beside it. Each entry keeps its #work-<slug> anchor.
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import HeroVideo from './HeroVideo.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  entries: CollectionEntry<'work'>[];
+}
+
+const { entries } = Astro.props;
+---
+
+<section class="section wrap projects" id="work" aria-labelledby="work-title">
+  <header class="section-head" data-reveal>
+    <div>
+      <h2 id="work-title" class="heading-2">Projects</h2>
+      <p class="lede title-2">How each was built, what it measured, and what it can't do yet.</p>
+    </div>
+  </header>
+
+  {
+    entries.map((e) => {
+      const { title, summary, org, role, dates, method, result, limit, stack, links, figure, showcase } = e.data;
+      const href = `/work/${e.id}/`;
+      return (
+        <article class="panel project" id={`work-${e.id}`} aria-labelledby={`title-${e.id}`} data-reveal>
+          <div class="head">
+            <h3 id={`title-${e.id}`} class="heading-5">
+              <a href={href}>{title}</a>
+            </h3>
+            <p class="caption-2 text-2 tnum dates">{dates}</p>
+            <p class="body-2 role">
+              {org}, {role}
+            </p>
+          </div>
+
+          <div class="body">
+            <div class="text">
+              <p class="body-3 summary">{summary}</p>
+              {method && (
+                <div class="block">
+                  <h4 class="title-4 text-2">Method</h4>
+                  <ul class="method">
+                    {method.map((m) => (
+                      <li class="body-3">{m}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {stack && (
+                <ul class="stack" aria-label="Tools">
+                  {stack.map((s) => (
+                    <li class="caption-2">{s}</li>
+                  ))}
+                </ul>
+              )}
+              <ul class="link-row">
+                <li>
+                  <a href={href}>
+                    Read the write-up <Icon name="arrowRight" />
+                  </a>
+                </li>
+                {links.slice(0, 1).map((l) => (
+                  <li>
+                    <a href={l.href}>
+                      {l.label} <Icon name="arrowUpRight" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class:list={['media', figure && `fit-${figure.fit}`]}>
+              {showcase === 'harp' ? (
+                <HeroVideo caption={false} />
+              ) : (
+                figure && (
+                  <figure>
+                    <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280]} sizes="(max-width: 1000px) 100vw, 640px" />
+                    <figcaption class="caption-2 text-2">{figure.caption}</figcaption>
+                  </figure>
+                )
+              )}
+            </div>
+          </div>
+
+          <dl class="outcome">
+            <div>
+              <dt class="title-4 text-2">Result</dt>
+              <dd class="body-3">{result}</dd>
+            </div>
+            <div>
+              <dt class="title-4 text-2">Limit</dt>
+              <dd class="body-3 text-2">{limit}</dd>
+            </div>
+          </dl>
+        </article>
+      );
+    })
+  }
+</section>
+
+<style>
+  .projects .section-head {
+    margin-bottom: var(--space-400);
+  }
+
+  .project {
+    display: grid;
+    gap: var(--space-300);
+    padding-top: var(--space-300);
+  }
+
+  .project + .project {
+    margin-top: var(--space-700);
+  }
+
+  /* The resume's line: title and dates on one row, the role under it. */
+  .head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-25) var(--space-300);
+    align-items: baseline;
+  }
+
+  .head h3 a {
+    text-decoration: none;
+  }
+
+  .dates {
+    justify-self: end;
+    white-space: nowrap;
+  }
+
+  .role {
+    grid-column: 1 / -1;
+    color: var(--gold);
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-400) var(--space-600);
+    align-items: start;
+  }
+
+  .text {
+    display: grid;
+    gap: var(--space-300);
+  }
+
+  .block {
+    display: grid;
+    gap: var(--space-100);
+  }
+
+  .method {
+    display: grid;
+    gap: var(--space-100);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .method li {
+    position: relative;
+    padding-left: var(--space-300);
+  }
+
+  /* Each line a waypoint on the route. */
+  .method li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.62em;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius-full);
+  }
+
+  /* Under the work, full width: what it measured beside what it can't do yet. */
+  .outcome {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-200) var(--space-600);
+    margin: 0;
+    padding-top: var(--space-300);
+    border-top: 1px dotted rgb(217 164 65 / 0.45);
+  }
+
+  .outcome div {
+    display: grid;
+    align-content: start;
+    gap: var(--space-50);
+  }
+
+  .outcome dd {
+    margin: 0;
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-75);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .stack li {
+    padding: 2px var(--space-100);
+    border: 1px solid rgb(217 164 65 / 0.5);
+    border-radius: var(--radius-full);
+    color: var(--text-2);
+  }
+
+  .link-row :global(.icon) {
+    width: 16px;
+    height: 16px;
+  }
+
+  .media figure {
+    margin: 0;
+  }
+
+  .media :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top center;
+    border: 1.5px solid rgb(217 164 65 / 0.7);
+    background: #ffffff;
+  }
+
+  .media.fit-contain :global(img) {
+    object-fit: contain;
+    padding: var(--space-200);
+  }
+
+  .media figcaption {
+    margin-top: var(--space-100);
+  }
+
+  @media (max-width: 1000px) {
+    .body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .media {
+      order: -1;
+    }
+
+    .outcome {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dates {
+      justify-self: start;
+    }
+
+  }
+</style>

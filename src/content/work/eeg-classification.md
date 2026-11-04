@@ -15,6 +15,11 @@ stat:
   label: balanced accuracy on 22 participants the model never saw
 limit: Offline evaluation within one dataset. Baseline run order is fixed, so condition and run effects are confounded.
 stack: [Python, MNE, SciPy, scikit-learn]
+method:
+  - "Started in 2024 as a single-channel hardware and machine-learning prototype at HUST, guided by Professor Trinh Van Chien; rebuilt as a reproducible multichannel benchmark on PhysioNet's 109-subject EEG Motor Movement/Imagery dataset."
+  - "Signal processing with a 0.5 to 40 Hz Butterworth filter, then Welch band-power features and power ratios: 512 features per window over 64 channels and 3,052 windows, from hash-verified recordings."
+  - "Keeps participants apart from feature extraction to final evaluation: 8 candidate models compared over 5 participant-disjoint folds, an RBF SVM selected, then one sealed evaluation on 22 held-out participants."
+  - "Reports uncertainty with a 2,000-sample participant-cluster bootstrap and keeps every model as a versioned artifact."
 specs:
   - label: Data
     value: 3,052 windows, 109 participants, 64 channels

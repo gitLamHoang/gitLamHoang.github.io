@@ -35,6 +35,7 @@ Every result comes with how it was measured and what it can't do yet. Harvey's R
 - Interactive pieces: HARP replay with log-synced overlay, recorded-run explorer, live crowd-navigation lab (a browser model of the method, not HARP's controller code), balancing-matrix method panel.
 - Decided 2026-11-03: the crowd lab and run explorer move off the home page to their own page; the home page keeps the replay.
 - Decided 2026-11-03: the HARP entry gets updated to the latest simulation run and technical state from Harvey's HARP checkout.
+- Decided 2026-11-04: the home page follows Harvey's resume. Order: Projects, Experience, People I've met, then Research and one band for Education, Skills, and Awards. Each project reads like a resume entry, its method and technical choices first, then the result with its limit. The poster's sentence says Harvey is interested in robotics and AI, not his HARP title. Experience keeps its waypoint timeline. No sections that are mostly empty space.
 - Static output only; no backend, CMS, analytics, contact form, or blog.
 
 ## Brand Commitments

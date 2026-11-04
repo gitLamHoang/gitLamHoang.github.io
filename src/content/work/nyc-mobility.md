@@ -15,6 +15,11 @@ stat:
   label: mean absolute error, against 5.104 for a weekly baseline
 limit: Boosting is worse on sparse-zone MAE in every month, and no live data feed exists.
 stack: [Python, SQL, FastAPI, TypeScript, SVG]
+method:
+  - "Forecasts yellow-taxi pickups for all 262 NYC Taxi Zones one hour ahead; at the start of hour t the model may use only observations through hour t − 1."
+  - "Acquired and hashed 23.3 million trips from Dec. 2025 to May 2026, engineered past-only features, and trained gradient-boosted models against baselines."
+  - "Evaluates walk-forward over an expanding history with May sealed, with matched-control ablations on delay, XGBoost depth, borough, and weather."
+  - "Ships a FastAPI inference prototype and a TypeScript map explorer that runs from a committed snapshot."
 specs:
   - label: Data
     value: 23,263,775 pickups, Dec. 2025 to May 2026

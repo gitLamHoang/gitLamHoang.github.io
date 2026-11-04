@@ -15,6 +15,12 @@ stat:
   label: unseen worlds reached by the game core, against 0 of 4 for the sampling MPC
 limit: Simulation only, at a 0.5 m/s test speed with walkers who give way; it has not run on the robot. In the held-out comparison no run kept the 0.30 m clearance rule, and the newest committed code (3a87d78) has unit tests but no simulator run of its own.
 stack: [Python, ROS 2, Nav2, MuJoCo, NumPy, SciPy, Docker]
+method:
+  - "Turns LiDAR and the head depth camera into tracked people with multi-object tracking, then plans the G1's body-frame velocity five times a second, inside a 0.15 s planning deadline."
+  - "Plans with the crowd as players: a game-theoretic core after BRNE (Sun et al., IJRR 2024) weighs about 260 robot paths against 32 per person for the 8 nearest people within 5 m, over six rounds of best responses."
+  - "Keeps each plan clear of straight-line forecasts for 1.2 s, with a 2.5 s plan B; the earlier sampling MPC stays selectable on main (PR #15)."
+  - "Sits between Nav2's route and NVIDIA's GR00T walking policy; every command passes HARP's safety harness and runs in MuJoCo first."
+  - "Before this: the team's waypoint routes, manual takeover, odometry route recorder, and speed and turn ramping (PRs #2, #5, #6, #7)."
 specs:
   - label: Control rate
     value: 5 Hz, 0.15 s planning deadline
