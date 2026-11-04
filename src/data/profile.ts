@@ -9,7 +9,7 @@ export const person = {
   statement: "I build navigation and control software for humanoid robots, and I measure what it can't do yet.",
   intro:
     'CS at Stanford. Software Engineer Lead for the Human Perception & Social Interaction Team at HARP, Stanford Student Robotics, and software engineer at POSH (YC W22) and Stanford AUV.',
-  now: "Now: NMPC crowd navigation for HARP's Unitree G1",
+  now: "Now: game-theoretic crowd navigation for HARP's Unitree G1",
   description:
     'Harvey Phan, Stanford CS: predictive crowd navigation for humanoid robots, applied machine learning, and mathematical research, each shown with its measured result and its main limit.',
 };
@@ -54,7 +54,7 @@ export const experience: Role[] = [
     org: 'Humanoid Athletic Robotics Project (HARP)',
     context: "Stanford Student Robotics' humanoid program, building on the Unitree G1",
     title: 'Software Engineer Lead, Human Perception & Social Interaction Team',
-    detail: 'Predictive crowd navigation (NMPC), waypoint routes, manual takeover, motion smoothing',
+    detail: 'Predictive crowd navigation (game-theoretic planner, sampling MPC baseline), waypoint routes, manual takeover, motion smoothing',
     dates: 'Oct 2026 - Present',
     work: 'harp-crowd-navigation',
   },
@@ -189,7 +189,7 @@ export const scores = [
 
 export const tools = [
   { group: 'Languages', items: 'Python, C/C++, Java, SQL, R, TypeScript' },
-  { group: 'Robotics and control', items: 'ROS 2, Nav2, MuJoCo, NMPC (SciPy SLSQP), multi-object tracking' },
+  { group: 'Robotics and control', items: 'ROS 2, Nav2, MuJoCo, game-theoretic and MPC planning, multi-object tracking' },
   { group: 'ML and data', items: 'PyTorch, scikit-learn, pandas, NumPy, SciPy' },
   { group: 'Systems', items: 'Docker, Git, FastAPI' },
 ];
