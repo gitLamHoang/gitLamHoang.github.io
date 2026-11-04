@@ -3,10 +3,8 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Marked from '../../components/Marked.astro';
-import RouteField from '../../components/RouteField.astro';
 import HeroVideo from '../../components/HeroVideo.astro';
 import Pipeline from '../../components/Pipeline.astro';
-import LabTabs from '../../components/LabTabs.astro';
 
 export async function getStaticPaths() {
   const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
@@ -35,19 +33,14 @@ const toc = headings.filter((h) => h.depth === 2);
 
 <Base title={title} description={summary} image={`/og/${entry.id}.png`}>
   <article class="project wrap">
-    <p class="back ui"><a href="/#work">All work</a></p>
+    <p class="back"><a href="/#work">All work</a></p>
 
-    <header class="row project-head">
-      <div>
-        <p class="kicker">{org}</p>
-        <h1 style={`view-transition-name: title-${entry.id}`}>{title}</h1>
-        <p class="summary">{summary}</p>
-      </div>
-      <div class="facts ui">
-        <p>{role}</p>
-        <p class="quiet">{dates}</p>
-        {stack && <p class="quiet stack">{stack.join(', ')}</p>}
-      </div>
+    <header class="project-head" data-enter>
+      <h1 style={`view-transition-name: title-${entry.id}`}>{title}</h1>
+      <p class="summary">{summary}</p>
+      <p class="facts">
+        {org}. {role}, {dates}{stack && <span class="stack">. {stack.join(', ')}</span>}
+      </p>
     </header>
 
     {
@@ -58,8 +51,23 @@ const toc = headings.filter((h) => h.depth === 2);
       )
     }
 
-    <div class="row intro-block">
-      <div class="measure">
+    {
+      figure && (
+        <figure class="figure shot" style={`view-transition-name: figure-${entry.id}`}>
+          {figure.href ? (
+            <a href={figure.href} class="shot-link">
+              <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280, 1600]} sizes="(max-width: 1440px) 100vw, 1376px" />
+            </a>
+          ) : (
+            <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280, 1600]} sizes="(max-width: 1440px) 100vw, 1376px" />
+          )}
+          <figcaption>{figure.caption}</figcaption>
+        </figure>
+      )
+    }
+
+    <div class="intro-block">
+      <div class="measure" data-enter>
         <h2 class="h-sub">The project</h2>
         <p>{overview}</p>
         <h2 class="h-sub">My part</h2>
@@ -67,7 +75,7 @@ const toc = headings.filter((h) => h.depth === 2);
       </div>
       {
         specs && (
-          <dl class="specs side-specs">
+          <dl class="specs side-specs" data-enter>
             {specs.map((sp) => (
               <div>
                 <dt>{sp.label}</dt>
@@ -79,19 +87,20 @@ const toc = headings.filter((h) => h.depth === 2);
       }
     </div>
 
-    <div class="row ledger">
-      <dl class="triple">
-        <div>
-          <dt>Claim</dt>
-          <dd>{claim}</dd>
-        </div>
-        <div>
-          <dt>Result</dt>
-          <dd><Marked text={result} highlight={highlight} /></dd>
-        </div>
-      </dl>
-      <p class="limit"><span class="limit-label">Limit</span>{' '}{limit}</p>
-    </div>
+    <dl class="evidence" data-enter>
+      <div>
+        <dt>Claim</dt>
+        <dd>{claim}</dd>
+      </div>
+      <div>
+        <dt>Result</dt>
+        <dd><Marked text={result} highlight={highlight} /></dd>
+      </div>
+      <div>
+        <dt>Limit</dt>
+        <dd>{limit}</dd>
+      </div>
+    </dl>
 
     {
       links.length > 0 && (
@@ -107,31 +116,11 @@ const toc = headings.filter((h) => h.depth === 2);
 
     {
       showcase === 'harp' && (
-        <>
-          <div class="figure">
-            <h2 class="h-sub">How the controller decides</h2>
-            <Pipeline />
-          </div>
-          <div class="figure">
-            <h2 class="h-sub">See it work</h2>
-            <LabTabs id={`${entry.id}-crowd`} />
-          </div>
-        </>
-      )
-    }
-
-    {
-      figure && (
-        <figure class="figure shot" style={`view-transition-name: figure-${entry.id}`}>
-          {figure.href ? (
-            <a href={figure.href} class="shot-link">
-              <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280]} sizes="(max-width: 1200px) 100vw, 1100px" />
-            </a>
-          ) : (
-            <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280]} sizes="(max-width: 1200px) 100vw, 1100px" />
-          )}
-          <figcaption class="quiet">{figure.caption}</figcaption>
-        </figure>
+        <div class="figure">
+          <h2 class="h-sub">How the controller decides</h2>
+          <Pipeline />
+          <p class="lab-link"><a class="btn" href="/lab/">Open the crowd lab</a></p>
+        </div>
       )
     }
 
@@ -141,7 +130,7 @@ const toc = headings.filter((h) => h.depth === 2);
       </div>
       {
         toc.length > 1 && (
-          <nav class="toc ui" aria-label="On this page" data-toc>
+          <nav class="toc" aria-label="On this page" data-toc>
             <p class="toc-title">On this page</p>
             <ul>
               {toc.map((h) => (
@@ -155,22 +144,9 @@ const toc = headings.filter((h) => h.depth === 2);
       }
     </div>
 
-    {
-      showcase === 'harp' && (
-        <div class="figure">
-          <h2 class="h-sub">Earlier work, in the browser: waypoint laps and takeover</h2>
-          <p class="measure demo-note">
-            A small browser model of the behavior from PRs #2, #5, and #6: repeated laps over a waypoint route, speed that ramps up and
-            slows into each target, and a takeover that stops at once. Click the floor to add waypoints.
-          </p>
-          <RouteField id={`${entry.id}-route`} />
-        </div>
-      )
-    }
-
-    <nav class="pager ui" aria-label="More work">
-      <a href={`/work/${prev.id}/`} rel="prev"><span class="quiet">Previous</span>{prev.data.title}</a>
-      <a href={`/work/${next.id}/`} rel="next" class="next"><span class="quiet">Next</span>{next.data.title}</a>
+    <nav class="pager" aria-label="More work">
+      <a href={`/work/${prev.id}/`} rel="prev"><span>Previous</span>{prev.data.title}</a>
+      <a href={`/work/${next.id}/`} rel="next" class="next"><span>Next</span>{next.data.title}</a>
     </nav>
   </article>
 </Base>
@@ -207,8 +183,121 @@ const toc = headings.filter((h) => h.depth === 2);
 
 <style>
   .project {
-    padding-top: clamp(20px, 4vw, 40px);
+    padding-top: clamp(16px, 3vw, 32px);
   }
+
+  .back {
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+
+  .back a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .project-head {
+    display: grid;
+    gap: 18px;
+    margin-top: clamp(24px, 4vw, 56px);
+  }
+
+  h1 {
+    max-width: 18ch;
+    font-size: var(--step-head);
+    line-height: 0.98;
+  }
+
+  .summary {
+    max-width: 48ch;
+    font-size: var(--step-lead);
+    line-height: 1.3;
+  }
+
+  .facts {
+    color: var(--muted);
+    font-size: var(--step-small);
+  }
+
+  .figure {
+    margin-top: clamp(48px, 6vw, 88px);
+  }
+
+  .shot img {
+    width: 100%;
+    max-height: 820px;
+    object-fit: cover;
+    object-position: top;
+    background: #fff;
+  }
+
+  .shot figcaption {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: var(--step-small);
+  }
+
+  .h-sub {
+    margin: 0 0 14px;
+    font-size: var(--step-lead);
+    letter-spacing: -0.02em;
+  }
+
+  .intro-block {
+    display: grid;
+    grid-template-columns: minmax(0, 68ch) minmax(0, 22rem);
+    justify-content: space-between;
+    gap: 48px;
+    margin-top: clamp(56px, 7vw, 104px);
+  }
+
+  .intro-block p + .h-sub {
+    margin-top: 40px;
+  }
+
+  .side-specs {
+    grid-template-columns: minmax(0, 1fr);
+    align-self: start;
+    padding: 24px;
+    background: var(--surface);
+  }
+
+  .evidence {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px clamp(24px, 3vw, 48px);
+    margin: clamp(48px, 6vw, 88px) 0 0;
+    padding: clamp(24px, 3vw, 40px);
+    background: var(--surface);
+  }
+
+  .evidence dt {
+    color: var(--muted);
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+
+  .evidence dd {
+    margin: 6px 0 0;
+  }
+
+  .project-links {
+    margin-top: 16px;
+  }
+
+  .lab-link {
+    margin-top: 20px;
+  }
+
+  @media (max-width: 1000px) {
+    .intro-block,
+    .evidence {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* ---------- the write-up and its contents ---------- */
 
   .prose-grid {
     display: grid;
@@ -216,20 +305,75 @@ const toc = headings.filter((h) => h.depth === 2);
     justify-content: space-between;
     gap: 48px;
     align-items: start;
+    margin-top: clamp(40px, 5vw, 72px);
+  }
+
+  .prose {
+    max-width: 68ch;
+  }
+
+  .prose :global(h2) {
+    margin-top: 64px;
+    font-size: var(--step-lead);
+    letter-spacing: -0.02em;
+  }
+
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(table) {
+    margin-top: 16px;
+  }
+
+  .prose :global(ul) {
+    padding-left: 1.2em;
+  }
+
+  .prose :global(li + li) {
+    margin-top: 8px;
+  }
+
+  .prose :global(li::marker) {
+    color: var(--muted);
+  }
+
+  .prose :global(strong) {
+    font-weight: 600;
+  }
+
+  /* Real tables keep quiet row lines. */
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--step-small);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .prose :global(th),
+  .prose :global(td) {
+    padding: 12px 16px 12px 0;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--grid);
+  }
+
+  .prose :global(th) {
+    color: var(--muted);
+    font-weight: 500;
   }
 
   .toc {
     position: sticky;
     top: 96px;
-    margin-top: 56px;
-    padding-left: 14px;
-    border-left: 1.5px solid var(--grid);
   }
 
   .toc-title {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--graphite);
+    color: var(--muted);
+    font-size: var(--step-small);
+    font-weight: 500;
   }
 
   .toc ul {
@@ -239,37 +383,25 @@ const toc = headings.filter((h) => h.depth === 2);
   }
 
   .toc a {
-    position: relative;
-    display: block;
-    padding: 5px 0;
-    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--muted);
+    font-size: var(--step-small);
     font-weight: 500;
     line-height: 1.3;
-    color: var(--graphite);
     text-decoration: none;
-  }
-
-  .toc a:hover {
-    color: var(--ink);
+    transition: color var(--dur-ui) ease;
   }
 
   .toc a[aria-current] {
     color: var(--ink);
-    font-weight: 600;
   }
 
-  /* the robot marker sits on the rail next to the current section */
-  .toc a[aria-current]::before {
-    content: '';
-    position: absolute;
-    left: -20.5px;
-    top: 50%;
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: var(--pen);
-    box-shadow: 0 0 0 3px var(--paper);
-    transform: translateY(-50%);
+  @media (hover: hover) and (pointer: fine) {
+    .toc a:hover {
+      color: var(--ink);
+    }
   }
 
   @media (max-width: 1000px) {
@@ -282,224 +414,44 @@ const toc = headings.filter((h) => h.depth === 2);
     }
   }
 
-  .back {
-    font-size: 1.0625rem;
-    font-weight: 500;
-  }
-
-  .back a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-  }
-
-  .project-head {
-    align-items: end;
-    margin-top: 12px;
-  }
-
-  .project-head .kicker {
-    margin-bottom: 10px;
-  }
-
-  .h-sub {
-    margin: 0 0 12px;
-    font-size: clamp(1.25rem, 2.2vw, 1.5rem);
-  }
-
-  .intro-block {
-    margin-top: 40px;
-    row-gap: 20px;
-  }
-
-  .intro-block p + .h-sub {
-    margin-top: 28px;
-  }
-
-  .side-specs {
-    grid-template-columns: minmax(0, 1fr);
-    align-self: start;
-  }
-
-  .demo-note {
-    margin-bottom: 16px;
-    color: var(--ink-soft);
-  }
-
-  h1 {
-    font-size: clamp(2.25rem, 5.6vw, 4rem);
-    line-height: 0.98;
-    letter-spacing: -0.015em;
-  }
-
-  .summary {
-    margin-top: 16px;
-    max-width: 52ch;
-    font-size: clamp(1.1875rem, 2vw, 1.375rem);
-    line-height: 1.45;
-  }
-
-  .facts {
-    font-size: 1.0625rem;
-    line-height: 1.45;
-  }
-
-  .stack {
-    margin-top: 6px;
-  }
-
-  @media (max-width: 900px) {
-    .facts {
-      margin-top: 18px;
-    }
-  }
-
-  .ledger {
-    margin-top: 36px;
-    padding: 24px 0;
-    border-block: 1.5px solid var(--ink);
-    row-gap: 16px;
-  }
-
-  .triple {
-    display: grid;
-    gap: 12px;
-    max-width: 66ch;
-  }
-
-  .triple div {
-    display: grid;
-    grid-template-columns: 4.5rem minmax(0, 1fr);
-    gap: 12px;
-  }
-
-  dt {
-    padding-top: 0.2em;
-    font-family: var(--font-ui);
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--graphite);
-  }
-
-  dd {
-    margin: 0;
-    font-size: 1.1875rem;
-  }
-
-  .project-links {
-    margin-top: 12px;
-  }
-
-  .figure {
-    margin-top: 40px;
-  }
-
-  .shot img {
-    width: 100%;
-    max-height: 760px;
-    object-fit: cover;
-    object-position: top;
-    border: 1.5px solid var(--ink);
-    border-radius: var(--radius);
-    background: #fff;
-  }
-
-  .shot figcaption {
-    margin-top: 10px;
-    font-size: 0.9375rem;
-  }
-
-  .prose {
-    max-width: 68ch;
-    margin-top: 16px;
-  }
-
-  .prose :global(h2) {
-    margin-top: 48px;
-    font-size: clamp(1.5rem, 2.8vw, 2rem);
-  }
-
-  .prose :global(p),
-  .prose :global(ul),
-  .prose :global(table) {
-    margin-top: 14px;
-  }
-
-  .prose :global(ul) {
-    padding-left: 1.2em;
-  }
-
-  .prose :global(li + li) {
-    margin-top: 8px;
-  }
-
-  .prose :global(li::marker) {
-    color: var(--graphite);
-  }
-
-  .prose :global(strong) {
-    font-family: var(--font-ui);
-    font-weight: 600;
-    font-size: 1.0625em;
-  }
-
-  .prose :global(table) {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 1rem;
-    line-height: 1.45;
-    font-variant-numeric: lining-nums tabular-nums;
-  }
-
-  .prose :global(th),
-  .prose :global(td) {
-    padding: 10px 16px 10px 0;
-    text-align: left;
-    vertical-align: top;
-    border-bottom: 1px solid var(--grid);
-  }
-
-  .prose :global(th) {
-    font-family: var(--font-ui);
-    font-weight: 600;
-    color: var(--graphite);
-    border-bottom: 1.5px solid var(--ink);
-  }
-
   .pager {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 72px;
-    padding-top: 24px;
-    border-top: 1.5px solid var(--ink);
-    font-size: 1.125rem;
-    font-weight: 600;
+    gap: 8px;
+    margin-top: var(--section);
   }
 
   .pager a {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    display: grid;
+    gap: 6px;
+    padding: clamp(20px, 3vw, 36px);
+    background: var(--surface);
+    font-size: var(--step-lead);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
     text-decoration: none;
-    min-height: 44px;
-  }
-
-  .pager a:hover {
-    text-decoration: underline;
+    transition: background-color var(--dur-ui) ease;
   }
 
   .pager span {
+    color: var(--muted);
+    font-size: var(--step-small);
     font-weight: 500;
-    font-size: 1rem;
+    letter-spacing: 0;
   }
 
   .pager .next {
     text-align: right;
   }
 
+  @media (hover: hover) and (pointer: fine) {
+    .pager a:hover {
+      background: var(--surface-2);
+    }
+  }
+
   @media (max-width: 640px) {
-    /* Let wide tables scroll instead of crushing their columns. */
     .prose :global(table) {
       display: block;
       overflow-x: auto;
@@ -509,20 +461,13 @@ const toc = headings.filter((h) => h.depth === 2);
     .prose :global(td) {
       min-width: 9rem;
     }
-  }
 
-  @media (max-width: 560px) {
     .pager {
       grid-template-columns: 1fr;
     }
 
     .pager .next {
       text-align: left;
-    }
-
-    .triple div {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0;
     }
   }
 </style>
