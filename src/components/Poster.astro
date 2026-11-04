@@ -60,44 +60,67 @@ const route = [
     const route = scene.querySelector<SVGPathElement>('[data-route]')!;
     const reveal = scene.querySelector<SVGPathElement>('[data-route-reveal]')!;
     const robot = scene.querySelector<SVGGElement>('[data-robot]')!;
-    const walkers = [...scene.querySelectorAll<SVGGElement>('.walker')].map((g) => {
+    const walkers = [...scene.querySelectorAll<SVGGElement>('.walker')].map((g, i) => {
       const [, x, y] = /translate\(([-\d.]+) ([-\d.]+)\)/.exec(g.getAttribute('transform')!)!.map(Number);
-      return { g, x, y, d: Number(g.dataset.drift) };
+      return { g, x, y, d: Number(g.dataset.drift), phase: i * 0.9 };
     });
     const L = route.getTotalLength();
     reveal.style.strokeDasharray = `${L}`;
 
-    const place = (p: number, q: number) => {
-      // p: how much of the plan is drawn; q: how far the robot has walked along it.
-      reveal.style.strokeDashoffset = `${L * (1 - p)}`;
+    const drawPlan = (p: number) => (reveal.style.strokeDashoffset = `${L * (1 - p)}`);
+    const placeRobot = (q: number) => {
       const pt = route.getPointAtLength(L * q);
       robot.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);
-      for (const w of walkers) w.g.setAttribute('transform', `translate(${(w.x + w.d * q).toFixed(1)} ${w.y})`);
+    };
+    // People keep crossing back and forth slowly, each on its own beat.
+    const placeWalkers = (t: number) => {
+      for (const w of walkers) {
+        const k = Math.sin(t / 7000 + w.phase);
+        w.g.setAttribute('transform', `translate(${(w.x + w.d * k).toFixed(1)} ${w.y})`);
+      }
     };
 
     if (reduce) {
       scene.classList.add('is-lit');
-      place(1, 1);
+      drawPlan(1);
+      placeRobot(1);
     } else {
-      place(0, 0);
       const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
       const DRAW = 1600;
       const WALK = 13000;
-      let t0 = 0;
+      let start = 0;
+      let running = false;
+      let visible = true;
+
       const frame = (now: number) => {
-        if (!t0) t0 = now;
-        const t = now - t0;
-        const p = Math.min(1, t / DRAW);
+        if (!start) start = now;
+        const t = now - start;
+        drawPlan(ease(Math.min(1, t / DRAW)));
         const q = Math.min(1, Math.max(0, (t - DRAW * 0.6) / WALK));
-        place(ease(p), ease(q));
-        if (q > 0 && q < 1) scene.classList.add('is-walking');
-        if (q >= 1) scene.classList.remove('is-walking');
-        else requestAnimationFrame(frame);
+        placeRobot(ease(q));
+        scene.classList.toggle('is-walking', q > 0 && q < 1);
+        placeWalkers(now);
+        if (visible) requestAnimationFrame(frame);
+        else running = false;
       };
-      requestAnimationFrame(() => {
-        scene.classList.add('is-lit');
+      const run = (restart: boolean) => {
+        if (restart) start = 0;
+        if (running) return;
+        running = true;
         requestAnimationFrame(frame);
-      });
+      };
+
+      requestAnimationFrame(() => scene.classList.add('is-lit'));
+      // While the poster is on screen it lives; when it comes back, the robot walks its route again.
+      let left = false;
+      new IntersectionObserver(([e]) => {
+        visible = e.isIntersecting;
+        scene.classList.toggle('is-live', visible);
+        if (visible) {
+          run(left);
+          left = false;
+        } else left = true;
+      }, { threshold: 0.15 }).observe(root);
 
       // The layers drift apart as the poster scrolls away: far ones slow, near ones fast.
       const layers = [...scene.querySelectorAll<SVGGElement>('[data-layer]')].map((g) => ({ g, k: Number(g.dataset.layer) }));
@@ -335,9 +358,26 @@ const route = [
       display: none;
     }
 
+    /* One row on phones, scrolled sideways, so the strip never climbs onto the plaza. */
+    .route {
+      bottom: var(--space-100);
+    }
+
     .route ol {
+      flex-wrap: nowrap;
       justify-content: flex-start;
-      gap: 0 var(--space-200);
+      gap: 0 var(--space-300);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .route ol::-webkit-scrollbar {
+      display: none;
+    }
+
+    .route li {
+      flex: none;
     }
 
     .route a {
