@@ -18,7 +18,7 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
       <p class="title-2 text-2">Questions about the work, or a role in robotics or AI? Email me.</p>
       <div class="cta">
         <a class="btn btn-primary" href={contact.resume} download="Harvey_Phan_Resume.pdf"><Icon name="download" />Download resume</a>
-        <a class="btn" href={`mailto:${contact.email}`}><Icon name="envelope" />Email me</a>
+        <a class="write" href={`mailto:${contact.email}`}>or email me</a>
       </div>
       <Epigraph quote="footer" />
     </div>
@@ -77,7 +77,16 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
   .cta {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-100);
+    align-items: center;
+    gap: var(--space-100) var(--space-300);
+  }
+
+  .write {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text);
+    font-family: var(--font-serif);
   }
 
   .contact {
@@ -88,9 +97,6 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
     padding: 0;
   }
 
-  .contact div + div {
-    border-top: 1px dotted rgb(217 164 65 / 0.45);
-  }
 
   .contact div {
     display: grid;

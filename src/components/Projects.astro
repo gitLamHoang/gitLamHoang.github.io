@@ -29,7 +29,7 @@ const { entries } = Astro.props;
       return (
         <article class="panel project" id={`work-${e.id}`} aria-labelledby={`title-${e.id}`} data-reveal>
           <div class="head">
-            <h3 id={`title-${e.id}`} class="heading-5">
+            <h3 id={`title-${e.id}`} class="heading-3">
               <a href={href}>{title}</a>
             </h3>
             <p class="caption-2 text-2 tnum dates">{dates}</p>
@@ -52,11 +52,9 @@ const { entries } = Astro.props;
                 </div>
               )}
               {stack && (
-                <ul class="stack" aria-label="Tools">
-                  {stack.map((s) => (
-                    <li class="caption-2">{s}</li>
-                  ))}
-                </ul>
+                <p class="body-6 stack">
+                  <span class="text-2">Built with</span> {stack.join(', ')}
+                </p>
               )}
               <ul class="link-row">
                 <li>
@@ -95,7 +93,7 @@ const { entries } = Astro.props;
             </div>
             <div>
               <dt class="title-4 text-2">Limit</dt>
-              <dd class="body-3 text-2">{limit}</dd>
+              <dd class="body-3">{limit}</dd>
             </div>
           </dl>
         </article>
@@ -183,14 +181,14 @@ const { entries } = Astro.props;
     border-radius: var(--radius-full);
   }
 
-  /* Under the work, full width: what it measured beside what it can't do yet. */
+  /* Under the work, full width on one step of tone: what it measured beside what it can't do yet. */
   .outcome {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--space-200) var(--space-600);
     margin: 0;
-    padding-top: var(--space-300);
-    border-top: 1px dotted rgb(217 164 65 / 0.45);
+    padding: var(--space-300) var(--space-400);
+    background: var(--surface-1);
   }
 
   .outcome div {
@@ -204,19 +202,7 @@ const { entries } = Astro.props;
   }
 
   .stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-75);
     margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .stack li {
-    padding: 2px var(--space-100);
-    border: 1px solid rgb(217 164 65 / 0.5);
-    border-radius: var(--radius-full);
-    color: var(--text-2);
   }
 
   .link-row :global(.icon) {
@@ -234,7 +220,6 @@ const { entries } = Astro.props;
     aspect-ratio: 16 / 10;
     object-fit: cover;
     object-position: top center;
-    border: 1.5px solid rgb(217 164 65 / 0.7);
     background: #ffffff;
   }
 
@@ -245,6 +230,18 @@ const { entries } = Astro.props;
 
   .media figcaption {
     margin-top: var(--space-100);
+  }
+
+  /* Narrower screens give the title the whole width; the dates move under it. */
+  @media (max-width: 1100px) {
+    .head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dates {
+      justify-self: start;
+      grid-row: 3;
+    }
   }
 
   @media (max-width: 1000px) {
@@ -261,14 +258,15 @@ const { entries } = Astro.props;
     }
   }
 
+  /* On a phone the titles keep their words and step down one size, so none runs past two lines. */
   @media (max-width: 640px) {
-    .head {
-      grid-template-columns: minmax(0, 1fr);
+    .outcome {
+      padding: var(--space-200);
     }
 
-    .dates {
-      justify-self: start;
+    .head h3 {
+      font-size: 1.625rem;
+      line-height: 1.75rem;
     }
-
   }
 </style>

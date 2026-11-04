@@ -124,8 +124,6 @@ const nav = [
     left: 0;
     right: 0;
     z-index: 40;
-    transition: border-color var(--dur-fade) var(--ease);
-    border-bottom: 1px solid transparent;
   }
 
   /* The solid bar is drawn behind the content on a pseudo-element: a blur on the header itself
@@ -140,10 +138,6 @@ const nav = [
     backdrop-filter: blur(12px);
     opacity: 0;
     transition: opacity var(--dur-fade) var(--ease);
-  }
-
-  .site-nav.is-solid {
-    border-bottom-color: var(--border);
   }
 
   .site-nav.is-solid::before {
@@ -199,8 +193,7 @@ const nav = [
 
   .cv {
     margin-left: var(--space-75);
-    border: 1.5px solid var(--gold);
-    padding-inline: var(--space-200);
+    color: var(--gold);
   }
 
   .icon-btn {
