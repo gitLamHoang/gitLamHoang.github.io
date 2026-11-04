@@ -1,5 +1,6 @@
-// Renders the link-preview cards: public/og.png for the site and public/og/<slug>.png for each
-// project, plus the app icons. Run with: node scripts/og.mjs
+// Renders the link-preview cards public/og/<slug>.png for each project, plus the app icons. Run
+// with: node scripts/og.mjs. The site's own card, public/og.png, is not drawn here: it is the live
+// poster itself, captured at 1440x900 (2x) and cropped to 1200x630, so it is replaced by hand.
 // Text uses the macOS system face Helvetica Neue (close to the site's Switzer) because librsvg can't
 // load web fonts; the PNGs are committed, so CI never needs to run this.
 import sharp from 'sharp';
@@ -72,17 +73,6 @@ function field(md, name) {
 }
 
 const poster = path.join(root, 'src/assets/harp/film-end.jpg');
-
-// Site card
-await card({
-  kicker: "Harvey's Hub",
-  titleLines: ['Harvey Phan'],
-  titleSize: 104,
-  sub: 'Crowd navigation for humanoid robots. Stanford CS, HARP Software Engineer Lead.',
-  caption: 'Recorded MuJoCo run, replayed: G1 through seven pedestrians',
-  image: poster,
-  out: path.join(root, 'public/og.png'),
-});
 
 // Project cards
 await mkdir(path.join(root, 'public/og'), { recursive: true });
