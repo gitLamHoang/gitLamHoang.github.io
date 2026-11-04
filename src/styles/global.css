@@ -63,7 +63,7 @@
   --grid: var(--surface-3);
   --grid-faint: rgb(39 39 39 / 0.6);
   --ink: var(--text);
-  --ink-soft: #d4d4d4;
+  --ink-soft: #e3d8bd;
   --graphite: var(--text-2);
   --graphite-soft: var(--text-3);
   --hl: var(--accent);
@@ -382,7 +382,7 @@ mark.hl {
 .btn-primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--text);
+  color: var(--bg);
   border-radius: var(--radius-full);
   box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 4px #f3c9a3;
   padding-inline: var(--space-300);
