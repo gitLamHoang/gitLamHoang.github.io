@@ -48,7 +48,7 @@ const stops = ['work', 'research', 'experience', 'people', 'education', 'contact
         .filter((el): el is HTMLElement => !!el)
         .map((el) => el.getBoundingClientRect().top + scrollY - base + 24);
       if (ys.length < 2) return;
-      top = ys[0] - 120;
+      top = ys[0] - 40;
       height = ys[ys.length - 1] - top + 40;
       spine.style.top = `${top}px`;
       spine.style.height = `${height}px`;
@@ -99,6 +99,7 @@ const stops = ['work', 'research', 'experience', 'people', 'education', 'contact
       const target = reduce ? height : scrollY + innerHeight * 0.45 - base - top;
       const y = Math.max(0, Math.min(height, target));
       robot.style.transform = `translate(${(xAt(y) - 14).toFixed(1)}px, ${(y - 50).toFixed(1)}px)`;
+      robot.style.opacity = target < 10 ? '0' : '1';
       if (!reduce && Math.abs(y - lastY) > 0.5) {
         spine.classList.add('is-walking');
         clearTimeout(walkTimer);
@@ -142,7 +143,9 @@ const stops = ['work', 'research', 'experience', 'people', 'education', 'contact
     top: 0;
     left: 0;
     overflow: visible;
-    transition: transform 120ms linear;
+    transition:
+      transform 120ms linear,
+      opacity 300ms var(--ease);
   }
 
   .leg {
