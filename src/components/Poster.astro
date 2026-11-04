@@ -160,9 +160,13 @@ const route = [
 </script>
 
 <style>
+  /* At least as tall as the copy plus the buildings under it: a wide, short window would otherwise
+     crop the scene from the top and lift the Quad into the sentence. The plaza and strip then sit
+     a little below the fold instead. Below the fonts' maximum size the copy grows with the width
+     (360px + 39vw); above it the copy stops growing (562px + 25vw). */
   .poster {
     position: relative;
-    min-height: 100dvh;
+    min-height: max(100dvh, min(360px + 39vw, 562px + 25vw));
     overflow: hidden;
     background: #091127;
     isolation: isolate;
