@@ -41,7 +41,44 @@ const oaks = [
 const palms = [
   [470, 690, 400, 1], [604, 640, 430, 0.9], [1216, 640, 386, 1], [1378, 650, 418, 0.95],
   [1290, 600, 470, 0.55], [1335, 600, 482, 0.5], [1160, 598, 488, 0.45], [680, 600, 476, 0.5],
+  [392, 700, 452, 0.8],
 ];
+
+// A eucalyptus behind the Hoover wing: leaf masses (x, y, radius), each with leaves hanging below.
+const gum = [
+  [214, 534, 17], [236, 512, 21], [258, 528, 17], [226, 490, 15], [250, 478, 13], [268, 552, 14], [204, 560, 13],
+];
+
+// Dust turning in the lamplight and at the lit doors: x, y, drift, duration, delay.
+const motes = Array.from({ length: 26 }, (_, i) => {
+  const [lx, ly] = [[400, 730], [880, 714], [1186, 734], [291, 684], [1010, 684]][i % 5];
+  return {
+    x: Math.round(lx + (rand() - 0.5) * 120),
+    y: Math.round(ly + (rand() - 0.5) * 60),
+    r: +(0.7 + rand() * 1.1).toFixed(2),
+    dx: Math.round((rand() - 0.5) * 50),
+    dy: Math.round(-20 - rand() * 50),
+    t: +(5 + rand() * 6).toFixed(1),
+    dl: +(rand() * 8).toFixed(1),
+  };
+});
+
+// Rodin's Burghers of Calais, in front of the Quad: x, height, head lean, gesture.
+const burghers = [
+  { x: 438, h: 27, lean: 1.5, pose: 'bow' },
+  { x: 451, h: 30, lean: -1, pose: 'hand' },
+  { x: 464, h: 28, lean: 0, pose: '' },
+  { x: 477, h: 31, lean: 1, pose: 'key' },
+  { x: 490, h: 27, lean: 2, pose: 'bow' },
+  { x: 503, h: 29, lean: -1, pose: 'hand' },
+];
+const robe = (h: number) =>
+  `M-5 0 C -5.5 -6, -6.5 ${-h * 0.55}, -5 ${-h * 0.82} C -3.5 ${-h * 0.98}, 3.5 ${-h * 0.98}, 5 ${-h * 0.82} C 6.5 ${-h * 0.55}, 5.5 -6, 5 0 Z`;
+
+// The Hoover Institution wing at the tower's foot: upper window centres (the middle one opens on
+// the balcony) and the ground floor's barred windows.
+const hooverUpper = [199, 229, 259, 291, 323, 353, 383];
+const hooverLower = [205, 240, 342, 377];
 
 // Frond tips, shared by every palm crown.
 const fronds = [
@@ -110,7 +147,7 @@ const lamps = [
   viewBox="0 0 1440 900"
   preserveAspectRatio="xMidYMax slice"
   role="img"
-  aria-label="Illustration: Stanford at night. Hoover Tower and the Main Quad with Memorial Church stand under a full moon; on the plaza a small humanoid robot walks a dotted route between people."
+  aria-label="Illustration: Stanford at night. Hoover Tower with the Hoover Institution at its foot, the Dish in the foothills, and the Main Quad with Memorial Church stand under a full moon; in front of Rodin's Burghers of Calais a small humanoid robot walks a dotted route between people."
   data-scene
 >
   <defs>
@@ -151,6 +188,40 @@ const lamps = [
       <rect x="0.6" y="0.6" width="1.2" height="1.2" fill="#f1cf80" />
     </pattern>
 
+    <!-- Light, as a camera sees it: bloom around lit windows, moon rays, low fog. -->
+    <radialGradient id="bloom">
+      <stop offset="0" stop-color="#f6c86f" stop-opacity="0.62" />
+      <stop offset="0.45" stop-color="#f0b860" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#f0b860" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="ray" gradientUnits="userSpaceOnUse" x1="1238" y1="158" x2="560" y2="760">
+      <stop offset="0" stop-color="#efe3c6" stop-opacity="0.12" />
+      <stop offset="0.6" stop-color="#efe3c6" stop-opacity="0.04" />
+      <stop offset="1" stop-color="#efe3c6" stop-opacity="0" />
+    </linearGradient>
+    <radialGradient id="corona">
+      <stop offset="0.3" stop-color="#efe3c6" stop-opacity="0.16" />
+      <stop offset="1" stop-color="#efe3c6" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="horizon">
+      <stop offset="0" stop-color="#f0b860" stop-opacity="0.16" />
+      <stop offset="1" stop-color="#f0b860" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="spillFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.95" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+    <mask id="mSpill" maskUnits="userSpaceOnUse" x="0" y="700" width="1440" height="120">
+      <path d="M980 706 L1040 706 L1110 812 L910 812 Z" fill="url(#spillFade)" />
+      <path d="M908 706 L948 706 L966 760 L884 760 Z" fill="url(#spillFade)" opacity="0.7" />
+      <path d="M1072 706 L1112 706 L1136 760 L1054 760 Z" fill="url(#spillFade)" opacity="0.7" />
+      {[...arches, 410, 437, 464, 491].map((x) => <path d={x < 520 ? `M${x + 3} 701 L${x + 17} 701 L${x + 24} 726 L${x - 4} 726 Z` : `M${x + 8} 707 L${x + 36} 707 L${x + 44} 726 L${x} 726 Z`} fill="url(#spillFade)" opacity="0.32" />)}
+    </mask>
+    <radialGradient id="fog">
+      <stop offset="0" stop-color="#a9b8de" stop-opacity="0.16" />
+      <stop offset="1" stop-color="#a9b8de" stop-opacity="0" />
+    </radialGradient>
+
     <!-- Masks that fade a screen out from its light source. -->
     <radialGradient id="fadeRound">
       <stop offset="0" stop-color="#fff" stop-opacity="1" />
@@ -186,6 +257,7 @@ const lamps = [
     <mask id="mStreak" maskUnits="userSpaceOnUse" x="0" y="700" width="1440" height="140">
       {[[400, 744], [880, 728], [1186, 748]].map(([x, y]) => <rect x={x - 4} y={y + 48} width="8" height="58" fill="url(#streakFade)" />)}
     </mask>
+    <mask id="mWing"><rect x="178" y="586" width="226" height="114" fill="url(#litTop)" /></mask>
     <mask id="mTower"><rect x="200" y="190" width="100" height="520" fill="url(#litRight)" /></mask>
     <mask id="mQuad"><rect x="520" y="470" width="920" height="240" fill="url(#litTop)" /></mask>
     <mask id="mMoon"><circle cx="1238" cy="158" r="56" fill="url(#litMoon)" /></mask>
@@ -225,6 +297,7 @@ const lamps = [
         </g>
       ))}
     </g>
+    <circle class="corona" cx="1238" cy="158" r="190" fill="url(#corona)" />
     <g class="moon">
       <circle cx="1241" cy="161" r="56" fill="#b9a983" opacity="0.5" />
       <circle cx="1238" cy="158" r="56" fill="#e9dcbc" />
@@ -255,6 +328,12 @@ const lamps = [
         </g>
       ))}
     </g>
+    <g class="rays" fill="url(#ray)">
+      <path d="M1238 158 L520 900 L700 900 Z" />
+      <path d="M1238 158 L820 900 L900 900 Z" />
+      <path d="M1238 158 L160 700 L300 820 Z" />
+      <path d="M1238 158 L1040 900 L1090 900 Z" />
+    </g>
     <path class="meteor" d="M380 70 L470 110" stroke="#efe3c6" stroke-width="1.6" stroke-linecap="round" />
     <!-- night birds crossing the moon -->
     <g class="birds" fill="none" stroke="#0a1229" stroke-width="1.8" stroke-linecap="round">
@@ -266,9 +345,27 @@ const lamps = [
 
   <!-- the foothills, with oaks -->
   <g data-layer="0.14">
+    <ellipse cx="720" cy="596" rx="900" ry="80" fill="url(#horizon)" />
     <path d="M0 610 C 160 560, 300 575, 430 590 S 700 540, 860 566 S 1150 548, 1300 572 S 1420 586, 1440 590 L1440 700 L0 700 Z" fill="#13214a" />
     <path d="M0 610 C 160 560, 300 575, 430 590 S 700 540, 860 566 S 1150 548, 1300 572 S 1420 586, 1440 590" fill="none" stroke="#24376b" stroke-width="1.6" />
     <path d="M0 626 C 180 600, 330 612, 470 618 S 760 586, 900 600 S 1170 588, 1320 604" fill="none" stroke="#1a2a55" stroke-width="1" stroke-dasharray="3 5" />
+    <!-- the Dish, Stanford's radio telescope in the foothills, turned to the moon, its beacon blinking -->
+    <g class="dish">
+      <path d="M336 581 C 360 586, 380 594, 404 602" fill="none" stroke="#2a3d72" stroke-width="1.2" stroke-dasharray="1.5 3" />
+      <path d="M299 581 L304 560 L316 560 L321 581 Z" fill="#0a1433" />
+      <g stroke="#1a2a55" stroke-width="0.9" fill="none"><path d="M302 572 L318 566 M301 578 L319 571 M303 566 L317 572" /></g>
+      <ellipse cx="310" cy="551" rx="23" ry="11" transform="rotate(30 310 551)" fill="#0a1433" />
+      <ellipse cx="311" cy="548" rx="22" ry="6.5" transform="rotate(30 311 548)" fill="#24376b" />
+      <ellipse cx="311" cy="548" rx="22" ry="6.5" transform="rotate(30 311 548)" fill="url(#dotsFine)" opacity="0.35" />
+      <g stroke="#0a1433" stroke-width="0.8" fill="none" transform="rotate(30 311 548)">
+        <path d="M296 548 L326 548 M304 543 L304 553 M318 543 L318 553" />
+      </g>
+      <g stroke="#0a1433" stroke-width="1.1" fill="none"><path d="M292 537 L320 531 L330 559 M320 531 L311 548" /></g>
+      <path d="M318 540 A22 6.5 30 0 1 331 558" fill="none" stroke="#efe3c6" stroke-opacity="0.45" stroke-width="1.2" />
+      <circle class="beacon" cx="320" cy="530" r="1.8" fill="#ec5a36" />
+      <rect x="324" y="572" width="13" height="9" fill="#0a1433" />
+      <rect x="327" y="575" width="3" height="3" fill="#f0b860" opacity="0.85" />
+    </g>
     {
       oaks.map(([x, y, r]) => (
         <g>
@@ -291,10 +388,27 @@ const lamps = [
     </g>
     <path d="M0 640 C 220 610, 420 628, 600 620 S 980 600, 1180 618 S 1380 630, 1440 626 L1440 700 L0 700 Z" fill="#101c3f" />
     <rect x="0" y="560" width="1440" height="90" fill="url(#dotsFine)" mask="url(#mHaze)" opacity="0.18" />
+    <g class="fog far" fill="url(#fog)">
+      <ellipse cx="300" cy="640" rx="380" ry="46" />
+      <ellipse cx="860" cy="616" rx="420" ry="40" />
+      <ellipse cx="1300" cy="636" rx="360" ry="44" />
+    </g>
   </g>
 
-  <!-- Palm Drive's palms, far ones small -->
+  <!-- Palm Drive's palms, far ones small, and a eucalyptus with its pale trunk -->
   <g data-layer="0.22" class="palms">
+    <g class="gum">
+      <path d="M232 600 C 232 570, 236 540, 238 506 M236 548 C 244 534, 252 522, 258 512 M234 566 C 226 552, 218 544, 212 536" fill="none" stroke="#33477f" stroke-width="4" stroke-linecap="round" />
+      <path d="M234 600 C 234 572, 238 542, 240 508" fill="none" stroke="#efe3c6" stroke-opacity="0.28" stroke-width="1.2" />
+      {gum.map(([x, y, r]) => (
+        <g>
+          <ellipse cx={x} cy={y} rx={r} ry={r * 0.72} fill="#0b1636" />
+          <path d={Array.from({ length: Math.round(r / 2.5) }, (_, k) => { const lx = x - r * 0.8 + k * 5; return `M${lx} ${y + r * 0.4} q 1 ${r * 0.35} -1 ${r * 0.6}`; }).join(' ')} fill="none" stroke="#0b1636" stroke-width="2.2" stroke-linecap="round" />
+          <path d={`M${x - r * 0.3} ${y - r * 0.68} A ${r} ${r * 0.72} 0 0 1 ${x + r * 0.9} ${y - r * 0.2}`} fill="none" stroke="#efe3c6" stroke-opacity="0.2" stroke-width="1.2" />
+          <path d={`M${x - r * 0.5} ${y - r * 0.1} q 4 -3 8 0 M${x + r * 0.1} ${y + r * 0.15} q 4 -3 8 0`} fill="none" stroke="#1a2a55" stroke-width="1" />
+        </g>
+      ))}
+    </g>
     {
       palms.map(([x, base, top, k]) => (
         <g>
@@ -323,7 +437,103 @@ const lamps = [
   </g>
 
   <!-- Hoover Tower, with an offset ink shadow like a misregistered print -->
-  <g data-layer="0.26" class="tower"><g class="tower-pos" transform="translate(-112 0)">
+  <g data-layer="0.26" class="tower">
+    <!-- the Hoover Institution's wing at the tower's foot: tile roof, arched windows, a balcony over the door -->
+    <g class="hoover">
+      <rect x="175" y="607" width="226" height="96" fill="#081029" />
+      <rect x="178" y="604" width="226" height="96" fill="#1c2c58" />
+      <rect x="178" y="604" width="226" height="96" fill="url(#courses)" opacity="0.45" />
+      <rect x="178" y="604" width="56" height="96" fill="url(#hatch)" opacity="0.5" />
+      <rect x="178" y="586" width="226" height="114" fill="url(#dots)" mask="url(#mWing)" opacity="0.22" />
+      <path d="M170 606 L186 590 L396 590 L412 606 Z" fill="#6e3430" />
+      <path d="M170 606 L186 590 L396 590 L412 606 Z" fill="url(#tiles)" />
+      <path d="M186 590.5 L396 590.5" stroke="#c96a4c" stroke-width="1.4" stroke-opacity="0.7" />
+      <path d="M396 590 L412 606" stroke="#c96a4c" stroke-width="1.6" stroke-opacity="0.85" />
+      <rect x="170" y="606" width="242" height="3" fill="#3e1a22" />
+      <g fill="#0f1a39">{Array.from({ length: 19 }, (_, i) => <rect x={182 + i * 12} y="609" width="4" height="3" />)}</g>
+      {
+        hooverUpper.map((cx, i) => {
+          const top = cx === 291 ? 618 : 622;
+          const foot = cx === 291 ? 646 : 640;
+          return (
+            <g>
+              <path d={`M${cx - 6} ${foot} L${cx - 6} ${top + 6} A6 6 0 0 1 ${cx + 6} ${top + 6} L${cx + 6} ${foot} Z`} fill="#0c1530" />
+              {i !== 5 && <path class="win" d={`M${cx - 4.5} ${foot - 1} L${cx - 4.5} ${top + 6.5} A4.5 4.5 0 0 1 ${cx + 4.5} ${top + 6.5} L${cx + 4.5} ${foot - 1} Z`} fill="#f0b860" fill-opacity={i % 2 ? 0.55 : 0.85} />}
+              <path d={`M${cx} ${top + 2} L${cx} ${foot} M${cx - 5} ${top + 12} L${cx + 5} ${top + 12}`} stroke="#0c1530" stroke-width="1" />
+              <rect x={cx - 7} y={foot} width="14" height="2" fill="#2c4078" />
+            </g>
+          );
+        })
+      }
+      <g stroke="#0b132b" stroke-width="1"><path d="M276 639 L306 639" />{Array.from({ length: 11 }, (_, i) => <path d={`M${277 + i * 2.8} 639 L${277 + i * 2.8} 645`} />)}</g>
+      <rect x="274" y="645" width="34" height="2.5" fill="#0b132b" />
+      <rect x="178" y="649" width="226" height="3" fill="#2c4078" />
+      <path d="M178 649.5 L404 649.5" stroke="#efe3c6" stroke-opacity="0.25" stroke-width="1" />
+      <path d="M279 700 L279 670 A12 12 0 0 1 303 670 L303 700 Z" fill="#2c4078" />
+      <path d="M283 700 L283 671 A8 8 0 0 1 299 671 L299 700 Z" fill="#0c1530" />
+      <path class="win" d="M284.5 700 L284.5 671.5 A6.5 6.5 0 0 1 297.5 671.5 L297.5 700 Z" fill="#f0b860" fill-opacity="0.75" />
+      <path class="win" d="M284.5 700 L284.5 671.5 A6.5 6.5 0 0 1 297.5 671.5 L297.5 700 Z" fill="url(#dotsGold)" />
+      <path d="M291 665 L291 700 M284 676 L298 676" stroke="#8c6a2d" stroke-width="1" />
+      {[271, 311].map((x) => (
+        <g>
+          <path d={`M${x} 668 L${x} 664 L${x + (x < 291 ? 3 : -3)} 664`} stroke="#0b132b" stroke-width="1" fill="none" />
+          <rect class="win lamp" x={x - 2} y="668" width="4" height="6" rx="1" fill="#f6cf86" />
+        </g>
+      ))}
+      {
+        hooverLower.map((cx) => (
+          <g>
+            <rect x={cx - 7} y="662" width="14" height="22" fill="#0c1530" />
+            <rect class="win" x={cx - 5.5} y="663.5" width="11" height="19" fill="#f0b860" fill-opacity="0.6" />
+            <g stroke="#0b132b" stroke-width="1">{[-4, -1.3, 1.3, 4].map((d) => <path d={`M${cx + d} 662 L${cx + d} 684`} />)}<path d={`M${cx - 7} 669 L${cx + 7} 669`} /></g>
+            <rect x={cx - 8} y="684" width="16" height="2" fill="#2c4078" />
+          </g>
+        ))
+      }
+      <path d="M178 700 L178 604 L404 604 L404 700" stroke="#050b1e" stroke-width="2" fill="none" />
+      <path d="M402.5 607 L402.5 698" stroke="#efe3c6" stroke-opacity="0.45" stroke-width="1.4" />
+    </g>
+    <!-- a one-storey loggia joining it to the Quad -->
+    <g class="loggia">
+      <rect x="401" y="645" width="119" height="58" fill="#081029" />
+      <rect x="404" y="642" width="116" height="58" fill="#1a2a55" />
+      <rect x="404" y="642" width="116" height="58" fill="url(#courses)" opacity="0.4" />
+      <path d="M398 644 L410 630 L522 630 L522 644 Z" fill="#6e3430" />
+      <path d="M398 644 L410 630 L522 630 L522 644 Z" fill="url(#tiles)" />
+      <path d="M410 630.5 L522 630.5" stroke="#c96a4c" stroke-width="1.2" stroke-opacity="0.7" />
+      <rect x="398" y="644" width="124" height="2.5" fill="#3e1a22" />
+      {
+        [410, 437, 464, 491].map((x) => (
+          <g>
+            <path d={`M${x} 700 L${x} 668 A10 10 0 0 1 ${x + 20} 668 L${x + 20} 700 Z`} fill="#0c1530" />
+            <path class="win" d={`M${x + 2.5} 700 L${x + 2.5} 669 A7.5 7.5 0 0 1 ${x + 17.5} 669 L${x + 17.5} 700 Z`} fill="#f0b860" fill-opacity="0.45" />
+            <path class="win" d={`M${x + 2.5} 700 L${x + 2.5} 669 A7.5 7.5 0 0 1 ${x + 17.5} 669 L${x + 17.5} 700 Z`} fill="url(#dotsGold)" />
+            <path d={`M${x - 2} 668 A12 12 0 0 1 ${x + 22} 668`} fill="none" stroke="#efe3c6" stroke-opacity="0.3" stroke-width="1.1" />
+            <rect x={x + 21} y="664" width="5" height="36" fill="#24366a" />
+          </g>
+        ))
+      }
+    </g>
+    <!-- the campus shuttle: out from behind the tower, a stop at the door, on behind the Quad -->
+    <g class="shuttle">
+      <g transform="translate(96 666)">
+        <path d="M86 20 L150 10 L150 32 Z" fill="#f6cf86" opacity="0.14" />
+        <rect x="0" y="0" width="86" height="30" rx="5" fill="#2c4078" />
+        <rect x="0" y="0" width="86" height="30" rx="5" fill="url(#dotsFine)" opacity="0.18" />
+        <path d="M5 0.8 L81 0.8" stroke="#efe3c6" stroke-opacity="0.45" stroke-width="1.2" />
+        <rect x="5" y="5" width="62" height="11" rx="1.5" fill="#f0b860" fill-opacity="0.85" />
+        <g fill="#0c1530">{[13, 25, 39, 53].map((x) => <circle cx={x} cy="10" r="2.6" />)}</g>
+        <g stroke="#0c1530" stroke-width="1.4">{[15.5, 26, 36.5, 47, 57.5].map((x) => <path d={`M${x} 5 L${x} 16`} />)}</g>
+        <path d="M70 4 L80 4 C 83 4, 85 7, 85 11 L85 16 L70 16 Z" fill="#f6dca0" fill-opacity="0.8" />
+        <rect x="60" y="5" width="7" height="20" fill="#0c1530" />
+        <rect x="0" y="19" width="86" height="3.5" fill="#b03a2e" />
+        <circle cx="84" cy="22" r="1.8" fill="#fff3d0" />
+        <rect x="0.5" y="20" width="2" height="5" fill="#ec5a36" />
+        <g fill="#050b1e"><circle cx="17" cy="29" r="5" /><circle cx="68" cy="29" r="5" /></g>
+        <g fill="#2c4078"><circle cx="17" cy="29" r="1.8" /><circle cx="68" cy="29" r="1.8" /></g>
+      </g>
+    </g>
+    <g class="tower-pos" transform="translate(-112 0)">
     <path d="M204 702 L212 332 L282 332 L290 702 Z" fill="#081029" />
     <path d="M207 700 L215 330 L285 330 L293 700 Z" fill="#1c2c58" />
     <path d="M250 700 L250 330 L285 330 L293 700 Z" fill="#26386a" />
@@ -365,11 +575,10 @@ const lamps = [
       <path d="M244 326 L244 306 A6 6 0 0 1 256 306 L256 326 Z" />
       <path d="M268 326 L268 306 A6 6 0 0 1 280 306 L280 326 Z" />
     </g>
-    <!-- belfry mullions and the observation deck's railing -->
-    <g stroke="#0b1430" stroke-width="1.6">
-      <path d="M226 326 L226 306" />
-      <path d="M250 326 L250 306" />
-      <path d="M274 326 L274 306" />
+    <!-- the carillon's bells in the belfry, and the observation deck's railing -->
+    <g stroke="#0b1430" stroke-width="1.4"><path d="M220 309 L232 309 M244 309 L256 309 M268 309 L280 309" /></g>
+    <g fill="#3e2a14">
+      {[226, 250, 274].map((x) => <path d={`M${x - 4} 322 C ${x - 4} 315, ${x - 3} 310, ${x} 310 C ${x + 3} 310, ${x + 4} 315, ${x + 4} 322 Z M${x - 1} 322 L${x + 1} 322 L${x + 1} 324.5 L${x - 1} 324.5 Z`} />)}
     </g>
     <rect x="202" y="330" width="96" height="6" fill="#2c4078" />
     <rect x="202" y="335" width="96" height="2" fill="#0b1430" />
@@ -505,6 +714,15 @@ const lamps = [
       <path d="M1076 704 L1076 666 A16 16 0 0 1 1108 666 L1108 704 Z" />
     </g>
     <g clip-path="url(#cQuad)"><rect x="520" y="470" width="920" height="240" fill="url(#dots)" mask="url(#mQuad)" opacity="0.3" /></g>
+    <!-- bloom: lit glass seen through night air -->
+    <g class="bloom" fill="url(#bloom)">
+      {arches.map((x) => <ellipse class="win" cx={x + 22} cy="680" rx="36" ry="34" />)}
+      {[410, 437, 464, 491].map((x) => <ellipse class="win" cx={x + 10} cy="684" rx="20" ry="22" />)}
+      <ellipse class="win" cx="1010" cy="682" rx="120" ry="52" />
+      <ellipse class="win" cx="1010" cy="566" rx="130" ry="74" opacity="0.7" />
+      <ellipse class="win" cx="291" cy="686" rx="26" ry="22" />
+      <ellipse class="win" cx="138" cy="316" rx="56" ry="26" opacity="0.8" />
+    </g>
   </g>
 
   <!-- the plaza: paths, lamps with halftone light, people, the robot and its route -->
@@ -523,11 +741,54 @@ const lamps = [
       <path d="M520 706 L520 690 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 L880 706 Z" />
       <path d="M1140 706 L1140 690 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 q 10 -8 20 0 L1440 690 L1440 706 Z" />
     </g>
+    <!-- Rodin's Burghers of Calais on their low plinth, bronze gone green at the edges -->
+    <g class="burghers">
+      <rect x="426" y="716" width="86" height="11" fill="#081029" />
+      <rect x="428" y="714" width="86" height="11" fill="#1c2c58" />
+      <rect x="428" y="714" width="86" height="11" fill="url(#courses)" opacity="0.4" />
+      <path d="M428 714.6 L514 714.6" stroke="#efe3c6" stroke-opacity="0.32" stroke-width="1" />
+      {
+        burghers.map((b) => (
+          <g transform={`translate(${b.x} 714)`}>
+            <path d={robe(b.h)} fill="#0b1430" />
+            <circle cx={b.lean + (b.pose === 'bow' ? 1.5 : 0)} cy={-b.h - (b.pose === 'bow' ? 1 : 3)} r="3.3" fill="#0b1430" />
+            {b.pose === 'hand' && <path d={`M3 ${-b.h * 0.78} Q 6.5 ${-b.h * 0.95} ${b.lean + 2.5} ${-b.h - 3}`} stroke="#0b1430" stroke-width="2.6" stroke-linecap="round" fill="none" />}
+            {b.pose === 'key' && <path d={`M-1 ${-b.h * 0.55} L-1 ${-b.h * 0.2} M-3 ${-b.h * 0.2} L1 ${-b.h * 0.2}`} stroke="#0b1430" stroke-width="1.6" fill="none" />}
+            <path d={`M-1.2 -1 L-1.8 ${-b.h * 0.55} M2.2 -1 L1.8 ${-b.h * 0.5}`} stroke="#050b1e" stroke-width="0.8" fill="none" />
+            <path d={`M5 -1 C 6.2 -8, 6.2 ${-b.h * 0.55}, 4.8 ${-b.h * 0.8}`} stroke="#7fa79c" stroke-opacity="0.5" stroke-width="1.1" fill="none" />
+            <path d={`M${b.lean + 1.5} ${-b.h - 6} A3.3 3.3 0 0 1 ${b.lean + 3.2} ${-b.h - 2}`} stroke="#7fa79c" stroke-opacity="0.55" stroke-width="1" fill="none" />
+          </g>
+        ))
+      }
+    </g>
+    <!-- the shuttle stop at the Hoover door, someone waiting -->
+    <g class="stop">
+      <path d="M352 706 L352 676" stroke="#0b132b" stroke-width="2" />
+      <rect x="346" y="670" width="12" height="9" rx="1.5" fill="#d9cba8" />
+      <rect x="348" y="672" width="8" height="2" fill="#b03a2e" />
+      <path d="M349 676 L355 676" stroke="#2c4078" stroke-width="1" />
+      <ellipse cx="366" cy="707" rx="7" ry="1.8" fill="#050a1a" opacity="0.6" />
+      <path d="M362 706 L363 696 M369 706 L368 696" stroke="#070d22" stroke-width="2.4" stroke-linecap="round" />
+      <path d="M361 697 C 360 690, 362 685, 365.5 685 C 369 685, 371 690, 370 697 Z" fill="#0a1229" />
+      <circle cx="365.5" cy="681.5" r="2.8" fill="#0a1229" />
+      <path d="M367 683 A2.8 2.8 0 0 1 368.3 681" stroke="#efe3c6" stroke-opacity="0.5" stroke-width="1" fill="none" />
+      <path d="M368.5 686.5 C 370.5 688, 370.8 692, 370 696" stroke="#efe3c6" stroke-opacity="0.4" stroke-width="1.1" fill="none" />
+    </g>
     <g fill="url(#dotsFine)" opacity="0.12">
       <rect x="520" y="684" width="360" height="22" />
       <rect x="1140" y="684" width="300" height="22" />
     </g>
     <g class="brush">{groundStrokes.map((b) => <path d={b.d} fill={b.c} opacity={b.o} />)}</g>
+    <!-- light pouring out of the church doors and the arches onto the paving -->
+    <g class="spill">
+      <rect class="win" x="0" y="700" width="1440" height="120" fill="#f0b860" mask="url(#mSpill)" opacity="0.22" />
+      <rect class="win" x="0" y="700" width="1440" height="120" fill="url(#dotsGold)" mask="url(#mSpill)" opacity="0.75" />
+    </g>
+    <g class="fog near" fill="url(#fog)">
+      <ellipse cx="240" cy="728" rx="300" ry="26" />
+      <ellipse cx="760" cy="720" rx="340" ry="22" />
+      <ellipse cx="1260" cy="730" rx="320" ry="26" />
+    </g>
     <rect x="0" y="640" width="1440" height="220" fill="url(#dotsGold)" mask="url(#mLamp)" opacity="0.7" class="pools" />
     <!-- lamplight on wet paving: broken vertical streaks under each lantern -->
     <g class="streaks">
@@ -568,6 +829,9 @@ const lamps = [
         </g>
       ))
     }
+    <g class="motes" fill="#f6cf86">
+      {motes.map((m) => <circle class="mote" cx={m.x} cy={m.y} r={m.r} style={`--dx:${m.dx}px;--dy:${m.dy}px;--t:${m.t}s;--dl:-${m.dl}s`} />)}
+    </g>
     <!-- a Stanford bike rack, full -->
     <g class="bikes" stroke="#060c20" fill="none" stroke-width="1.6">
       <path d="M286 778 L370 778" stroke="#1d2d5a" stroke-width="2" />
@@ -747,6 +1011,35 @@ const lamps = [
       animation: meteor 11s ease-in infinite 3s;
     }
 
+    .scene.is-live .rays {
+      animation: breathe 12s ease-in-out infinite;
+    }
+
+    .scene.is-live .fog.near {
+      animation: fog 34s ease-in-out infinite alternate;
+    }
+
+    .scene.is-live .fog.far {
+      animation: fog 52s ease-in-out infinite alternate-reverse;
+    }
+
+    .scene.is-live .mote {
+      animation: mote var(--t) ease-in-out infinite var(--dl);
+    }
+
+    .scene.is-live .beacon {
+      animation: beacon 2.4s steps(1, end) infinite;
+    }
+
+    .scene .shuttle {
+      animation: shuttle 36s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+
+    .scene.is-live .shuttle {
+      animation-play-state: running;
+    }
+
     .scene.is-live .birds {
       animation: glide 26s ease-in-out infinite alternate;
     }
@@ -784,6 +1077,61 @@ const lamps = [
     }
   }
 
+  .scene .mote {
+    opacity: 0;
+  }
+
+  @keyframes mote {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    25%,
+    70% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy));
+    }
+  }
+
+  @keyframes fog {
+    to {
+      transform: translateX(80px);
+    }
+  }
+
+  /* Parked at the door when nothing moves. */
+  .scene .shuttle {
+    transform: translateX(160px);
+  }
+
+  @keyframes shuttle {
+    0% {
+      transform: translateX(0);
+    }
+    22%,
+    34% {
+      transform: translateX(160px);
+    }
+    56%,
+    100% {
+      transform: translateX(436px);
+    }
+  }
+
+  @keyframes beacon {
+    0%,
+    60% {
+      opacity: 1;
+    }
+    61%,
+    100% {
+      opacity: 0.15;
+    }
+  }
+
   @keyframes drift-x {
     to {
       transform: translateX(-60px);
@@ -814,7 +1162,8 @@ const lamps = [
     }
 
     .scene :global(.moon),
-    .scene :global(.glow) {
+    .scene :global(.glow),
+    .scene :global(.corona) {
       transform-box: fill-box;
       transform-origin: center;
     }
@@ -823,7 +1172,8 @@ const lamps = [
       transform: translate(-370px, 330px) scale(0.55);
     }
 
-    .scene :global(.glow) {
+    .scene :global(.glow),
+    .scene :global(.corona) {
       transform: translate(-370px, 330px) scale(0.6);
     }
   }
@@ -831,6 +1181,10 @@ const lamps = [
   @media (prefers-reduced-motion: reduce) {
     :global(html.js) .scene .win {
       transition: none;
+    }
+
+    .scene .mote {
+      opacity: 0.6;
     }
   }
 </style>

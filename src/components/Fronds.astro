@@ -1,0 +1,137 @@
+---
+// Palm fronds close to the camera, framing a corner of the poster in near-black, the way a film
+// shot looks out from under trees. Each frond is a midrib with leaflets hanging off it, drawn
+// from one function so the four corners match. A thin moonlit edge sits on the upper side.
+interface Props {
+  corner: 'bl' | 'br' | 'tl' | 'tr';
+}
+
+const { corner } = Astro.props;
+const top = corner === 'tl' || corner === 'tr';
+
+// One frond: base, control point and tip of the midrib, leaflet length, count, and how much the
+// leaflets hang under their own weight. Each leaflet is a tapered blade; its upper edge is kept
+// apart so the moon can catch it.
+const f1 = (v: number) => v.toFixed(1);
+const frond = (bx: number, by: number, cx: number, cy: number, tx: number, ty: number, len: number, n: number, droop: number) => {
+  let leaves = '';
+  let edges = '';
+  for (let k = 1; k <= n; k++) {
+    const t = 0.14 + (k / (n + 1)) * 0.86;
+    const x = (1 - t) ** 2 * bx + 2 * (1 - t) * t * cx + t * t * tx;
+    const y = (1 - t) ** 2 * by + 2 * (1 - t) * t * cy + t * t * ty;
+    const dx = 2 * (1 - t) * (cx - bx) + 2 * t * (tx - cx);
+    const dy = 2 * (1 - t) * (cy - by) + 2 * t * (ty - cy);
+    const m = Math.hypot(dx, dy);
+    const ux = dx / m;
+    const uy = dy / m;
+    const L = len * (1 - t * 0.6);
+    for (const side of [1, -1]) {
+      const a = side * 0.95;
+      let lx = ux * Math.cos(a) - uy * Math.sin(a);
+      let ly = ux * Math.sin(a) + uy * Math.cos(a) + droop;
+      const lm = Math.hypot(lx, ly);
+      lx /= lm;
+      ly /= lm;
+      const mx = x + lx * L * 0.5 + ux * L * 0.16;
+      const my = y + ly * L * 0.5 + uy * L * 0.16;
+      const ex = x + lx * L;
+      const ey = y + ly * L;
+      const w = L * 0.13;
+      // The blade's two sides; the one facing up gets the rim light.
+      const [nx, ny] = -lx < 0 ? [ly, -lx] : [-ly, lx];
+      const up = `M${f1(x)} ${f1(y)} Q ${f1(mx + nx * w)} ${f1(my + ny * w)} ${f1(ex)} ${f1(ey)}`;
+      leaves += `${up} Q ${f1(mx - nx * w)} ${f1(my - ny * w)} ${f1(x)} ${f1(y)} Z `;
+      edges += `${up} `;
+    }
+  }
+  return { rib: `M${bx} ${by} Q ${cx} ${cy} ${tx} ${ty}`, leaves, edges };
+};
+
+// Bottom corners rise from below the frame; top corners hang from above it.
+const fronds = top
+  ? [
+      frond(-30, 30, 70, 20, 200, 120, 46, 15, 1.1),
+      frond(-30, 30, 20, 90, 70, 210, 40, 12, 1),
+      frond(-30, 30, 110, -10, 250, 40, 40, 14, 1.2),
+    ]
+  : [
+      frond(-10, 270, 70, 90, 230, 120, 54, 16, 0.8),
+      frond(-10, 270, 30, 30, 150, 10, 48, 15, 0.7),
+      frond(-10, 270, -10, 40, 40, -10, 40, 12, 0.5),
+      frond(-10, 270, 110, 170, 290, 200, 46, 14, 0.7),
+      frond(-10, 270, 80, 140, 260, 70, 50, 15, 0.8),
+    ];
+---
+
+<div class={`fg ${corner}`} data-layer={top ? '0.7' : '0.95'} aria-hidden="true">
+  <svg viewBox={top ? '0 0 260 220' : '0 0 300 240'} preserveAspectRatio={top ? 'xMinYMin meet' : 'xMinYMax meet'}>
+    {fronds.map((f) => <path d={f.rib} fill="none" stroke="#02061a" stroke-width="4.4" stroke-linecap="round" />)}
+    {fronds.map((f) => <path d={f.leaves} fill="#02061a" />)}
+    {fronds.map((f) => <path d={f.edges} fill="none" stroke="#2a3f78" stroke-width="1" stroke-opacity="0.8" />)}
+    {!top && <path d="M0 240 L0 196 C 40 186, 90 200, 130 212 C 170 220, 210 228, 240 240 Z" fill="#02061a" />}
+  </svg>
+</div>
+
+<style>
+  .fg {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .bl,
+  .br {
+    bottom: 0;
+    width: clamp(130px, 15vw, 270px);
+  }
+
+  .bl {
+    left: 0;
+  }
+
+  .br {
+    right: 0;
+  }
+
+  .br svg,
+  .tr svg {
+    transform: scaleX(-1);
+  }
+
+  .tl,
+  .tr {
+    top: 64px;
+    width: clamp(110px, 11vw, 200px);
+  }
+
+  .tl {
+    left: 0;
+  }
+
+  .tr {
+    right: 0;
+  }
+
+  /* On a phone the plaza is the picture: keep only the low corners, smaller. */
+  @media (max-width: 760px) {
+    .tl,
+    .tr {
+      display: none;
+    }
+
+    .bl,
+    .br {
+      width: 96px;
+      bottom: 40px;
+    }
+  }
+</style>

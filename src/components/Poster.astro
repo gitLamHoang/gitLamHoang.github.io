@@ -3,6 +3,7 @@
 // sky, the side tabs lead to the work and the letter, and the strip along the bottom is Harvey's
 // route from Hanoi to HARP. The scene plays once: windows light, the plan draws, the robot walks it.
 import NightScene from './NightScene.astro';
+import Fronds from './Fronds.astro';
 import { contact } from '../data/profile';
 
 const route = [
@@ -17,6 +18,10 @@ const route = [
 
 <section class="poster" aria-labelledby="hero-title" data-poster>
   <NightScene />
+  <Fronds corner="tl" />
+  <Fronds corner="tr" />
+  <Fronds corner="bl" />
+  <Fronds corner="br" />
 
   <div class="copy">
     <h1 id="hero-title" class="display">
@@ -80,6 +85,32 @@ const route = [
       }
     };
 
+    // Depth: every layer, the near fronds included, drifts with the scroll (a slow crane up) and,
+    // with a mouse, leans away from the pointer, eased so it settles like a camera on a head.
+    const layers = [...root.querySelectorAll<HTMLElement | SVGGElement>('[data-layer]')].map((g) => ({ g, k: Number(g.dataset.layer) }));
+    let px = 0;
+    let py = 0;
+    let tx = 0;
+    let ty = 0;
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      root.addEventListener('pointermove', (e) => {
+        tx = (e.clientX / innerWidth) * 2 - 1;
+        ty = (e.clientY / innerHeight) * 2 - 1;
+      });
+      root.addEventListener('pointerleave', () => {
+        tx = 0;
+        ty = 0;
+      });
+    }
+    const placeLayers = () => {
+      px += (tx - px) * 0.05;
+      py += (ty - py) * 0.05;
+      const y = Math.min(scrollY, innerHeight);
+      for (const l of layers) {
+        l.g.style.transform = `translate(${(-px * l.k * 26).toFixed(2)}px, ${(y * l.k * 0.55 - py * l.k * 12).toFixed(2)}px)`;
+      }
+    };
+
     if (reduce) {
       scene.classList.add('is-lit');
       drawPlan(1);
@@ -100,6 +131,7 @@ const route = [
         placeRobot(ease(q));
         scene.classList.toggle('is-walking', q > 0 && q < 1);
         placeWalkers(now);
+        placeLayers();
         if (visible) requestAnimationFrame(frame);
         else running = false;
       };
@@ -122,19 +154,6 @@ const route = [
         } else left = true;
       }, { threshold: 0.15 }).observe(root);
 
-      // The layers drift apart as the poster scrolls away: far ones slow, near ones fast.
-      const layers = [...scene.querySelectorAll<SVGGElement>('[data-layer]')].map((g) => ({ g, k: Number(g.dataset.layer) }));
-      let queued = false;
-      const drift = () => {
-        queued = false;
-        const y = Math.min(scrollY, innerHeight);
-        for (const l of layers) l.g.style.transform = `translateY(${(y * l.k * 0.55).toFixed(1)}px)`;
-      };
-      addEventListener('scroll', () => {
-        if (queued || scrollY > innerHeight * 1.2) return;
-        queued = true;
-        requestAnimationFrame(drift);
-      }, { passive: true });
     }
   }
 </script>
@@ -146,6 +165,83 @@ const route = [
     overflow: hidden;
     background: #091127;
     isolation: isolate;
+  }
+
+  /* A lens: the corners fall off, and the top darkens under the nav. */
+  .poster::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(130% 95% at 50% 44%, transparent 56%, rgb(3 6 18 / 0.6) 100%),
+      linear-gradient(to bottom, rgb(3 6 18 / 0.4), transparent 16%);
+  }
+
+  /* The opening shot: the camera settles in while the title rises like a card. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .poster :global(.scene) {
+      transform-origin: 50% 78%;
+      will-change: transform;
+      animation: push-in 3.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    :global(html.js) .l1,
+    :global(html.js) .l2 {
+      animation: title-in 1.4s var(--ease) both;
+    }
+
+    :global(html.js) .l1 {
+      animation-delay: 200ms;
+    }
+
+    :global(html.js) .l2 {
+      animation-delay: 420ms;
+    }
+
+    :global(html.js) .lede {
+      animation: fade-up 1s var(--ease) 800ms both;
+    }
+
+    :global(html.js) .acts {
+      animation: fade-up 1s var(--ease) 950ms both;
+    }
+  }
+
+  @keyframes push-in {
+    from {
+      opacity: 0.35;
+      transform: scale(1.09);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes title-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.3em);
+      filter: blur(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   /* ---------- headline in the sky ---------- */
