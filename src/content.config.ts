@@ -24,6 +24,8 @@ const work = defineCollection({
         result: z.string(),
         /** Exact substring of `result` to mark with the highlighter. Only numbers from an evaluation. */
         highlight: z.string().optional(),
+        /** The headline number shown large in the case file; `value` must be an exact substring of `result`. */
+        stat: z.object({ value: z.string(), label: z.string() }).optional(),
         limit: z.string(),
         stack: z.array(z.string()).optional(),
         /** Short technical facts shown as a spec sheet. */
@@ -46,6 +48,9 @@ const work = defineCollection({
       })
       .refine((d) => !d.highlight || d.result.includes(d.highlight), {
         message: '`highlight` must be an exact substring of `result`',
+      })
+      .refine((d) => !d.stat || d.result.includes(d.stat.value), {
+        message: '`stat.value` must be an exact substring of `result`',
       }),
 });
 

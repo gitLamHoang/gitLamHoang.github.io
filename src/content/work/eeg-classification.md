@@ -10,6 +10,9 @@ contribution: I started the work in 2024 as a single-channel hardware and machin
 claim: Spectral features separate eyes-open from eyes-closed EEG recordings in participants the model never saw during training or selection.
 result: 79.9% balanced accuracy on 22 unseen participants (95% CI 72.7 to 86.2), against 50.0% for a majority-class baseline.
 highlight: 79.9% balanced accuracy
+stat:
+  value: '79.9%'
+  label: balanced accuracy on 22 participants the model never saw
 limit: Offline evaluation within one dataset. Baseline run order is fixed, so condition and run effects are confounded.
 stack: [Python, MNE, SciPy, scikit-learn]
 specs:

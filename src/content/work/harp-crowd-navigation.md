@@ -10,6 +10,9 @@ contribution: I lead navigation for the Human Perception & Social Interaction Te
 claim: Planning with the crowd as players, rather than forecasting everyone straight on, gets the G1 to goals on worlds it has never seen, where the sampling MPC stops short.
 result: 'On four held-out worlds made before any run, the game core reached the goal in 3 of 4 runs and the sampling MPC in 0 of 4, with 0 contacts for both (commit 48d8ab7). In the newest suite, 10 runs at commit 7ce8c00, it reached the goal in 5 of 10, passed every check in 2 of 10, and had 1 contact.'
 highlight: reached the goal in 3 of 4 runs and the sampling MPC in 0 of 4
+stat:
+  value: '3 of 4'
+  label: unseen worlds reached by the game core, against 0 of 4 for the sampling MPC
 limit: Simulation only, at a 0.5 m/s test speed with walkers who give way; it has not run on the robot. In the held-out comparison no run kept the 0.30 m clearance rule, and the newest committed code (3a87d78) has unit tests but no simulator run of its own.
 stack: [Python, ROS 2, Nav2, MuJoCo, NumPy, SciPy, Docker]
 specs:

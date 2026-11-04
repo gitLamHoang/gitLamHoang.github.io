@@ -10,6 +10,9 @@ contribution: As an AI Engineer Apprentice at Pfizer, I built the end-to-end Pyt
 claim: A three-stage pipeline (OCR, retrieval, classification) can route pharmaceutical vendor files. A date that reads two ways, like 09/10/2026, can be settled by other dates in the same document that read only one way, and left unresolved when that evidence is missing or mixed.
 result: 50+ vendor files processed; 4 OCR/LLM approaches compared across 6 chunking configurations; 100+ outputs reviewed. In the public register of 742 source-linked date cells, same-notice evidence suggests a reading for 118 of 123 ambiguous dates, and a leave-one-out check agrees on 390 of 399 dates with 0 disagreements.
 highlight: agrees on 390 of 399 dates with 0 disagreements
+stat:
+  value: '390 of 399'
+  label: dates agree in a leave-one-out check, with 0 disagreements
 limit: The Pfizer code and data are internal. Every public notice is English and day-first, so the resolver is untested on real month-first documents, and its 118 suggestions still need human review.
 stack: [Python, Docker, Tesseract, PaddleOCR, Mistral, Phi-2, scikit-learn, TypeScript, SQL]
 specs:

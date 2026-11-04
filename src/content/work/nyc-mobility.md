@@ -10,6 +10,9 @@ contribution: I built it end to end. That covers acquisition and source hashing 
 claim: A boosting model on past-only features forecasts hourly pickups per zone better than a weekly baseline.
 result: MAE 3.693 vs 5.104 (27.65% lower) over 559,370 zone-hours of walk-forward validation.
 highlight: MAE 3.693 vs 5.104
+stat:
+  value: '3.693'
+  label: mean absolute error, against 5.104 for a weekly baseline
 limit: Boosting is worse on sparse-zone MAE in every month, and no live data feed exists.
 stack: [Python, SQL, FastAPI, TypeScript, SVG]
 specs:
