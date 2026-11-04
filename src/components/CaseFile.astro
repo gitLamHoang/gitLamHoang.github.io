@@ -1,0 +1,378 @@
+---
+// Work as one case file: a tab per project, each showing the work beside its headline number,
+// claim, result, and limit, with the whole project and my part underneath. ARIA tabs with arrow,
+// Home, and End keys; #work-<slug> opens a tab. Without script every project shows, stacked.
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import HeroVideo from './HeroVideo.astro';
+import Icon from './Icon.astro';
+import Marked from './Marked.astro';
+
+interface Props {
+  entries: CollectionEntry<'work'>[];
+}
+
+const { entries } = Astro.props;
+const short: Record<string, string> = {
+  'harp-crowd-navigation': 'Crowd navigation',
+  'pharma-document-processing': 'Pharma documents',
+  'eeg-classification': 'EEG states',
+  'nyc-mobility': 'NYC demand',
+};
+---
+
+<section class="casefile wrap" id="work" aria-labelledby="work-title" data-casefile>
+  <div class="panel shell">
+    <div class="bar">
+      <h2 id="work-title" class="title-2">Work</h2>
+      <div class="tablist" role="tablist" aria-label="Projects">
+        {
+          entries.map((e, i) => (
+            <button
+              type="button"
+              role="tab"
+              class="tab title-4"
+              id={`tab-${e.id}`}
+              aria-controls={`work-${e.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {short[e.id] ?? e.data.title}
+            </button>
+          ))
+        }
+      </div>
+      <p class="caption-2 text-2 hint">Each with its claim, measured result, and main limit</p>
+    </div>
+
+    {
+      entries.map((e) => {
+        const { title, org, role, dates, overview, contribution, claim, result, highlight, stat, limit, links, figure, showcase } = e.data;
+        const href = `/work/${e.id}/`;
+        return (
+          <article class="case" role="tabpanel" id={`work-${e.id}`} aria-labelledby={`tab-${e.id}`} tabindex="0">
+            <div class="top">
+              <div class:list={['media', figure && `fit-${figure.fit}`]}>
+                {showcase === 'harp' ? (
+                  <HeroVideo caption={false} />
+                ) : (
+                  figure && <Image src={figure.src} alt={figure.alt} widths={[640, 960, 1280]} sizes="(max-width: 1000px) 100vw, 720px" />
+                )}
+              </div>
+              <div class="facts">
+                <p class="caption-2 text-2">
+                  {org}. {role}, {dates}
+                </p>
+                <h3 class="heading-5">
+                  <a href={href}>{title}</a>
+                </h3>
+                {stat && (
+                  <p class="stat">
+                    <span class="heading-2 tnum">{stat.value}</span>
+                    <span class="body-6 text-2">{stat.label}</span>
+                  </p>
+                )}
+                <dl class="evidence">
+                  <div>
+                    <dt class="title-4 text-2">Claim</dt>
+                    <dd class="body-3">{claim}</dd>
+                  </div>
+                  <div>
+                    <dt class="title-4 text-2">Result</dt>
+                    <dd class="body-3">
+                      <Marked text={result} highlight={highlight} />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt class="title-4 text-2">Limit</dt>
+                    <dd class="body-3">{limit}</dd>
+                  </div>
+                </dl>
+                <ul class="link-row">
+                  <li>
+                    <a href={href}>
+                      Read the write-up <Icon name="arrowRight" />
+                    </a>
+                  </li>
+                  {links.slice(0, 1).map((l) => (
+                    <li>
+                      <a href={l.href}>
+                        {l.label} <Icon name="arrowUpRight" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div class="story">
+              <div>
+                <h4 class="title-3">The project</h4>
+                <p class="body-6 text-2">{overview}</p>
+              </div>
+              <div>
+                <h4 class="title-3">My part</h4>
+                <p class="body-6 text-2">{contribution}</p>
+              </div>
+            </div>
+          </article>
+        );
+      })
+    }
+  </div>
+</section>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-casefile]')) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls')!)!);
+    root.dataset.live = '';
+
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, k) => {
+        const on = k === i;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        panels[k].hidden = !on;
+        panels[k].classList.toggle('is-in', false);
+      });
+      requestAnimationFrame(() => panels[i].classList.add('is-in'));
+      if (focus) tabs[i].focus();
+      // Canvas and video views measure themselves on resize; tell them a panel changed.
+      window.dispatchEvent(new Event('resize'));
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const n = tabs.length;
+        const to = { ArrowRight: (i + 1) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 }[e.key];
+        if (to === undefined) return;
+        e.preventDefault();
+        select(to, true);
+      });
+    });
+
+    // A link to #work-<slug> opens that project's tab.
+    const fromHash = () => {
+      const k = panels.findIndex((p) => `#${p.id}` === location.hash);
+      if (k >= 0) select(k);
+    };
+    window.addEventListener('hashchange', fromHash);
+    select(Math.max(0, panels.findIndex((p) => `#${p.id}` === location.hash)));
+  }
+</script>
+
+<style>
+  .casefile {
+    margin-top: var(--space-600);
+    scroll-margin-top: var(--space-900);
+  }
+
+  .shell {
+    padding: var(--space-75);
+  }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-100) var(--space-300);
+    padding: var(--space-75) var(--space-75) var(--space-200) var(--space-200);
+  }
+
+  .hint {
+    margin-left: auto;
+  }
+
+  /* The segmented control: a track on surface 2, the selected tab in white. */
+  .tablist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-50);
+    padding: var(--space-50);
+    border-radius: var(--radius-xl);
+    background: var(--surface-2);
+  }
+
+  .tab {
+    min-height: 40px;
+    padding: var(--space-75) var(--space-200);
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: transparent;
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+      color var(--dur-fade) var(--ease),
+      background-color var(--dur-fade) var(--ease),
+      transform var(--dur-fade) var(--ease);
+  }
+
+  .tab[aria-selected='true'] {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .tab:active {
+    transform: scale(0.98);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tab:not([aria-selected='true']):hover {
+      color: var(--text);
+      background: var(--surface-3);
+    }
+  }
+
+  /* Without script there is nothing to switch, so the tabs stay out of the way. */
+  .casefile:not([data-live]) .tablist,
+  .casefile:not([data-live]) .hint {
+    display: none;
+  }
+
+  .case {
+    padding: var(--space-75);
+    border-radius: var(--radius-lg);
+  }
+
+  .case + .case {
+    margin-top: var(--space-300);
+  }
+
+  [data-live] .case + .case {
+    margin-top: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-live] .case {
+      opacity: 0;
+      transform: translateY(8px);
+      transition:
+        opacity var(--dur-move) var(--ease),
+        transform var(--dur-move) var(--ease);
+    }
+
+    [data-live] .case.is-in {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-400) var(--space-600);
+    align-items: start;
+  }
+
+  /* Nested radius: 16px panel, 8px inset, so media takes 8px. */
+  .media {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--surface-2);
+  }
+
+  .media :global(img) {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top center;
+    background: #ffffff;
+  }
+
+  .media.fit-contain :global(img) {
+    object-fit: contain;
+    padding: var(--space-200);
+  }
+
+  .media :global(.replay-frame) {
+    border-radius: var(--radius-lg);
+  }
+
+  .facts {
+    display: grid;
+    gap: var(--space-200);
+    padding-top: var(--space-100);
+    padding-right: var(--space-200);
+  }
+
+  .facts h3 a {
+    text-decoration: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .facts h3 a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  .stat {
+    display: grid;
+    gap: var(--space-50);
+    margin-top: var(--space-75);
+  }
+
+  .stat .heading-2 {
+    color: var(--accent);
+  }
+
+  .evidence {
+    display: grid;
+    gap: var(--space-200);
+    margin: var(--space-75) 0 0;
+  }
+
+  .evidence dd {
+    margin-top: var(--space-50);
+  }
+
+  .link-row :global(.icon) {
+    width: 16px;
+    height: 16px;
+  }
+
+  .story {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-300) var(--space-600);
+    margin-top: var(--space-400);
+    padding: var(--space-300) var(--space-200) var(--space-200);
+    border-radius: var(--radius-lg);
+    background: var(--surface-2);
+  }
+
+  .story p {
+    margin-top: var(--space-75);
+  }
+
+  @media (max-width: 1000px) {
+    .top,
+    .story {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .facts {
+      padding-right: 0;
+    }
+
+    .hint {
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .bar {
+      padding-left: var(--space-75);
+    }
+
+    .tablist {
+      width: 100%;
+    }
+
+    .tab {
+      flex: 1 1 auto;
+      padding-inline: var(--space-100);
+    }
+  }
+</style>

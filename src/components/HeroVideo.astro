@@ -134,7 +134,9 @@ const people = run.frames[0].p.length;
   .replay-frame {
     position: relative;
     aspect-ratio: 16 / 9;
-    background: var(--surface);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--surface-2);
   }
 
   video {
@@ -150,20 +152,23 @@ const people = run.frames[0].p.length;
 
   [data-live] .readout {
     position: absolute;
-    top: var(--margin);
-    right: var(--margin);
+    top: var(--space-200);
+    right: var(--space-200);
     display: grid;
     justify-items: end;
-    gap: 12px;
-    padding: 14px 16px 16px;
-    background: rgb(21 24 29 / 0.9);
-    font-size: var(--step-small);
+    gap: var(--space-100);
+    padding: var(--space-100) var(--space-200) var(--space-200);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: rgb(0 0 0 / 0.78);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   dl {
     display: grid;
     grid-template-columns: auto auto;
-    gap: 2px 16px;
+    gap: var(--space-25) var(--space-200);
     margin: 0;
     text-align: right;
   }
@@ -184,35 +189,40 @@ const people = run.frames[0].p.length;
   .replay-toggle {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
-    padding: 0 16px;
-    border: 0;
+    min-height: 36px;
+    padding: var(--space-50) var(--space-100);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-full);
     background: var(--surface-2);
-    font-size: var(--step-small);
-    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: transform var(--dur-press) var(--ease-out), background-color var(--dur-ui) ease;
+    transition:
+      transform var(--dur-fade) var(--ease),
+      background-color var(--dur-fade) var(--ease);
   }
 
   .replay-toggle:active {
-    transform: scale(0.97);
+    transform: scale(0.98);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .replay-toggle:hover {
-      background: #2a2f37;
+      background: var(--surface-3);
     }
   }
 
   .replay-caption {
-    margin-top: 14px;
+    margin-top: var(--space-100);
     max-width: 78ch;
-    color: var(--muted);
-    font-size: var(--step-small);
+    color: var(--text-2);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .replay-caption strong {
-    color: var(--ink);
+    color: var(--text);
     font-weight: 500;
   }
 
@@ -222,9 +232,15 @@ const people = run.frames[0].p.length;
     }
 
     [data-live] .readout {
-      top: 12px;
-      right: 12px;
-      padding: 10px 12px 12px;
+      top: var(--space-100);
+      right: var(--space-100);
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+
+    [data-live] .readout dl {
+      display: none;
     }
   }
 </style>
