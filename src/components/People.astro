@@ -11,12 +11,12 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
     people.map((p) => (
       <li>
         <figure>
-          <div class="photo frame">
+          <div class="photo">
             <Image
               src={photo(p.photo)}
               alt={`Harvey Phan with ${p.name}`}
               widths={[360, 540, 720]}
-              sizes="(max-width: 700px) 100vw, 400px"
+              sizes="(max-width: 700px) 82vw, 30vw"
               style={`object-position:${p.focus}`}
             />
           </div>
@@ -31,29 +31,31 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
 </ul>
 
 <style>
+  /* Three portraits in one row, set at staggered heights. */
   .people {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
-    margin: 28px 0 0;
+    gap: clamp(16px, 2vw, 32px);
+    align-items: start;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  @media (max-width: 900px) {
-    .people {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  li:nth-child(2) {
+    margin-top: clamp(32px, 6vw, 96px);
   }
 
-  @media (max-width: 560px) {
-    .people {
-      grid-template-columns: minmax(0, 1fr);
-    }
+  li:nth-child(3) {
+    margin-top: clamp(16px, 3vw, 48px);
   }
 
   figure {
     margin: 0;
+  }
+
+  .photo {
+    background: var(--surface);
   }
 
   .photo img {
@@ -64,25 +66,35 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
   }
 
   figcaption {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 2px;
-    margin-top: 12px;
-    padding-left: 12px;
-    border-left: 3px solid var(--pen);
+    margin-top: 16px;
   }
 
   .name {
-    font-family: var(--font-ui);
-    font-size: 1.3125rem;
+    font-size: var(--step-lead);
     font-weight: 600;
+    letter-spacing: -0.02em;
     line-height: 1.15;
   }
 
   .title {
-    font-family: var(--font-ui);
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--graphite);
+    color: var(--muted);
+  }
+
+  @media (max-width: 700px) {
+    .people {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+    }
+
+    li {
+      width: 82%;
+      margin-top: 0 !important;
+    }
+
+    li:nth-child(2) {
+      justify-self: end;
+    }
   }
 </style>
