@@ -4,7 +4,7 @@ summary: One-hour-ahead pickup forecasts for all 262 NYC Taxi Zones under a stri
 org: Independent project
 role: Sole developer
 dates: '2026'
-order: 4
+order: 5
 overview: Demand forecasts decide where vehicles should be before riders ask for them. This project forecasts yellow-taxi pickups for every NYC Taxi Zone one hour ahead. At the start of hour t it may use only observations through hour t − 1, and evaluation walks forward in time so no model ever sees its own future.
 contribution: I built it end to end. That covers acquisition and source hashing for 23.3 million trips, past-only feature engineering, gradient-boosted and baseline models, walk-forward evaluation with matched-control ablations, a FastAPI inference prototype, and a TypeScript map explorer that runs from a committed snapshot.
 claim: A boosting model on past-only features forecasts hourly pickups per zone better than a weekly baseline.

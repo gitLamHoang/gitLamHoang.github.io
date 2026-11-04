@@ -4,7 +4,7 @@ summary: An OCR, retrieval, and classification pipeline for pharmaceutical vendo
 org: Pfizer
 role: AI Engineer Apprentice
 dates: Jun 2026 - Sep 2026, public continuation 2026
-order: 2
+order: 3
 overview: Pharmaceutical supply chains run on vendor paperwork, scanned files whose fields must be read, checked, and routed to the right team. The project asked how far an OCR, retrieval, and LLM pipeline can automate that intake, and where it breaks.
 contribution: As an AI Engineer Apprentice at Pfizer, I built the end-to-end Python and Docker pipeline, benchmarked OCR and LLM choices, reviewed outputs by hand to diagnose failures, and delivered a demo interface and a technical report with deployment recommendations. I then built a public continuation on 60 real MHRA recall and defect notices that keeps every extracted date traceable to its source cell, and added a resolver that reads a document's date order from its own unambiguous dates.
 claim: A three-stage pipeline (OCR, retrieval, classification) can route pharmaceutical vendor files. A date that reads two ways, like 09/10/2026, can be settled by other dates in the same document that read only one way, and left unresolved when that evidence is missing or mixed.

@@ -4,7 +4,7 @@ summary: An auditable EEG pipeline, from hash-verified public recordings to pred
 org: Hanoi University of Science and Technology
 role: Machine Learning Researcher
 dates: 2024 prototype; public benchmark 2026
-order: 3
+order: 4
 overview: Classifying mental or physiological state from EEG is a core brain-computer interface problem, and the hard part is generalizing to new people. Windows from the same person are correlated, so a random split leaks subjects into the test set and inflates accuracy. This project keeps participants separate from feature extraction to final evaluation, on PhysioNet's 109-subject EEG Motor Movement/Imagery dataset.
 contribution: I started the work in 2024 as a single-channel hardware and machine learning prototype at Hanoi University of Science and Technology, with guidance from Professor Trinh Van Chien. I later rebuilt it as a reproducible multichannel benchmark with verified acquisition, 512 spectral features, participant-grouped model selection, a sealed holdout, and versioned model artifacts.
 claim: Spectral features separate eyes-open from eyes-closed EEG recordings in participants the model never saw during training or selection.

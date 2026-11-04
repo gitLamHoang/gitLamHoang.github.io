@@ -66,9 +66,11 @@ export const experience: Role[] = [
   },
   {
     org: 'Stanford Autonomous Underwater Vehicle',
-    context: "Stanford's autonomous underwater vehicle team",
+    context: "Stanford Student Robotics' RoboSub team, building an eight-thruster AUV",
     title: 'Software Engineer',
+    detail: 'Physics-based EKF and model-based PID control; mission routes for pool tests',
     dates: 'Sep 2026 - Present',
+    work: 'auv-estimation-control',
   },
   {
     org: 'Pfizer',
