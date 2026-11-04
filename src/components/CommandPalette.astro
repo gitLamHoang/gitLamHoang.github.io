@@ -38,12 +38,11 @@ const items: Item[] = [
     href: `https://doi.org/${p.doi}`,
     keywords: 'paper doi',
   })),
-  { group: 'Demos', label: 'Steer the robot through a crowd', hint: 'Live lab on this site', href: '/#home-crowd-lab-caption', keywords: 'mpc lab simulation' },
+  { group: 'Demos', label: 'Steer the robot through a crowd', hint: 'Live lab on this site', href: '/lab/', keywords: 'mpc lab simulation explorer replay' },
   { group: 'Demos', label: 'NYC taxi demand explorer', hint: 'External demo', href: 'https://gitlamhoang.github.io/nyc-mobility-intelligence/', keywords: 'map forecast' },
   { group: 'Demos', label: 'Pharmaceutical date review workspace', hint: 'External demo', href: 'https://gitlamhoang.github.io/pharma-ocr-date-rag/', keywords: 'pfizer ocr' },
   { group: 'Actions', label: 'Copy email address', hint: contact.email, action: 'copy-email', keywords: 'mail' },
   { group: 'Actions', label: "Download Harvey Phan's Resume", hint: 'PDF', action: 'resume', keywords: 'cv pdf' },
-  { group: 'Actions', label: 'Switch light or dark theme', action: 'theme', keywords: 'dark light mode' },
   { group: 'Actions', label: 'Open GitHub', hint: 'github.com/gitLamHoang', href: contact.github, keywords: 'code' },
   { group: 'Actions', label: 'Open LinkedIn', hint: 'linkedin.com/in/phanhlam', href: contact.linkedin, keywords: 'profile' },
 ];
@@ -188,8 +187,6 @@ const items: Item[] = [
         a.href = contact.resume;
         a.download = 'Harvey_Phan_Resume.pdf';
         a.click();
-      } else if (action === 'theme') {
-        document.querySelector<HTMLButtonElement>('[data-theme-toggle]')?.click();
       } else if (o.dataset.href) {
         const url = new URL(o.dataset.href, window.location.href);
         if (url.origin === window.location.origin) window.location.href = url.href;
