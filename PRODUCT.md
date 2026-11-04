@@ -45,7 +45,8 @@ Every result comes with how it was measured and what it can't do yet. Harvey's R
 - Harvey's words for the feel he wants: professional, robust, smooth, minimal, and still very creative, with beautiful animation and graphics.
 - Rejected before: the "report and instrument" redesign (IBM Carbon structure, Plex type), 2026-11-02, as not different enough.
 - Rejected 2026-11-03: the "launch film" redesign (graphite cinema, Switzer), as too simple and not designed well.
-- Pinned 2026-11-03: impeccable runs the design process, and the visual system is elayadesign's landing-page-design (Part B: Geist, named text styles on the Tailwind scale, fixed spacing tokens, flat dark surfaces, gradient hero heading text, floating blurred nav, word-by-word tagline reveal). Harvey's own copy rules win where they differ (dates written like LinkedIn, "Jun 2026 - Sep 2026").
+- Rejected 2026-11-04: the elaya case-file site (flat black SaaS look), as having "no animations, no nice background, no creative idea".
+- Pinned 2026-11-04: impeccable runs the process; the look follows Harvey's reference, an illustrated night poster (the "Villa Castagneto" screenshot): a full-bleed drawn night scene, navy ground, cream and vermilion type, gold outline details, screen-print grain, a condensed poster face for headlines, a classic serif for the nav, vertical side tabs, and a strip along the bottom. The scene is Stanford at night (Hoover Tower, the Main Quad arcades, palms, a full moon) with the G1 walking its waypoints, drawn in code so it can move. Harvey's copy rules still win: dates like LinkedIn.
 
 ## Evidence on Hand
 
