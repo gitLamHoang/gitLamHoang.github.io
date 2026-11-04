@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Epigraph from '../components/Epigraph.astro';
-import HeroVideo from '../components/HeroVideo.astro';
+import Film from '../components/Film.astro';
 import Affiliations from '../components/Affiliations.astro';
 import FeatureProject from '../components/FeatureProject.astro';
 import ProjectRow from '../components/ProjectRow.astro';
@@ -33,25 +33,7 @@ const scholarly = papers.map((p) => ({
 ---
 
 <Base structured={scholarly}>
-  <section class="hero wrap" aria-labelledby="hero-name">
-    <div class="hero-grid">
-      <div class="hero-text">
-        <p class="now ui"><span class="dot" aria-hidden="true"></span>{person.now}</p>
-        <h1 id="hero-name" class="name">{person.name}</h1>
-        <p class="statement">{person.statement}</p>
-        <p class="intro">{person.intro}</p>
-        <div class="cta">
-          <a class="btn btn-primary" href={contact.resume} download="Harvey_Phan_Resume.pdf">{contact.resumeLabel} (PDF)</a>
-          <a class="btn" href={`mailto:${contact.email}`}>Email me</a>
-          <a class="btn" href={contact.github}>GitHub</a>
-        </div>
-        <Epigraph quote="hero" class="hero-quote" />
-      </div>
-      <div class="hero-media">
-        <HeroVideo />
-      </div>
-    </div>
-  </section>
+  <Film />
 
   <Affiliations />
 

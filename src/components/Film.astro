@@ -1,0 +1,556 @@
+---
+// The home page's opening: the recorded HARP run, replayed full-bleed in the site's graphite look,
+// with the name split to two corners. The stage stays pinned while the six steps the planner runs
+// every 0.2 s take turns in one slot, so nothing ever scrolls over the name.
+// Without JavaScript the video keeps native controls and the steps read as a plain list.
+import poster from '../assets/harp/film-poster.jpg';
+import run from '../data/harp-crowd-run.json';
+import Epigraph from './Epigraph.astro';
+import { contact, person } from '../data/profile';
+
+// What happens inside one planning cycle in this run (the planner on the branch at the time).
+// Facts from lam/predictive-avoidance as of the Nov 1 recording (context/predictive-avoidance.md).
+const steps = [
+  { name: 'Perceive', detail: 'LiDAR returns are motion-compensated, floor and self points dropped, the rest clustered.', param: 'Stamped TF' },
+  { name: 'Track', detail: 'Clusters join tracks by Hungarian assignment; a lost track coasts on memory.', param: '2.5 s coasting' },
+  { name: 'Forecast', detail: 'Each person keeps walking at constant velocity, with growing uncertainty. No one is assumed to yield.', param: '4 s horizon' },
+  { name: 'Optimize', detail: 'Candidate velocity plans are rolled out with delay and gains, sampled, then refined.', param: 'Sampling MPC' },
+  { name: 'Certify', detail: 'Every plan is swept against each forecast with a braking tail; if none is clear, the least intrusive one wins.', param: 'Hard body margin' },
+  { name: 'Command', detail: 'Only the first velocity goes to the GR00T walker, then it replans. Stale input means zero.', param: '5 Hz, 0.15 s deadline' },
+];
+
+const s = run.summary;
+const people = run.frames[0].p.length;
+const duration = run.frames[run.frames.length - 1].t;
+---
+
+<section class="film" aria-labelledby="hero-name" data-film>
+  <div class="stage">
+    <video
+      class="footage"
+      data-film-video
+      muted
+      playsinline
+      controls
+      preload="auto"
+      poster={poster.src}
+      width="1600"
+      height="900"
+      aria-label={`Replay of a recorded simulation: HARP's Unitree G1 humanoid walks through a building past ${people} moving pedestrians to a goal marker, its path drawn in yellow.`}
+    >
+      <source src="/media/film-720x900.mp4" type="video/mp4" media="(max-width: 700px)" />
+      <source src="/media/film-1600.mp4" type="video/mp4" />
+    </video>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <h1 id="hero-name" class="name">
+      <span class="first">Harvey</span>
+      <span class="last">Phan</span>
+    </h1>
+
+    <div class="readout" data-ui>
+      <p class="result"><span class="tnum">{s.seconds.toFixed(1)} s</span> to goal, {s.contacts} contacts</p>
+      <dl class="hud tnum" aria-hidden="true">
+        <div><dt>Sim time</dt><dd><span data-hud="time">0.0</span> / {duration.toFixed(1)} s</dd></div>
+        <div><dt>Planner</dt><dd data-hud="mode">Follow</dd></div>
+        <div><dt>To goal</dt><dd><span data-hud="goal">9.00</span> m</dd></div>
+      </dl>
+      <button type="button" class="film-toggle" data-film-toggle>Pause</button>
+    </div>
+
+    <div class="slot" data-slot>
+      <div class="intro" data-slide="0">
+        <p class="statement">{person.statement}</p>
+        <div class="cta">
+          <a class="btn btn-primary" href={contact.resume} download="Harvey_Phan_Resume.pdf">Resume (PDF)</a>
+          <a class="btn" href={`mailto:${contact.email}`}>Email me</a>
+          <a class="btn" href={contact.github}>GitHub</a>
+        </div>
+        <Epigraph quote="hero" />
+      </div>
+      <div class="steps">
+        <div class="steps-head" data-slide="1">
+          <h2>How it decides</h2>
+          <p class="detail">Six steps, from LiDAR to the walker, five times a second.</p>
+        </div>
+        <ol>
+          {
+            steps.map((st, i) => (
+              <li data-slide={i + 2}>
+                <h3>{st.name}</h3>
+                <p class="detail">{st.detail}</p>
+                <p class="param tnum">{st.param}</p>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="steps-end"><a href="/lab/">Try the method in the crowd lab</a></p>
+      </div>
+    </div>
+
+    <p class="caption small">
+      Recorded run, replayed from its log: native MuJoCo G1, earlier planner, Nov 1. Walls cut to 0.9 m, 2.5× speed.
+    </p>
+  </div>
+
+  <div class="track" aria-hidden="true">
+    {[0, 1, ...steps.map((_, i) => i + 2)].map((i) => <div class="beat" data-beat={i}></div>)}
+  </div>
+</section>
+<div data-film-end aria-hidden="true"></div>
+
+<script>
+  import run from '../data/harp-crowd-run.json';
+
+  const SPEED = 2.5; // playback speed the video was rendered at
+  const LABEL: Record<string, string> = { follow: 'Follow', evade: 'Evade', yield: 'Yield', blocked: 'Blocked', idle: 'Idle' };
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const root = document.querySelector<HTMLElement>('[data-film]');
+
+  if (root) {
+    const video = root.querySelector<HTMLVideoElement>('[data-film-video]')!;
+    const toggle = root.querySelector<HTMLButtonElement>('[data-film-toggle]')!;
+    const time = root.querySelector('[data-hud="time"]')!;
+    const mode = root.querySelector('[data-hud="mode"]')!;
+    const goal = root.querySelector('[data-hud="goal"]')!;
+    const frames = run.frames;
+    let last = -1;
+    let userPaused = reduce.matches;
+
+    video.controls = false;
+    root.dataset.live = '';
+
+    // The readout follows the decoded frame, read from the same log as the video.
+    const draw = () => {
+      const i = Math.max(0, Math.min(frames.length - 1, Math.round(video.currentTime * SPEED * run.hz)));
+      if (i === last) return;
+      last = i;
+      const f = frames[i];
+      time.textContent = f.t.toFixed(1);
+      goal.textContent = Math.hypot(run.goal[0] - f.r[0], run.goal[1] - f.r[1]).toFixed(2);
+      mode.textContent = LABEL[f.m] ?? f.m;
+    };
+    const rvfc = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+    const tick = () => {
+      draw();
+      if (video.paused) return;
+      if (rvfc) video.requestVideoFrameCallback(tick);
+      else requestAnimationFrame(tick);
+    };
+    const sync = () => {
+      toggle.textContent = video.ended ? 'Replay' : video.paused ? 'Play' : 'Pause';
+    };
+    toggle.addEventListener('click', () => {
+      if (video.paused) {
+        userPaused = false;
+        if (video.ended) video.currentTime = 0;
+        video.play().catch(sync);
+      } else {
+        userPaused = true;
+        video.pause();
+      }
+    });
+    video.addEventListener('play', () => {
+      sync();
+      tick();
+    });
+    video.addEventListener('pause', sync);
+    video.addEventListener('ended', sync);
+    video.addEventListener('seeked', draw);
+    video.addEventListener('loadeddata', draw);
+
+    // Plays once while on screen; never on its own under reduced motion.
+    new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          if (!userPaused && !video.ended) video.play().catch(sync);
+        } else video.pause();
+      },
+      { threshold: 0.3 },
+    ).observe(root.querySelector('.stage')!);
+    sync();
+
+    // The pinned story: whichever beat crosses the middle of the screen owns the slot.
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
+    const show = (n: number) => {
+      root.dataset.beat = String(n);
+      for (const el of slides) el.classList.toggle('is-on', el.dataset.slide === String(n));
+    };
+    const beats = root.querySelectorAll<HTMLElement>('[data-beat]');
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) show(Number((e.target as HTMLElement).dataset.beat));
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    beats.forEach((b) => io.observe(b));
+    show(0);
+  }
+</script>
+
+<style>
+  .film {
+    --header-h: 64px;
+    position: relative;
+  }
+
+  /* ---------- the stage ---------- */
+
+  .stage {
+    position: relative;
+    height: 100svh;
+    min-height: 560px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  [data-live] .stage {
+    position: sticky;
+    top: 0;
+  }
+
+  .footage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgb(13 15 18 / 0.86) 0%, rgb(13 15 18 / 0.5) 18%, rgb(13 15 18 / 0) 34%),
+      linear-gradient(90deg, rgb(13 15 18 / 0.92) 0%, rgb(13 15 18 / 0.72) 34%, rgb(13 15 18 / 0) 62%),
+      linear-gradient(0deg, rgb(13 15 18 / 0.78) 0%, rgb(13 15 18 / 0) 26%);
+  }
+
+  .name {
+    position: absolute;
+    inset: calc(var(--header-h) + 4px) var(--margin) var(--margin);
+    margin: 0;
+    pointer-events: none;
+    font-size: var(--step-display);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+  }
+
+  .name span {
+    position: absolute;
+  }
+
+  .first {
+    top: 0;
+    left: 0;
+  }
+
+  .last {
+    right: 0;
+    bottom: 0;
+  }
+
+  /* ---------- the readout, top right ---------- */
+
+  .readout {
+    position: absolute;
+    top: calc(var(--header-h) + 12px);
+    right: var(--margin);
+    display: grid;
+    justify-items: end;
+    gap: 14px;
+    padding: 18px 20px 20px;
+    background: rgb(21 24 29 / 0.9);
+    text-align: right;
+  }
+
+  .result {
+    color: var(--measure);
+    font-size: var(--step-lead);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .hud,
+  .film-toggle {
+    display: none;
+  }
+
+  [data-live] .hud {
+    display: grid;
+  }
+
+  [data-live] .film-toggle {
+    display: inline-flex;
+  }
+
+  .hud {
+    grid-template-columns: auto auto;
+    gap: 2px 16px;
+    margin: 0;
+    font-size: var(--step-small);
+  }
+
+  .hud div {
+    display: contents;
+  }
+
+  .hud dt {
+    color: var(--muted);
+  }
+
+  .hud dd {
+    margin: 0;
+    min-width: 7.5ch;
+  }
+
+  .film-toggle {
+    align-items: center;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 0;
+    background: rgb(30 34 41 / 0.86);
+    font-size: var(--step-small);
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform var(--dur-press) var(--ease-out), background-color var(--dur-ui) ease;
+  }
+
+  .film-toggle:active {
+    transform: scale(0.97);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .film-toggle:hover {
+      background: #2a2f37;
+    }
+  }
+
+  /* ---------- the slot: intro first, then one step at a time ---------- */
+
+  .slot {
+    position: absolute;
+    left: var(--margin);
+    top: 42%;
+    width: min(34rem, 44vw);
+  }
+
+  .statement {
+    font-size: var(--step-lead);
+    line-height: 1.28;
+    letter-spacing: -0.015em;
+    max-width: 26ch;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .intro :global(.epigraph) {
+    margin-top: 32px;
+  }
+
+  .steps {
+    display: none;
+  }
+
+  .steps ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .steps h2,
+  .steps h3 {
+    font-size: var(--step-head);
+  }
+
+  .detail {
+    margin-top: 16px;
+    font-size: var(--step-lead);
+    line-height: 1.3;
+    max-width: 30ch;
+  }
+
+  .param {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+
+  .steps-end {
+    margin-top: 28px;
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+
+  .steps-end a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* With script, every slide shares the slot and only the current one shows. */
+  [data-live] .steps {
+    display: block;
+    position: absolute;
+    inset: 0 0 auto;
+  }
+
+  [data-live] [data-slide],
+  [data-live] .steps-end {
+    transition:
+      opacity 360ms var(--ease-out),
+      transform 360ms var(--ease-out),
+      visibility 0s linear 360ms;
+  }
+
+  [data-live] [data-slide]:not(.is-on) {
+    opacity: 0;
+    transform: translateY(12px);
+    visibility: hidden;
+  }
+
+  [data-live] .is-on {
+    transition-delay: 80ms, 80ms, 0s;
+  }
+
+  [data-live] .steps li,
+  [data-live] .steps-head {
+    position: absolute;
+    inset: 0 0 auto;
+  }
+
+  [data-live] .steps-end {
+    position: absolute;
+    top: 14.5rem;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  [data-live][data-beat='7'] .steps-end {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 160ms, 160ms, 0s;
+  }
+
+  .caption {
+    position: absolute;
+    left: var(--margin);
+    bottom: var(--margin);
+    max-width: 44ch;
+    color: var(--muted);
+  }
+
+  /* ---------- the scroll track that drives the slot ---------- */
+
+  .track {
+    display: none;
+  }
+
+  [data-live] .track {
+    display: block;
+    position: relative;
+    margin-top: -100svh;
+    pointer-events: none;
+  }
+
+  .beat {
+    height: 40svh;
+  }
+
+  .beat:first-child {
+    height: 100svh;
+  }
+
+  /* ---------- without script: a plain page ---------- */
+
+  .film:not([data-live]) .steps {
+    display: block;
+    position: static;
+  }
+
+  /* ---------- phones: name top and bottom, picture between, copy under it ---------- */
+
+  @media (max-width: 700px) {
+    .stage {
+      min-height: 640px;
+    }
+
+    .footage {
+      inset: calc(var(--header-h) + 15vw + 12px) 0 auto;
+      height: 50svh;
+    }
+
+    .scrim {
+      background: linear-gradient(0deg, rgb(13 15 18 / 0.9) 0%, rgb(13 15 18 / 0) 30%);
+      inset: auto 0 0;
+      height: 40%;
+    }
+
+    .name {
+      font-size: 15vw;
+    }
+
+    .readout {
+      top: calc(var(--header-h) + 15vw + 24px);
+      gap: 6px;
+      padding: 10px 12px 12px;
+    }
+
+    .result {
+      font-size: var(--step-body);
+    }
+
+    .hud {
+      display: none !important;
+    }
+
+    .slot {
+      top: calc(var(--header-h) + 15vw + 50svh + 24px);
+      width: auto;
+      right: var(--margin);
+    }
+
+    .statement {
+      font-size: var(--step-body);
+    }
+
+    .cta {
+      margin-top: 18px;
+    }
+
+    .cta .btn:last-child,
+    .intro :global(.epigraph),
+    .caption {
+      display: none;
+    }
+
+    .steps h2,
+    .steps h3 {
+      font-size: 2rem;
+    }
+
+    .detail {
+      margin-top: 10px;
+      font-size: var(--step-body);
+    }
+
+    [data-live] .steps-end {
+      top: 9.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-live] [data-slide],
+    [data-live] .steps-end {
+      transform: none !important;
+      transition-duration: 0s, 0s, 0s;
+    }
+  }
+</style>
