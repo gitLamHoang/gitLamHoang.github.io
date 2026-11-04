@@ -1,7 +1,7 @@
 // Renders the link-preview cards: public/og.png for the site and public/og/<slug>.png for each
 // project, plus the app icons. Run with: node scripts/og.mjs
-// Text uses macOS system faces (Avenir Next Condensed, Georgia) because librsvg can't load web fonts;
-// the PNGs are committed, so CI never needs to run this.
+// Text uses the macOS system face Helvetica Neue (close to the site's Switzer) because librsvg can't
+// load web fonts; the PNGs are committed, so CI never needs to run this.
 import sharp from 'sharp';
 import { mkdir, readFile, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -10,7 +10,6 @@ import path from 'node:path';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const W = 1200;
 const H = 630;
-const cell = 40;
 const shot = { x: 600, y: 150, w: 560, h: 315 };
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -33,12 +32,7 @@ function wrap(text, max, lines) {
   return out;
 }
 
-const gridSvg = () => {
-  const g = [];
-  for (let x = 0; x <= W; x += cell) g.push(`<line x1="${x}" y1="0" x2="${x}" y2="${H}" />`);
-  for (let y = 0; y <= H; y += cell) g.push(`<line x1="0" y1="${y}" x2="${W}" y2="${y}" />`);
-  return `<rect width="${W}" height="${H}" fill="#eef2ef"/><g stroke="#d3ded9" stroke-width="1">${g.join('')}</g>`;
-};
+const groundSvg = () => `<rect width="${W}" height="${H}" fill="#0d0f12"/>`;
 
 async function card({ kicker, titleLines, titleSize, sub, caption, image, out, fit = 'cover' }) {
   const lineH = Math.round(titleSize * 1.02);
@@ -51,15 +45,13 @@ async function card({ kicker, titleLines, titleSize, sub, caption, image, out, f
     .map((l, i) => `<tspan x="70" y="${subY + i * 34}">${esc(l)}</tspan>`)
     .join('');
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-    ${gridSvg()}
-    <rect x="${shot.x - 3}" y="${shot.y - 3}" width="${shot.w + 6}" height="${shot.h + 6}" rx="6" fill="#1c2b4b"/>
-    <rect x="${shot.x}" y="${shot.y}" width="${shot.w}" height="${shot.h}" fill="#ffffff"/>
-    <line x1="70" y1="98" x2="94" y2="98" stroke="#c0283a" stroke-width="3"/>
-    <text x="104" y="108" font-family="Avenir Next Condensed" font-weight="600" font-size="28" fill="#c0283a">${esc(kicker)}</text>
-    <text font-family="Avenir Next Condensed" font-weight="700" font-size="${titleSize}" letter-spacing="-1" fill="#1c2b4b">${title}</text>
-    <text font-family="Georgia" font-size="25" fill="#24324f">${subLines}</text>
-    <text x="70" y="580" font-family="Avenir Next Condensed" font-weight="600" font-size="24" fill="#3f4957">Harvey's Hub  /  gitlamhoang.github.io</text>
-    <text x="${shot.x}" y="${shot.y + shot.h + 40}" font-family="Avenir Next Condensed" font-weight="500" font-size="22" fill="#3f4957">${esc(caption)}</text>
+    ${groundSvg()}
+    <rect x="${shot.x}" y="${shot.y}" width="${shot.w}" height="${shot.h}" fill="#15181d"/>
+    <text x="70" y="108" font-family="Helvetica Neue" font-weight="500" font-size="26" fill="#9aa1aa">${esc(kicker)}</text>
+    <text font-family="Helvetica Neue" font-weight="700" font-size="${titleSize}" letter-spacing="-2" fill="#f4f5f6">${title}</text>
+    <text font-family="Helvetica Neue" font-size="24" fill="#d9dcdf">${subLines}</text>
+    <text x="70" y="580" font-family="Helvetica Neue" font-weight="500" font-size="22" fill="#9aa1aa">Harvey's Hub  /  gitlamhoang.github.io</text>
+    <text x="${shot.x}" y="${shot.y + shot.h + 40}" font-family="Helvetica Neue" font-weight="500" font-size="21" fill="#9aa1aa">${esc(caption)}</text>
   </svg>`;
   const pad = fit === 'contain' ? 14 : 0;
   const frame = await sharp(image)
@@ -79,7 +71,7 @@ function field(md, name) {
   return m ? m[1].trim().replace(/^'(.*)'$/, '$1') : '';
 }
 
-const poster = path.join(root, 'src/assets/harp/replay-poster.jpg');
+const poster = path.join(root, 'src/assets/harp/film-end.jpg');
 
 // Site card
 await card({
@@ -87,7 +79,7 @@ await card({
   titleLines: ['Harvey Phan'],
   titleSize: 104,
   sub: 'Crowd navigation for humanoid robots. Stanford CS, HARP Software Engineer Lead.',
-  caption: 'Recorded MuJoCo run: G1 through seven pedestrians, zero contacts',
+  caption: 'Recorded MuJoCo run, replayed: G1 through seven pedestrians',
   image: poster,
   out: path.join(root, 'public/og.png'),
 });
@@ -105,10 +97,10 @@ for (const file of (await readdir(dir)).filter((f) => f.endsWith('.md'))) {
   await card({
     kicker: field(md, 'org'),
     titleLines: lines,
-    // Avenir Next Condensed Bold runs about 0.43 em per character; keep the title clear of the screenshot.
+    // Helvetica Neue Bold runs about 0.52 em per character; keep the title clear of the screenshot.
     titleSize: Math.min(
       lines.length > 2 ? 62 : 70,
-      Math.floor((shot.x - 86) / (0.43 * Math.max(...lines.map((l) => l.length)))),
+      Math.floor((shot.x - 86) / (0.52 * Math.max(...lines.map((l) => l.length)))),
     ),
     sub: field(md, 'result'),
     caption: fig ? 'From the project' : 'Recorded MuJoCo run, replayed',
@@ -131,9 +123,9 @@ for (const [size, name] of [
       bottom: size - Math.round(size * 0.78) - Math.round(size * 0.11),
       left: Math.round(size * 0.11),
       right: size - Math.round(size * 0.78) - Math.round(size * 0.11),
-      background: '#eef2ef',
+      background: '#0d0f12',
     })
-    .flatten({ background: '#eef2ef' })
+    .flatten({ background: '#0d0f12' })
     .png()
     .toFile(path.join(root, 'public', name));
   console.log('wrote', `public/${name}`);
