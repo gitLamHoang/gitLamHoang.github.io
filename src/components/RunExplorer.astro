@@ -215,7 +215,7 @@ const f0 = frames[start];
   }
 
   .block {
-    fill: #5d6f95;
+    fill: #5b6170;
   }
 
   .trail {
@@ -237,8 +237,8 @@ const f0 = frames[start];
 
   /* One color per planner mode, shared by the path, the timeline, and the legend. */
   .m-follow { --mc: var(--ink); }
-  .m-evade { --mc: #c99a06; }
-  .m-yield { --mc: var(--pen); }
+  .m-evade { --mc: var(--measure); }
+  .m-yield { --mc: #ff8a7a; }
   .m-blocked { --mc: var(--graphite-soft); }
   .m-idle { --mc: var(--grid); }
 
@@ -261,14 +261,14 @@ const f0 = frames[start];
   }
 
   .robot {
-    fill: var(--pen);
+    fill: var(--robot);
     stroke: var(--paper-raised);
     stroke-width: 2;
     vector-effect: non-scaling-stroke;
   }
 
   .robot-heading {
-    stroke: var(--pen);
+    stroke: var(--robot);
     stroke-width: 3;
     stroke-linecap: round;
     vector-effect: non-scaling-stroke;
@@ -293,7 +293,7 @@ const f0 = frames[start];
 
   input[type='range'] {
     width: 100%;
-    accent-color: var(--pen);
+    accent-color: var(--ink);
   }
 
   .modebar {

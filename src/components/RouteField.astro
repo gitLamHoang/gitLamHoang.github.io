@@ -185,11 +185,11 @@ const { autoplay = false, id } = Astro.props;
   }
 
   .route-svg :global(.wp.is-target text) {
-    fill: #1c2b4b;
+    fill: var(--bg);
   }
 
   .robot-body {
-    fill: var(--pen);
+    fill: var(--robot);
   }
 
   .robot-nose {
@@ -197,7 +197,7 @@ const { autoplay = false, id } = Astro.props;
   }
 
   .robot-heading {
-    stroke: var(--pen);
+    stroke: var(--robot);
     stroke-width: 3;
     stroke-linecap: round;
     vector-effect: non-scaling-stroke;
@@ -263,7 +263,7 @@ const { autoplay = false, id } = Astro.props;
 
   .trace-line {
     fill: none;
-    stroke: var(--pen);
+    stroke: var(--robot);
     stroke-width: 2;
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;

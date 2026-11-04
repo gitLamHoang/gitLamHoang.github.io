@@ -45,6 +45,8 @@
   --measure: #ffcf3f;
   --measure-ink: #0d0f12;
   --scrim: rgb(13 15 18 / 0.78);
+  /* the robot and its path, in the film and in every instrument */
+  --robot: var(--measure);
 
   /* type: one family, five steps */
   --font: 'Switzer', 'Helvetica Neue', Arial, sans-serif;

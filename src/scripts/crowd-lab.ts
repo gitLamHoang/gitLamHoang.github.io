@@ -40,7 +40,7 @@ function palette(): Palette {
     grid: v('--grid', '#d3ded9'),
     ink: v('--ink', '#1c2b4b'),
     graphite: v('--graphite', '#3f4957'),
-    pen: v('--pen', '#c0283a'),
+    pen: v('--robot', '#ffcf3f'),
   };
 }
 

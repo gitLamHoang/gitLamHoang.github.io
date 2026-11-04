@@ -1,0 +1,87 @@
+---
+// The crowd lab: the interactive pieces of the HARP work, moved off the home page so it stays short.
+import Base from '../layouts/Base.astro';
+import LabTabs from '../components/LabTabs.astro';
+import RouteField from '../components/RouteField.astro';
+---
+
+<Base
+  title="Crowd lab"
+  description="Steer a browser model of predictive crowd avoidance, scrub a recorded HARP G1 run, and drive the earlier waypoint-lap behavior."
+  image="/og/harp-crowd-navigation.png"
+>
+  <article class="lab wrap">
+    <header class="head" data-enter>
+      <h1>Crowd lab</h1>
+      <p class="lede">
+        The method behind the HARP work, running in your browser. It is a model written for this site to show the idea, not HARP's
+        controller code.
+      </p>
+      <p class="back"><a href="/work/harp-crowd-navigation/">Read the HARP write-up</a></p>
+    </header>
+
+    <section class="block" aria-labelledby="lab-crowd">
+      <h2 id="lab-crowd">Steer through a crowd, or scrub the recorded run</h2>
+      <LabTabs id="lab-crowd" />
+    </section>
+
+    <section class="block" aria-labelledby="lab-route">
+      <h2 id="lab-route">Earlier work: waypoint laps and takeover</h2>
+      <p class="note">
+        A small browser model of the behavior from PRs #2, #5, and #6: repeated laps over a waypoint route, speed that ramps up and
+        slows into each target, and a takeover that stops at once. Click the floor to add waypoints.
+      </p>
+      <RouteField id="lab-route-field" />
+    </section>
+  </article>
+</Base>
+
+<style>
+  .lab {
+    padding-top: clamp(32px, 5vw, 72px);
+  }
+
+  .head {
+    display: grid;
+    gap: 16px;
+    max-width: 60rem;
+  }
+
+  h1 {
+    font-size: var(--step-head);
+  }
+
+  .lede {
+    max-width: 52ch;
+    color: var(--muted);
+    font-size: var(--step-lead);
+    line-height: 1.3;
+  }
+
+  .back {
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+
+  .back a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .block {
+    margin-top: clamp(64px, 8vw, 120px);
+  }
+
+  .block h2 {
+    font-size: var(--step-lead);
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  .note {
+    max-width: 68ch;
+    margin-bottom: 20px;
+    color: var(--muted);
+  }
+</style>

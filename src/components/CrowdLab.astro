@@ -162,17 +162,17 @@ const { id } = Astro.props;
     font-family: var(--font-ui);
     font-size: 0.875rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--bg);
     background: var(--mc);
   }
 
-  .mode-chip.m-evade {
-    color: #1c2b4b;
+  .mode-chip.m-blocked {
+    color: #fff;
   }
 
-  .m-follow { --mc: #1c2b4b; }
-  .m-evade { --mc: #d9a90b; }
-  .m-yield { --mc: #c0283a; }
+  .m-follow { --mc: var(--ink); }
+  .m-evade { --mc: var(--measure); }
+  .m-yield { --mc: #ff8a7a; }
   .m-blocked { --mc: #5d6776; }
 
   .lab-knobs {
@@ -194,7 +194,7 @@ const { id } = Astro.props;
 
   .knob input {
     width: 100%;
-    accent-color: var(--pen);
+    accent-color: var(--ink);
     min-height: 32px;
   }
 
@@ -215,7 +215,7 @@ const { id } = Astro.props;
   .check input {
     width: 18px;
     height: 18px;
-    accent-color: var(--pen);
+    accent-color: var(--ink);
   }
 
   .lab-caption {
