@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/styles/global.css"
+        ],
+        "createdAt": "2026-11-04T02:36:00.739Z",
+        "reason": "Harvey pinned elayadesign's system (2026-11-03); its rule B5 requires the hero heading in a white to grey text gradient"
+      }
+    ]
+  }
+}

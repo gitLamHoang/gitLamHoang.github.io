@@ -1,0 +1,26 @@
+---
+// Phosphor icons (regular weight), inlined so every icon shares one stroke and needs no request.
+import arrowRight from '@phosphor-icons/core/regular/arrow-right.svg?raw';
+import arrowUpRight from '@phosphor-icons/core/regular/arrow-up-right.svg?raw';
+import download from '@phosphor-icons/core/regular/download-simple.svg?raw';
+import envelope from '@phosphor-icons/core/regular/envelope-simple.svg?raw';
+import github from '@phosphor-icons/core/regular/github-logo.svg?raw';
+import linkedin from '@phosphor-icons/core/regular/linkedin-logo.svg?raw';
+import list from '@phosphor-icons/core/regular/list.svg?raw';
+import mapPin from '@phosphor-icons/core/regular/map-pin.svg?raw';
+import phone from '@phosphor-icons/core/regular/phone.svg?raw';
+import search from '@phosphor-icons/core/regular/magnifying-glass.svg?raw';
+import fileText from '@phosphor-icons/core/regular/file-text.svg?raw';
+
+const icons = { arrowRight, arrowUpRight, download, envelope, github, linkedin, list, mapPin, phone, search, fileText };
+
+interface Props {
+  name: keyof typeof icons;
+  class?: string;
+}
+
+const { name, class: cls = '' } = Astro.props;
+const svg = icons[name].replace('<svg ', `<svg aria-hidden="true" focusable="false" class="icon ${cls}" `);
+---
+
+<Fragment set:html={svg} />

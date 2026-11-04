@@ -1,93 +1,96 @@
-/* Harvey's Hub: a launch film cut from a recorded robot run.
-   Graphite ground, off-white ink, one yellow that only marks what was measured. */
-
-@font-face {
-  font-family: 'Switzer';
-  src: url('/fonts/switzer-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Switzer';
-  src: url('/fonts/switzer-400-italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Switzer';
-  src: url('/fonts/switzer-500.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Switzer';
-  src: url('/fonts/switzer-600.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
+/* Harvey's Hub, in elayadesign's visual system: one face in named text styles, a fixed spacing
+   scale, flat black surfaces, and one gold accent kept for measured figures. */
 
 :root {
   color-scheme: dark;
 
-  /* colour: one ground, one ink, one measured accent */
-  --bg: #0d0f12;
-  --surface: #15181d;
-  --surface-2: #1e2229;
-  --ink: #f4f5f6;
-  --muted: #9aa1aa;
-  --measure: #ffcf3f;
-  --measure-ink: #0d0f12;
-  --scrim: rgb(13 15 18 / 0.78);
-  /* the robot and its path, in the film and in every instrument */
-  --robot: var(--measure);
+  /* surfaces: flat, from the approved dark set only */
+  --bg: #000000;
+  --surface-1: #181818;
+  --surface-2: #1f1f1f;
+  --surface-3: #272727;
+  --surface-4: #313131;
+  --border: #272727;
+  --border-strong: #313131;
 
-  /* type: one family, five steps */
-  --font: 'Switzer', 'Helvetica Neue', Arial, sans-serif;
-  --step-small: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
-  --step-body: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
-  --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
-  --step-head: clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);
-  --step-display: clamp(4rem, 9vw, 8.75rem);
+  /* text and the one accent */
+  --text: #ffffff;
+  --text-2: #9b9b9b;
+  --text-3: #6f6f6f;
+  --accent: #e5c04a;
+  --accent-ink: #000000;
 
-  /* space: one pair of margins, one section rhythm */
-  --margin: clamp(16px, 2.2vw, 32px);
-  --section: clamp(112px, 13vw, 200px);
-  --measure-text: 66ch;
+  --font: 'Geist Variable', 'Geist', system-ui, sans-serif;
 
-  /* motion */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --dur-press: 120ms;
-  --dur-ui: 200ms;
-  --dur-enter: 640ms;
+  /* spacing: only these values */
+  --space-25: 2px;
+  --space-50: 4px;
+  --space-75: 8px;
+  --space-100: 12px;
+  --space-200: 16px;
+  --space-300: 24px;
+  --space-400: 32px;
+  --space-500: 40px;
+  --space-600: 48px;
+  --space-700: 64px;
+  --space-800: 80px;
+  --space-900: 96px;
 
-  /* Legacy names, kept while the instruments on /lab still read them. */
+  /* radius: Tailwind's values */
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* motion: weighted, decelerating into place */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-move: 500ms;
+  --dur-fade: 300ms;
+  --dur-reveal: 700ms;
+
+  --page-max: 1312px;
+  --gutter: var(--space-300);
+
+  /* Legacy names read by the lab instruments and their canvases. */
   --paper: var(--bg);
-  --paper-raised: var(--surface);
-  --grid: #2b3038;
-  --grid-faint: rgb(43 48 56 / 0.5);
-  --ink-soft: #d9dcdf;
-  --graphite: var(--muted);
-  --graphite-soft: #7d848d;
-  --hl: var(--measure);
-  --hl-mark: var(--measure);
-  --pen: #ff8a7a;
-  --route: var(--ink);
+  --paper-raised: var(--surface-1);
+  --grid: var(--surface-3);
+  --grid-faint: rgb(39 39 39 / 0.6);
+  --ink: var(--text);
+  --ink-soft: #d4d4d4;
+  --graphite: var(--text-2);
+  --graphite-soft: var(--text-3);
+  --hl: var(--accent);
+  --hl-mark: var(--accent);
+  --measure: var(--accent);
+  --robot: var(--accent);
+  --pen: #f28b74;
+  --route: var(--text);
+  --surface: var(--surface-1);
+  --muted: var(--text-2);
   --font-text: var(--font);
   --font-ui: var(--font);
   --font-mono: var(--font);
-  --gutter: var(--margin);
-  --radius: 0px;
+  --radius: var(--radius-lg);
+  --margin: var(--gutter);
   --cell: 40px;
   --margin-col: 19rem;
-  --col-gap: clamp(24px, 4vw, 64px);
+  --col-gap: var(--space-600);
+  --ease-out: var(--ease);
+  --dur-press: 200ms;
+  --dur-ui: var(--dur-fade);
+  --step-small: 0.875rem;
+  --step-body: 1rem;
+  --step-lead: 1.25rem;
+  --step-head: 3rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: var(--space-600);
+  }
 }
 
 /* ---------- base ---------- */
@@ -101,44 +104,45 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: 80px;
+  scroll-padding-top: var(--space-900);
+  scroll-behavior: smooth;
   background: var(--bg);
-  scrollbar-color: #3a3f47 var(--bg);
+  scrollbar-color: var(--surface-4) var(--bg);
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  color: var(--ink);
+  min-height: 100dvh;
   background: var(--bg);
+  color: var(--text);
   font-family: var(--font);
-  font-size: var(--step-body);
-  line-height: 1.5;
-  letter-spacing: -0.005em;
-  font-variant-numeric: lining-nums;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
 }
 
-:where(h1, h2, h3, h4) {
+:where(h1, h2, h3, h4, h5, h6, p, ul, ol, dl, dd, figure, blockquote) {
   margin: 0;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.035em;
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
   text-wrap: balance;
 }
 
-:where(p, ul, ol, dl, figure, blockquote) {
-  margin: 0;
+:where(p, li, dd, figcaption, blockquote) {
+  text-wrap: pretty;
 }
 
 :where(a) {
   color: inherit;
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.22em;
-  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
-  transition: text-decoration-color var(--dur-ui) ease;
+  text-underline-offset: 0.25em;
+  text-decoration-color: rgb(255 255 255 / 0.35);
+  transition: text-decoration-color var(--dur-fade) var(--ease);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -152,28 +156,36 @@ body {
   color: inherit;
 }
 
+em,
+i,
+cite {
+  font-style: normal;
+}
+
 :focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
 }
 
 ::selection {
-  background: var(--ink);
+  background: var(--text);
   color: var(--bg);
 }
 
 img,
 video {
+  display: block;
   max-width: 100%;
   height: auto;
-  display: block;
 }
 
 code {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 0.86em;
-  background: var(--surface-2);
-  padding: 0.08em 0.32em;
+  font-size: 0.875em;
+  padding: var(--space-25) var(--space-50);
+  border-radius: var(--radius-md);
+  background: var(--surface-3);
 }
 
 .sr-only {
@@ -189,271 +201,305 @@ code {
 }
 
 .skip-link {
-  position: absolute;
-  left: var(--margin);
+  position: fixed;
+  left: var(--space-200);
   top: -100px;
-  z-index: 50;
-  padding: 12px 16px;
-  background: var(--ink);
+  z-index: 60;
+  padding: var(--space-75) var(--space-100);
+  border-radius: var(--radius-xl);
+  background: var(--text);
   color: var(--bg);
-  font-weight: 600;
   text-decoration: none;
 }
 
 .skip-link:focus {
-  top: 12px;
+  top: var(--space-200);
+}
+
+/* ---------- named text styles (Tailwind scale) ---------- */
+
+.heading-1 { font-size: 3.75rem; line-height: 3.75rem; font-weight: 600; letter-spacing: -0.035em; }
+.heading-2 { font-size: 3rem; line-height: 3rem; font-weight: 600; letter-spacing: -0.03em; }
+.heading-3 { font-size: 2.25rem; line-height: 2.5rem; font-weight: 600; letter-spacing: -0.025em; }
+.heading-4 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 600; letter-spacing: -0.02em; }
+.heading-5 { font-size: 1.5rem; line-height: 2rem; font-weight: 600; letter-spacing: -0.015em; }
+.heading-6 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; letter-spacing: -0.01em; }
+.title-1 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 500; letter-spacing: -0.01em; }
+.title-2 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 500; }
+.title-3 { font-size: 1rem; line-height: 1.5rem; font-weight: 500; }
+.title-4 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+.title-5 { font-size: 0.75rem; line-height: 1rem; font-weight: 500; }
+.body-1 { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+.body-2 { font-size: 1rem; line-height: 1.5rem; font-weight: 500; }
+.body-3 { font-size: 1rem; line-height: 1.5rem; font-weight: 400; }
+.body-4 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; }
+.body-5 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+.body-6 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; }
+.button-lg { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; }
+.button-md { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+.button-sm { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; }
+.caption-1 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+.caption-2 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; }
+.caption-3 { font-size: 0.75rem; line-height: 1rem; font-weight: 600; }
+.caption-4 { font-size: 0.75rem; line-height: 1rem; font-weight: 500; }
+.caption-5 { font-size: 0.75rem; line-height: 1rem; font-weight: 400; }
+
+/* Headings step down on phones, still on the scale. */
+@media (max-width: 767px) {
+  .heading-1 { font-size: 2.25rem; line-height: 2.5rem; }
+  .heading-2 { font-size: 1.875rem; line-height: 2.25rem; }
+  .heading-3 { font-size: 1.5rem; line-height: 2rem; }
+  .heading-4 { font-size: 1.5rem; line-height: 2rem; }
+}
+
+/* The hero heading is the one place a gradient is allowed: on the text, left to right. */
+.hero-gradient {
+  background: linear-gradient(90deg, #ffffff 0%, #9b9b9b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-2 {
+  color: var(--text-2);
+}
+
+.text-3 {
+  color: var(--text-3);
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Measured: the gold accent marks only numbers that came out of an evaluation. */
+mark.hl {
+  background: none;
+  color: var(--accent);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- layout ---------- */
 
 .wrap {
   width: 100%;
-  max-width: 1440px;
+  max-width: calc(var(--page-max) + 2 * var(--gutter));
   margin-inline: auto;
-  padding-inline: var(--margin);
-}
-
-.row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--margin-col);
-  column-gap: var(--col-gap);
-}
-
-@media (max-width: 900px) {
-  .row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.measure {
-  max-width: var(--measure-text);
+  padding-inline: var(--gutter);
 }
 
 .section {
-  padding-block: var(--section) 0;
+  padding-block: var(--space-900) 0;
 }
 
-/* A section opens with its heading and lede on the left, its quote across on the right. */
+@media (max-width: 767px) {
+  .section {
+    padding-block: var(--space-700) 0;
+  }
+}
+
 .section-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
-  gap: 20px clamp(32px, 5vw, 96px);
-  margin-bottom: clamp(40px, 5vw, 72px);
+  grid-template-columns: minmax(0, 680px) minmax(0, 22rem);
+  justify-content: space-between;
+  align-items: end;
+  gap: var(--space-300) var(--space-600);
+  margin-bottom: var(--space-600);
 }
 
-.section-head > :not(.epigraph) {
-  grid-column: 1;
-}
-
-.section-head > .epigraph {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: end;
+.section-head .lede {
+  margin-top: var(--space-100);
+  color: var(--text-2);
 }
 
 @media (max-width: 900px) {
   .section-head {
     grid-template-columns: minmax(0, 1fr);
   }
-
-  .section-head > .epigraph {
-    grid-column: 1;
-    grid-row: auto;
-  }
 }
 
-.section-head h2 {
-  font-size: var(--step-head);
+/* A panel is a flat surface with a full border; media inside it takes the nested radius. */
+.panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
 }
 
-.section-head .lede {
-  max-width: 52ch;
-  color: var(--muted);
-  font-size: var(--step-lead);
-  line-height: 1.3;
+.panel-inset {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
-/* ---------- shared type ---------- */
-
-.ui {
-  font-family: var(--font);
-}
-
-.mono,
-.tnum {
-  font-variant-numeric: tabular-nums lining-nums;
-}
-
-.quiet {
-  color: var(--muted);
-}
-
-.small {
-  font-size: var(--step-small);
-}
-
-/* Measured: the only yellow on the page, behind numbers that came out of an evaluation. */
-mark.hl {
-  color: var(--measure);
-  background: none;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums lining-nums;
-}
-
-/* A limit is part of the evidence: steel label, full-ink text, same place in every entry. */
-.limit {
-  color: var(--ink);
-  font-size: var(--step-body);
-  line-height: 1.5;
-}
-
-.limit-label {
-  display: block;
-  color: var(--muted);
-  font-size: var(--step-small);
-  font-weight: 500;
-  font-style: normal;
-  margin-bottom: 4px;
-}
-
-.label-ui {
-  color: var(--muted);
-  font-size: var(--step-small);
-  font-weight: 500;
-}
-
-/* ---------- buttons: one shape, square ---------- */
+/* ---------- buttons: 8px by 12px padding, held to a 44px target ---------- */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5em;
-  min-height: 48px;
-  padding: 0 22px;
-  border: 0;
+  gap: var(--space-75);
+  min-height: 44px;
+  padding: var(--space-75) var(--space-100);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
   background: var(--surface-2);
-  color: var(--ink);
-  font-family: var(--font);
-  font-size: var(--step-small);
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background-color var(--dur-ui) ease,
-    color var(--dur-ui) ease,
-    transform var(--dur-press) var(--ease-out);
+    background-color var(--dur-fade) var(--ease),
+    border-color var(--dur-fade) var(--ease),
+    transform var(--dur-fade) var(--ease);
 }
 
-.btn:active {
-  transform: scale(0.97);
+.btn svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
 }
 
 .btn-primary {
-  background: var(--ink);
+  background: var(--text);
+  border-color: var(--text);
   color: var(--bg);
+}
+
+.btn-sm {
+  min-height: 36px;
+  padding: var(--space-50) var(--space-100);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .btn:hover {
-    background: #2a2f37;
+    background: var(--surface-3);
+    transform: translateY(-1px);
   }
 
   .btn-primary:hover {
-    background: #ffffff;
+    background: #e6e6e6;
   }
 }
 
+.btn:active {
+  transform: scale(0.98);
+}
+
 .btn-stop {
-  background: var(--surface-2);
   color: var(--pen);
 }
 
 .btn[aria-pressed='true'] {
-  background: var(--ink);
+  background: var(--text);
+  border-color: var(--text);
   color: var(--bg);
 }
 
 .btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+  transform: none;
 }
 
 .link-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 28px;
+  gap: var(--space-50) var(--space-300);
   padding: 0;
   list-style: none;
-  font-size: var(--step-small);
-  font-weight: 500;
 }
 
 .link-row a {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-50);
   min-height: 44px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
 }
 
-/* ---------- spec rows: label and value pairs, separated by space ---------- */
+/* ---------- shared bits the instruments and write-ups still use ---------- */
 
 .specs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: 20px 32px;
+  gap: var(--space-200);
   margin: 0;
 }
 
 .specs dt {
-  color: var(--muted);
-  font-size: var(--step-small);
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 500;
 }
 
 .specs dd {
-  margin: 4px 0 0;
-  line-height: 1.4;
+  margin-top: var(--space-25);
 }
 
-/* Media sits on a panel one tone up, square corners. */
 .frame {
-  background: var(--surface);
+  background: var(--surface-1);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
-/* ---------- entrances: once, from an already-visible default ---------- */
+.label-ui,
+.limit-label {
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+
+.quiet {
+  color: var(--text-2);
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+}
+
+.ui {
+  font-family: var(--font);
+}
+
+/* ---------- scroll reveals: rise 32px and fade in, once ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
-  html.js [data-enter] > * {
+  html.js [data-reveal] {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(32px);
     transition:
-      opacity var(--dur-enter) var(--ease-out),
-      transform var(--dur-enter) var(--ease-out);
-    transition-delay: calc(var(--i, 0) * 70ms);
+      opacity var(--dur-reveal) var(--ease),
+      transform var(--dur-reveal) var(--ease);
   }
 
-  html.js [data-enter].is-in > * {
+  html.js [data-reveal].is-in {
     opacity: 1;
     transform: none;
   }
 }
 
-/* ---------- page transitions: fade out, then in; the header holds still ---------- */
+/* ---------- page transitions: fade, header held ---------- */
 
 @view-transition {
   navigation: auto;
 }
 
 ::view-transition-old(root) {
-  animation: 120ms ease-out both vt-out;
+  animation: 200ms var(--ease) both vt-out;
 }
 
 ::view-transition-new(root) {
-  animation: 180ms var(--ease-out) 120ms both vt-in;
+  animation: 300ms var(--ease) 120ms both vt-in;
 }
 
 @keyframes vt-out {
@@ -473,17 +519,9 @@ mark.hl {
     navigation: none;
   }
 
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
+  html {
+    scroll-behavior: auto;
   }
-}
-
-/* ---------- typographic polish ---------- */
-
-:where(p, li, dd, figcaption, blockquote) {
-  text-wrap: pretty;
 }
 
 /* ---------- print: the page becomes a clean CV ---------- */
@@ -492,15 +530,13 @@ mark.hl {
   :root {
     color-scheme: light;
     --bg: #fff;
-    --surface: #fff;
-    --surface-2: #f1f1f1;
-    --ink: #000;
-    --muted: #444;
-    --measure: #000;
-    --paper: #fff;
-    --paper-raised: #fff;
-    --grid: #ccc;
-    --pen: #000;
+    --surface-1: #fff;
+    --surface-2: #fff;
+    --surface-3: #ddd;
+    --border: #ddd;
+    --text: #000;
+    --text-2: #444;
+    --accent: #000;
   }
 
   @page {
@@ -514,88 +550,49 @@ mark.hl {
 
   body {
     font-size: 10.5pt;
-    line-height: 1.45;
   }
 
-  mark.hl {
-    font-weight: 600;
+  .hero-gradient {
+    background: none;
+    color: #000;
   }
 
-  .site-header,
+  .site-nav,
   .skip-link,
   .cta,
-  .film .footage,
-  .film .scrim,
-  .film .readout,
-  .film .caption,
-  .film .track,
-  .film .steps,
-  .film .intro .epigraph,
   .replay,
   [data-explorer],
   [data-route],
-  [data-marquee],
-  .site-footer .cv,
+  .tablist,
   .pager,
-  .toc {
+  .toc,
+  .close-cta {
     display: none !important;
   }
 
-  html.js [data-enter] > * {
+  html.js [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* Every case-file tab prints, one after another. */
+  [role='tabpanel'][hidden] {
+    display: block !important;
   }
 
   .section {
     padding-top: 16pt;
   }
 
-  /* The film's name and statement print as a plain header. */
-  .film .stage {
-    position: static !important;
-    height: auto !important;
-    min-height: 0 !important;
-  }
-
-  .film .name,
-  .film .name span,
-  .film .slot {
-    position: static !important;
-    width: auto !important;
-  }
-
-  .film .name {
-    font-size: 28pt;
-  }
-
-  .film .name span + span::before {
-    content: ' ';
-  }
-
-  .film .slot {
-    margin-top: 8pt;
-  }
-
-  .section-head,
-  .project,
-  .paper,
+  .panel,
   .role,
-  .facts li,
-  .people li,
   figure {
     break-inside: avoid;
   }
 
-  h2,
-  h3 {
-    break-after: avoid;
-  }
-
-  /* Print where each external link goes. */
   main a[href^='http']::after {
     content: ' (' attr(href) ')';
     font-size: 0.78em;
-    font-weight: 400;
     color: #555;
     overflow-wrap: anywhere;
   }
