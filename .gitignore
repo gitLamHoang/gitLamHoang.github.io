@@ -11,3 +11,8 @@ npm-debug.log*
 # local tooling and OS files
 .claude/
 .DS_Store
+
+# design tool working files
+.taste-skill/
+.impeccable/mocks/
+.impeccable/review/
