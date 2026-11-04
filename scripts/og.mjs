@@ -110,22 +110,15 @@ for (const file of (await readdir(dir)).filter((f) => f.endsWith('.md'))) {
   });
 }
 
-// App icons from the favicon
+// App icons from the favicon: the H, full bleed on the night navy (phones round the corners).
 const favicon = await readFile(path.join(root, 'public/favicon.svg'));
 for (const [size, name] of [
   [180, 'apple-touch-icon.png'],
   [512, 'icon-512.png'],
 ]) {
   await sharp(favicon, { density: (72 * size) / 32 })
-    .resize(Math.round(size * 0.78))
-    .extend({
-      top: Math.round(size * 0.11),
-      bottom: size - Math.round(size * 0.78) - Math.round(size * 0.11),
-      left: Math.round(size * 0.11),
-      right: size - Math.round(size * 0.78) - Math.round(size * 0.11),
-      background: '#0d0f12',
-    })
-    .flatten({ background: '#0d0f12' })
+    .resize(size)
+    .flatten({ background: '#0b1430' })
     .png()
     .toFile(path.join(root, 'public', name));
   console.log('wrote', `public/${name}`);

@@ -4,8 +4,8 @@
   "description": "Harvey Phan's portfolio: crowd navigation for humanoid robots, applied machine learning, and research.",
   "start_url": "/",
   "display": "browser",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#0b1430",
+  "theme_color": "#0b1430",
   "icons": [
     {
       "src": "/favicon.svg",
