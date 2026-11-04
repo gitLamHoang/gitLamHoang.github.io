@@ -16,13 +16,13 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
               src={photo(p.photo)}
               alt={`Harvey Phan with ${p.name}`}
               widths={[360, 540, 720]}
-              sizes="(max-width: 700px) 82vw, 30vw"
+              sizes="(max-width: 700px) 100vw, 30vw"
               style={`object-position:${p.focus}`}
             />
           </div>
           <figcaption>
-            <span class="name">{p.name}</span>
-            <span class="title">{p.title}</span>
+            <span class="heading-6">{p.name}</span>
+            <span class="body-6 text-2">{p.title}</span>
           </figcaption>
         </figure>
       </li>
@@ -31,11 +31,11 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
 </ul>
 
 <style>
-  /* Three portraits in one row, set at staggered heights. */
+  /* Three portraits at staggered heights; real photographs, cropped decisively. */
   .people {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(16px, 2vw, 32px);
+    gap: var(--space-300);
     align-items: start;
     margin: 0;
     padding: 0;
@@ -43,19 +43,25 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
   }
 
   li:nth-child(2) {
-    margin-top: clamp(32px, 6vw, 96px);
+    margin-top: var(--space-800);
   }
 
   li:nth-child(3) {
-    margin-top: clamp(16px, 3vw, 48px);
+    margin-top: var(--space-400);
   }
 
   figure {
     margin: 0;
+    padding: var(--space-75);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    background: var(--surface-1);
   }
 
   .photo {
-    background: var(--surface);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--surface-2);
   }
 
   .photo img {
@@ -67,34 +73,17 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
 
   figcaption {
     display: grid;
-    gap: 2px;
-    margin-top: 16px;
-  }
-
-  .name {
-    font-size: var(--step-lead);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-  }
-
-  .title {
-    color: var(--muted);
+    gap: var(--space-25);
+    padding: var(--space-200) var(--space-100) var(--space-100);
   }
 
   @media (max-width: 700px) {
     .people {
       grid-template-columns: minmax(0, 1fr);
-      gap: 40px;
     }
 
     li {
-      width: 82%;
       margin-top: 0 !important;
-    }
-
-    li:nth-child(2) {
-      justify-self: end;
     }
   }
 </style>

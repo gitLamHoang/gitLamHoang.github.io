@@ -16,12 +16,12 @@ const images: Record<string, ImageMetadata> = { '2025': cert2025, '2024': cert20
             src={images[c.year]}
             alt={`IM²C ${c.year} Certificate of Achievement, Honorable Mention, Hanoi-Amsterdam High School for the Gifted, representing Vietnam.`}
             widths={[360, 540, 720]}
-            sizes="(max-width: 700px) 100vw, 340px"
+            sizes="(max-width: 700px) 100vw, 300px"
           />
         </a>
-        <p class="label">{c.label}</p>
-        <p class="team">{c.team}</p>
-        <p class="pdf"><a href={c.pdf}>Certificate (PDF)</a></p>
+        <p class="body-5">{c.label}</p>
+        <p class="caption-2 text-2">{c.team}</p>
+        <p class="pdf"><a class="body-5" href={c.pdf}>Certificate (PDF)</a></p>
       </li>
     ))
   }
@@ -30,16 +30,18 @@ const images: Record<string, ImageMetadata> = { '2025': cert2025, '2024': cert20
 <style>
   .certs {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-    gap: 32px 24px;
-    margin: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-200);
+    margin: var(--space-75) 0 0;
     padding: 0;
     list-style: none;
   }
 
   .shot {
     display: block;
-    background: #fff;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: #ffffff;
   }
 
   .shot img {
@@ -47,25 +49,19 @@ const images: Record<string, ImageMetadata> = { '2025': cert2025, '2024': cert20
     height: auto;
   }
 
-  .label {
-    margin-top: 14px;
-    font-weight: 500;
-  }
-
-  .team {
-    margin-top: 4px;
-    font-size: var(--step-small);
-    color: var(--muted);
-  }
-
-  .pdf {
-    font-size: var(--step-small);
-    font-weight: 500;
+  li > p {
+    margin-top: var(--space-75);
   }
 
   .pdf a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+  }
+
+  @media (max-width: 480px) {
+    .certs {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 </style>

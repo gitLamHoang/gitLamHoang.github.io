@@ -12,14 +12,14 @@ const { text, episode } = quotes[quote];
 
 <figure class:list={['epigraph', className]}>
   <blockquote>
-    <p>&ldquo;{text}&rdquo;</p>
+    <p class="body-3">&ldquo;{text}&rdquo;</p>
   </blockquote>
-  <figcaption>Harvey Specter, <cite>Suits</cite>, {episode}</figcaption>
+  <figcaption class="caption-4 text-3">Harvey Specter, <cite>Suits</cite>, {episode}</figcaption>
 </figure>
 
 <style>
   .epigraph {
-    max-width: 36ch;
+    max-width: 22rem;
   }
 
   blockquote {
@@ -27,19 +27,10 @@ const { text, episode } = quotes[quote];
   }
 
   blockquote p {
-    font-style: italic;
-    font-size: var(--step-body);
-    line-height: 1.4;
     color: var(--ink-soft);
   }
 
   figcaption {
-    margin-top: 6px;
-    font-size: var(--step-small);
-    color: var(--muted);
-  }
-
-  cite {
-    font-style: italic;
+    margin-top: var(--space-50);
   }
 </style>

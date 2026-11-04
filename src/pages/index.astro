@@ -2,19 +2,20 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Epigraph from '../components/Epigraph.astro';
-import Film from '../components/Film.astro';
-import Work from '../components/Work.astro';
-import Marquee from '../components/Marquee.astro';
+import CaseFile from '../components/CaseFile.astro';
+import Tagline from '../components/Tagline.astro';
+import Icon from '../components/Icon.astro';
 import BalancingMethod from '../components/BalancingMethod.astro';
 import Certificates from '../components/Certificates.astro';
 import People from '../components/People.astro';
 import Marked from '../components/Marked.astro';
-import { education, experience, honors, immc, papers, scores, tools } from '../data/profile';
+import { affiliations, contact, education, experience, honors, immc, papers, person, scores, tools } from '../data/profile';
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const [balancing, macro] = papers;
 const current = experience.filter((r) => r.dates.includes('Present'));
 const past = experience.filter((r) => !r.dates.includes('Present'));
+const orgs = affiliations.map((a) => a.name.replace('International Mathematical Modeling Challenge', 'IM²C'));
 
 // schema.org records for the two papers, so search engines can cite them.
 const scholarly = papers.map((p) => ({
@@ -30,69 +31,103 @@ const scholarly = papers.map((p) => ({
 ---
 
 <Base structured={scholarly}>
-  <Film />
-
-  <section class="section wrap" id="work" aria-labelledby="work-title">
-    <header class="section-head" data-enter>
-      <h2 id="work-title">Work</h2>
-      <p class="lede">What each project set out to do, my part in it, what was measured, and its main limit.</p>
-      <Epigraph quote="work" />
-    </header>
-    <Work entries={work} />
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div class="hero-main">
+      <h1 id="hero-title" class="heading-1 hero-gradient">
+        Navigation software<br />
+        for humanoid robots.
+      </h1>
+      <p class="sub title-1 text-2">{person.name}, Stanford CS. I lead navigation for HARP's Unitree G1 humanoid, and I measure what it can't do yet.</p>
+    </div>
+    <div class="hero-side">
+      <div class="cta">
+        <a class="btn btn-primary" href={contact.resume} download="Harvey_Phan_Resume.pdf"><Icon name="download" />Download resume</a>
+        <a class="btn" href={`mailto:${contact.email}`}><Icon name="envelope" />Email me</a>
+      </div>
+      <Epigraph quote="hero" />
+    </div>
+    <ul class="orgs title-4 text-3" aria-label="Where I've worked, studied, and competed">
+      {orgs.map((o) => <li>{o}</li>)}
+    </ul>
   </section>
 
-  <Marquee />
+  <CaseFile entries={work} />
+
+  <Tagline text="Every result on this site comes with how it was measured, and what it can't do yet." />
 
   <section class="section wrap" id="research" aria-labelledby="research-title">
-    <header class="section-head" data-enter>
-      <h2 id="research-title">Research</h2>
-      <p class="lede">Two co-authored papers and an international modeling competition. These ones do play the odds.</p>
+    <header class="section-head" data-reveal>
+      <div>
+        <h2 id="research-title" class="heading-2">Research</h2>
+        <p class="lede title-2">Two coauthored papers and an international modeling competition. These ones do play the odds.</p>
+      </div>
       <Epigraph quote="research" />
     </header>
 
-    <article class="paper" aria-labelledby="paper-balancing">
-      <div class="paper-text" data-enter>
-        <h3 id="paper-balancing">Balancing numbers by the matrix method</h3>
-        <p class="cite">{balancing.authors}. {balancing.journal}, {balancing.issue}.</p>
-        <p><span class="label-ui">The question</span> {balancing.overview}</p>
-        <p><span class="label-ui">What it shows</span> {balancing.findings}</p>
-        <p class="doi"><span class="label-ui">{balancing.role}</span> <a href={`https://doi.org/${balancing.doi}`}>doi.org/{balancing.doi}</a></p>
+    <article class="panel paper" aria-labelledby="paper-balancing" data-reveal>
+      <div class="paper-text">
+        <p class="caption-2 text-2">{balancing.journal}, {balancing.issue}</p>
+        <h3 id="paper-balancing" class="heading-5">Balancing numbers by the matrix method</h3>
+        <p class="body-6 text-2">{balancing.authors}</p>
+        <div class="qa">
+          <h4 class="title-4 text-2">The question</h4>
+          <p class="body-3">{balancing.overview}</p>
+        </div>
+        <div class="qa">
+          <h4 class="title-4 text-2">What it shows</h4>
+          <p class="body-3">{balancing.findings}</p>
+        </div>
+        <ul class="link-row">
+          <li><a href={`https://doi.org/${balancing.doi}`}>doi.org/{balancing.doi} <Icon name="arrowUpRight" /></a></li>
+        </ul>
       </div>
       <div class="paper-figure">
         <BalancingMethod />
       </div>
     </article>
 
-    <article class="paper paper-flip" aria-labelledby="paper-macro">
-      <div class="paper-text" data-enter>
-        <h3 id="paper-macro">Deep learning against econometrics for inflation, GDP, and unemployment</h3>
-        <p class="cite">Published as &ldquo;{macro.title}.&rdquo; {macro.authors}. {macro.journal}, {macro.issue}.</p>
-        <p><span class="label-ui">The question</span> {macro.overview}</p>
-      </div>
-      <div class="paper-text" data-enter>
-        <p><span class="label-ui">What it shows</span> <Marked text={macro.findings} highlight={macro.highlight} /></p>
-        <p class="doi"><span class="label-ui">{macro.role}</span> <a href={`https://doi.org/${macro.doi}`}>doi.org/{macro.doi}</a></p>
-      </div>
-    </article>
+    <div class="pair">
+      <article class="panel paper-small" aria-labelledby="paper-macro" data-reveal>
+        <p class="caption-2 text-2">{macro.journal}, {macro.issue}</p>
+        <h3 id="paper-macro" class="heading-5">Deep learning against econometrics for inflation, GDP, and unemployment</h3>
+        <p class="body-6 text-2">Published as &ldquo;{macro.title}.&rdquo; {macro.authors}.</p>
+        <div class="qa">
+          <h4 class="title-4 text-2">The question</h4>
+          <p class="body-3">{macro.overview}</p>
+        </div>
+        <div class="qa">
+          <h4 class="title-4 text-2">What it shows</h4>
+          <p class="body-3"><Marked text={macro.findings} highlight={macro.highlight} /></p>
+        </div>
+        <ul class="link-row">
+          <li><a href={`https://doi.org/${macro.doi}`}>doi.org/{macro.doi} <Icon name="arrowUpRight" /></a></li>
+        </ul>
+      </article>
 
-    <article class="paper" aria-labelledby="immc-title">
-      <div class="paper-text" data-enter>
-        <h3 id="immc-title">{immc.title}</h3>
-        <p class="cite">COMAP and NeoUnion ESC Organization. Hanoi-Amsterdam High School for the Gifted, representing Vietnam.</p>
-        <p><span class="label-ui">The challenge</span> {immc.overview}</p>
-        <p><span class="label-ui">Our work</span> {immc.work}</p>
-        <p class="immc-result">{immc.result}</p>
-      </div>
-      <div class="paper-figure">
+      <article class="panel paper-small" aria-labelledby="immc-title" data-reveal>
+        <p class="caption-2 text-2">COMAP and NeoUnion ESC Organization</p>
+        <h3 id="immc-title" class="heading-5">{immc.title}</h3>
+        <p class="body-6 text-2">Hanoi-Amsterdam High School for the Gifted, representing Vietnam</p>
+        <div class="qa">
+          <h4 class="title-4 text-2">The challenge</h4>
+          <p class="body-3">{immc.overview}</p>
+        </div>
+        <div class="qa">
+          <h4 class="title-4 text-2">Our work</h4>
+          <p class="body-3">{immc.work}</p>
+        </div>
+        <p class="body-2">{immc.result}</p>
         <Certificates />
-      </div>
-    </article>
+      </article>
+    </div>
   </section>
 
   <section class="section wrap" id="experience" aria-labelledby="experience-title">
-    <header class="section-head" data-enter>
-      <h2 id="experience-title">Experience</h2>
-      <p class="lede">Teams and organizations, most recent first.</p>
+    <header class="section-head" data-reveal>
+      <div>
+        <h2 id="experience-title" class="heading-2">Experience</h2>
+        <p class="lede title-2">Teams and organizations, most recent first.</p>
+      </div>
       <Epigraph quote="experience" />
     </header>
     <div class="legs">
@@ -101,19 +136,21 @@ const scholarly = papers.map((p) => ({
           { label: 'Now', roles: current },
           { label: 'Before', roles: past },
         ].map((leg) => (
-          <section class="leg" aria-labelledby={`leg-${leg.label}`}>
-            <h3 id={`leg-${leg.label}`} class="leg-title">{leg.label}</h3>
-            <ol class="roles" data-enter>
+          <section class="panel leg" aria-labelledby={`leg-${leg.label}`} data-reveal>
+            <h3 id={`leg-${leg.label}`} class="title-2 text-2">{leg.label}</h3>
+            <ol class="roles">
               {leg.roles.map((r) => (
                 <li class="role">
-                  <p class="role-dates tnum">{r.dates}</p>
-                  <p class="org">{r.org}</p>
-                  <p class="role-title">{r.title}</p>
-                  {r.context && <p class="role-note">{r.context}</p>}
-                  {r.detail && <p class="role-note">{r.detail}</p>}
+                  <p class="caption-2 text-2 tnum">{r.dates}</p>
+                  <p class="heading-6">{r.org}</p>
+                  <p class="body-2">{r.title}</p>
+                  {r.context && <p class="body-6 text-2">{r.context}</p>}
+                  {r.detail && <p class="body-6 text-2">{r.detail}</p>}
                   {r.work && (
                     <p class="role-link">
-                      <a href={`/work/${r.work}/`}>See the project</a>
+                      <a href={`/#work-${r.work}`} class="body-5">
+                        See the project <Icon name="arrowRight" />
+                      </a>
                     </p>
                   )}
                 </li>
@@ -126,51 +163,53 @@ const scholarly = papers.map((p) => ({
   </section>
 
   <section class="section wrap" id="people" aria-labelledby="people-title">
-    <header class="section-head" data-enter>
-      <h2 id="people-title">People I've met</h2>
-      <p class="lede">Leaders in product and venture I have had the chance to meet.</p>
+    <header class="section-head" data-reveal>
+      <div>
+        <h2 id="people-title" class="heading-2">People I've met</h2>
+        <p class="lede title-2">Leaders in product and venture I have had the chance to meet.</p>
+      </div>
       <Epigraph quote="people" />
     </header>
     <People />
   </section>
 
   <section class="section wrap" id="education" aria-labelledby="education-title">
-    <header class="section-head" data-enter>
-      <h2 id="education-title">Education and honors</h2>
+    <header class="section-head" data-reveal>
+      <div>
+        <h2 id="education-title" class="heading-2">Education and honors</h2>
+      </div>
       <Epigraph quote="honors" />
     </header>
-    <div class="facts" data-enter>
-      <div>
-        <h3>Education</h3>
+    <div class="facts">
+      <div class="panel fact-wide" data-reveal>
+        <h3 class="title-2 text-2">Education</h3>
         <ul>
           {
             education.map((e) => (
               <li>
-                <strong>{e.school}</strong>
-                <span>{e.detail}</span>
+                <p class="heading-6">{e.school}</p>
+                <p class="body-6 text-2">{e.detail}</p>
               </li>
             ))
           }
         </ul>
-      </div>
-      <div>
-        <h3>Honors and scores</h3>
-        <ul>
-          {honors.map((h) => <li>{h}</li>)}
-          {scores.map((s) => <li>{s}</li>)}
-        </ul>
-      </div>
-      <div>
-        <h3>Tools</h3>
-        <ul>
+        <h3 class="title-2 text-2 tools-title">Tools</h3>
+        <ul class="tools">
           {
             tools.map((t) => (
               <li>
-                <strong>{t.group}</strong>
-                <span>{t.items}</span>
+                <p class="body-2">{t.group}</p>
+                <p class="body-6 text-2">{t.items}</p>
               </li>
             ))
           }
+        </ul>
+      </div>
+      <div class="panel" data-reveal>
+        <h3 class="title-2 text-2">Honors and scores</h3>
+        <ul>
+          {honors.map((h) => <li class="body-3">{h}</li>)}
+          {scores.map((s) => <li class="body-3">{s}</li>)}
         </ul>
       </div>
     </div>
@@ -178,133 +217,158 @@ const scholarly = papers.map((p) => ({
 </Base>
 
 <style>
-  /* ---------- research: figure beside its text, mirrored from Work ---------- */
+  /* ---------- hero: heading and subheading at 680px, actions beside ---------- */
 
-  .paper {
+  .hero {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: clamp(32px, 4vw, 72px);
-    align-items: start;
+    grid-template-columns: minmax(0, 680px) minmax(0, 24rem);
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-400) var(--space-600);
+    padding-top: calc(var(--space-900) + var(--space-600));
   }
 
-  .paper + .paper {
-    margin-top: var(--section);
+  .sub {
+    margin-top: var(--space-300);
+    max-width: 680px;
   }
 
-  .paper .paper-figure {
-    order: -1;
-  }
-
-  .paper-flip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .paper-flip .paper-text + .paper-text {
-    padding-top: clamp(0px, 8vw, 132px);
-  }
-
-  .paper-text {
+  .hero-side {
     display: grid;
-    gap: 16px;
+    gap: var(--space-300);
+    justify-items: start;
   }
 
-  .paper h3 {
-    font-size: var(--step-lead);
-    line-height: 1.12;
-    letter-spacing: -0.025em;
-    max-width: 26ch;
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-100);
   }
 
-  .cite {
-    color: var(--muted);
-    font-size: var(--step-small);
-    margin-bottom: 12px;
-  }
-
-  .paper-text .label-ui {
-    margin-right: 0.35em;
-  }
-
-  .doi {
-    margin-top: 8px;
-    font-size: var(--step-small);
-  }
-
-  .doi a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    overflow-wrap: anywhere;
-  }
-
-  .immc-result {
-    font-weight: 500;
-  }
-
-  @media (max-width: 1000px) {
-    .paper {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .paper .paper-figure {
-      order: 0;
-    }
-  }
-
-  /* ---------- experience: now and before ---------- */
-
-  .legs {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(40px, 6vw, 112px);
-  }
-
-  .leg-title {
-    font-size: var(--step-lead);
-    letter-spacing: -0.02em;
-    margin-bottom: 28px;
-  }
-
-  .roles {
-    display: grid;
-    gap: 36px;
+  .orgs {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-75) var(--space-200);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .role-dates {
-    color: var(--muted);
-    font-size: var(--step-small);
+  .orgs li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-200);
   }
 
-  .org {
-    margin-top: 6px;
-    font-size: var(--step-lead);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
+  .orgs li + li::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--surface-4);
   }
 
-  .role-title {
-    margin-top: 4px;
-    font-weight: 500;
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
+      padding-top: calc(var(--space-900) + var(--space-200));
+    }
+
+    .orgs {
+      gap: var(--space-75) var(--space-300);
+    }
+
+    .orgs li + li::before {
+      display: none;
+    }
   }
 
-  .role-note {
-    margin-top: 6px;
-    color: var(--muted);
+  /* ---------- research ---------- */
+
+  .paper {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-400);
+    padding: var(--space-75);
   }
 
-  .role-link {
-    font-size: var(--step-small);
-    font-weight: 500;
+  .paper-text,
+  .paper-small {
+    display: grid;
+    align-content: start;
+    gap: var(--space-200);
+  }
+
+  .paper-text {
+    padding: var(--space-300) var(--space-200) var(--space-200);
+  }
+
+  .paper-small {
+    padding: var(--space-400) var(--space-300);
+  }
+
+  .qa {
+    display: grid;
+    gap: var(--space-50);
+  }
+
+  .pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-300);
+    margin-top: var(--space-300);
+    align-items: start;
+  }
+
+  .link-row :global(.icon) {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (max-width: 1000px) {
+    .paper,
+    .pair {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* ---------- experience ---------- */
+
+  .legs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-300);
+    align-items: start;
+  }
+
+  .leg {
+    padding: var(--space-400) var(--space-300);
+  }
+
+  .roles {
+    display: grid;
+    gap: var(--space-400);
+    margin: var(--space-300) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .role {
+    display: grid;
+    gap: var(--space-50);
   }
 
   .role-link a {
     display: inline-flex;
     align-items: center;
+    gap: var(--space-50);
     min-height: 44px;
+  }
+
+  .role-link :global(.icon) {
+    width: 16px;
+    height: 16px;
   }
 
   @media (max-width: 760px) {
@@ -313,42 +377,38 @@ const scholarly = papers.map((p) => ({
     }
   }
 
-
-
-  /* ---------- education and honors ---------- */
+  /* ---------- education and honors: one wide panel, one narrow ---------- */
 
   .facts {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 48px clamp(32px, 4vw, 72px);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-300);
+    align-items: start;
   }
 
-  .facts h3 {
-    font-size: var(--step-lead);
-    letter-spacing: -0.02em;
-    margin-bottom: 20px;
+  .facts .panel {
+    padding: var(--space-400) var(--space-300);
   }
 
   .facts ul {
     display: grid;
-    gap: 16px;
-    margin: 0;
+    gap: var(--space-200);
+    margin: var(--space-300) 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .facts strong {
-    display: block;
-    font-weight: 500;
+  .tools {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .facts span {
-    display: block;
-    color: var(--muted);
+  .tools-title {
+    margin-top: var(--space-600);
   }
 
   @media (max-width: 900px) {
-    .facts {
+    .facts,
+    .tools {
       grid-template-columns: minmax(0, 1fr);
     }
   }
