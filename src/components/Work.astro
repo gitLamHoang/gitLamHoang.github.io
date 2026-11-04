@@ -1,0 +1,281 @@
+---
+// Work on the home page: a short index a recruiter can scan in seconds (each project with its
+// measured headline), then one spread per project. The text runs on the left; its picture stays
+// beside it while it is read. Every spread keeps the whole project, then my part, then claim,
+// result, and limit.
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Marked from './Marked.astro';
+import filmEnd from '../assets/harp/film-end.jpg';
+
+interface Props {
+  entries: CollectionEntry<'work'>[];
+}
+
+const { entries } = Astro.props;
+---
+
+<ol class="index" aria-label="Projects">
+  {
+    entries.map((e) => (
+      <li>
+        <a href={`#${e.id}`}>
+          <span class="i-title">{e.data.title}</span>
+          <span class="i-org">{e.data.org}</span>
+          <span class="i-result tnum">{e.data.highlight ?? ''}</span>
+        </a>
+      </li>
+    ))
+  }
+</ol>
+
+{
+  entries.map((e) => {
+    const { title, org, role, dates, overview, contribution, claim, result, highlight, limit, links, figure } = e.data;
+    const href = `/work/${e.id}/`;
+    const pic = figure ?? { src: filmEnd, alt: 'Last frame of the replayed run: the G1 at its goal, its path through the crowd drawn in yellow.', fit: 'cover' as const };
+    return (
+      <article class="spread" id={e.id} aria-labelledby={`t-${e.id}`}>
+        <div class="text" data-enter>
+          <h3 id={`t-${e.id}`} style={`view-transition-name: title-${e.id}`}>
+            <a href={href}>{title}</a>
+          </h3>
+          <p class="meta">
+            {org}. {role}, {dates}
+          </p>
+          <p class="overview">{overview}</p>
+          <p class="part">
+            <span class="label-ui">My part</span> {contribution}
+          </p>
+          <dl class="evidence">
+            <div>
+              <dt>Claim</dt>
+              <dd>{claim}</dd>
+            </div>
+            <div>
+              <dt>Result</dt>
+              <dd>
+                <Marked text={result} highlight={highlight} />
+              </dd>
+            </div>
+            <div>
+              <dt>Limit</dt>
+              <dd>{limit}</dd>
+            </div>
+          </dl>
+          <ul class="link-row">
+            <li>
+              <a href={href}>Read the write-up</a>
+            </li>
+            {links.slice(0, 2).map((l) => (
+              <li>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <a class:list={['pic', `fit-${pic.fit}`]} href={href} tabindex="-1" aria-hidden="true" data-wipe>
+          <Image src={pic.src} alt="" widths={[640, 960, 1400]} sizes="(max-width: 900px) 100vw, 58vw" />
+        </a>
+      </article>
+    );
+  })
+}
+
+<script>
+  // Each picture opens from the bottom edge once, as its spread arrives.
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        e.target.classList.add('is-in');
+        io.unobserve(e.target);
+      }
+    },
+    { rootMargin: '0px 0px -15% 0px' },
+  );
+  document.querySelectorAll('[data-wipe]').forEach((el) => io.observe(el));
+</script>
+
+<style>
+  /* ---------- the index ---------- */
+
+  .index {
+    margin: 0 0 clamp(72px, 9vw, 140px);
+    padding: 0;
+    list-style: none;
+  }
+
+  .index a {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4px 32px;
+    align-items: baseline;
+    padding: 18px 20px;
+    margin-inline: -20px;
+    text-decoration: none;
+    transition: background-color var(--dur-ui) ease;
+  }
+
+  .index li + li {
+    margin-top: 2px;
+  }
+
+  .i-title {
+    font-size: var(--step-lead);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .i-org {
+    color: var(--muted);
+    font-size: var(--step-small);
+  }
+
+  .i-result {
+    color: var(--measure);
+    font-size: var(--step-small);
+    font-weight: 500;
+    text-align: right;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .index a:hover {
+      background: var(--surface);
+    }
+  }
+
+  .index a:active {
+    background: var(--surface-2);
+  }
+
+  /* ---------- one spread per project ---------- */
+
+  .spread {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 4vw, 72px);
+    align-items: start;
+    scroll-margin-top: 80px;
+  }
+
+  .spread + .spread {
+    margin-top: clamp(88px, 10vw, 150px);
+  }
+
+  h3 {
+    font-size: var(--step-lead);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    max-width: 22ch;
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    h3 a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  .meta {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: var(--step-small);
+  }
+
+  .overview {
+    margin-top: 28px;
+  }
+
+  .part {
+    margin-top: 16px;
+  }
+
+  .part .label-ui {
+    margin-right: 0.35em;
+  }
+
+  .evidence {
+    display: grid;
+    gap: 18px;
+    margin: 32px 0 0;
+    padding: 24px;
+    background: var(--surface);
+  }
+
+  .evidence dt {
+    color: var(--muted);
+    font-size: var(--step-small);
+    font-weight: 500;
+  }
+
+  .evidence dd {
+    margin: 4px 0 0;
+  }
+
+  .link-row {
+    margin-top: 20px;
+  }
+
+  .pic {
+    position: sticky;
+    top: 88px;
+    display: block;
+    height: min(72svh, 680px);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .pic :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .pic.fit-contain :global(img) {
+    object-fit: contain;
+    object-position: center;
+    padding: clamp(16px, 2.4vw, 40px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .pic {
+      clip-path: inset(100% 0 0 0);
+      transition: clip-path 900ms var(--ease-in-out);
+    }
+
+    :global(html.js) .pic.is-in {
+      clip-path: inset(0);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .index a {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 16px 16px;
+      margin-inline: -16px;
+    }
+
+    .i-result {
+      text-align: left;
+    }
+
+    .spread {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pic {
+      position: relative;
+      top: 0;
+      order: -1;
+      height: auto;
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>
