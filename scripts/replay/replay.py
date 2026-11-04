@@ -20,10 +20,34 @@ import numpy as np
 # Unitree's G1 model from unitree_mujoco; override with HARP_G1_XML.
 G1 = Path(os.environ.get('HARP_G1_XML', Path.home() / 'harp/unitree_mujoco/unitree_robots/g1/g1_29dof.xml'))
 
-PERSON_COLORS = [
-    (0.36, 0.49, 0.69), (0.54, 0.60, 0.36), (0.79, 0.65, 0.42), (0.56, 0.42, 0.54),
-    (0.31, 0.54, 0.55), (0.71, 0.40, 0.29), (0.48, 0.50, 0.53),
-]
+# Two looks over the same log: the original light 'notebook' render and the site's 'graphite' one.
+# Only materials, lights, and overlay colours change; every pose still comes from the recording.
+LOOKS = {
+    'notebook': dict(
+        people=[(0.36, 0.49, 0.69), (0.54, 0.60, 0.36), (0.79, 0.65, 0.42), (0.56, 0.42, 0.54),
+                (0.31, 0.54, 0.55), (0.71, 0.40, 0.29), (0.48, 0.50, 0.53)],
+        headlight='ambient="0.46 0.46 0.46" diffuse="0.32 0.32 0.32" specular="0.04 0.04 0.04"',
+        sky='rgb1="0.95 0.96 0.955" rgb2="0.84 0.88 0.89"',
+        floor='rgb1="0.925 0.94 0.93" mark="edge" markrgb="0.76 0.81 0.79"',
+        floor_reflect='0.04',
+        wall='0.965 0.955 0.93 1', block='0.33 0.41 0.58 1', head='0.90 0.86 0.80 1',
+        sun='diffuse="0.62 0.61 0.59"',
+        trail=[0.75, 0.16, 0.23, 0.95], track=[0.94, 0.84, 0.29, 0.55], arrow=[0.11, 0.17, 0.29, 0.85],
+        goal=([0.11, 0.17, 0.29, 0.9], [0.94, 0.95, 0.94, 1], [0.11, 0.17, 0.29, 1]),
+    ),
+    'graphite': dict(
+        people=[(0.62, 0.65, 0.69), (0.50, 0.53, 0.57), (0.74, 0.76, 0.79), (0.56, 0.59, 0.63),
+                (0.68, 0.70, 0.73), (0.46, 0.49, 0.53), (0.80, 0.81, 0.83)],
+        headlight='ambient="0.30 0.30 0.31" diffuse="0.36 0.36 0.37" specular="0.05 0.05 0.05"',
+        sky='rgb1="0.051 0.059 0.071" rgb2="0.051 0.059 0.071"',
+        floor='rgb1="0.082 0.090 0.106" mark="edge" markrgb="0.100 0.109 0.127"',
+        floor_reflect='0.10',
+        wall='0.72 0.74 0.78 1', block='0.36 0.39 0.44 1', head='0.88 0.89 0.90 1',
+        sun='diffuse="0.80 0.80 0.80"',
+        trail=[1.0, 0.81, 0.25, 1.0], track=[0.86, 0.88, 0.91, 0.22], arrow=[0.94, 0.95, 0.96, 0.85],
+        goal=([0.96, 0.96, 0.97, 0.95], [0.082, 0.090, 0.106, 1], [1.0, 0.81, 0.25, 1]),
+    ),
+}
 
 
 def load_run(run: Path):
@@ -49,7 +73,7 @@ def load_run(run: Path):
     return world, t_traj, q_traj, np.array(people_t), np.array(people), tracks, modes
 
 
-def build_model(world: str, n_people: int):
+def build_model(world: str, n_people: int, look: dict):
     xml = G1.read_text().replace('meshdir="meshes"', f'meshdir="{G1.parent / "meshes"}"')
     statics = []
     for tag in re.findall(r'<geom name="(?:wall|block)\d+"[^>]*/>', world):
@@ -70,26 +94,26 @@ def build_model(world: str, n_people: int):
         )
     mats = ''.join(
         f'<material name="p{i}" rgba="{r} {g} {b} 1" specular="0.15" shininess="0.2"/>'
-        for i, (r, g, b) in enumerate(PERSON_COLORS)
+        for i, (r, g, b) in enumerate(look['people'][k % len(look['people'])] for k in range(n_people))
     )
     extra = f"""
   <visual>
     <global offwidth="1920" offheight="1080"/>
     <quality shadowsize="8192" offsamples="8"/>
-    <headlight ambient="0.46 0.46 0.46" diffuse="0.32 0.32 0.32" specular="0.04 0.04 0.04"/>
+    <headlight {look['headlight']}/>
     <map znear="0.02" zfar="80" shadowclip="18"/>
   </visual>
   <asset>
-    <texture name="sky" type="skybox" builtin="gradient" rgb1="0.95 0.96 0.955" rgb2="0.84 0.88 0.89" width="512" height="512"/>
-    <texture name="floorgrid" type="2d" builtin="flat" rgb1="0.925 0.94 0.93" width="40" height="40" mark="edge" markrgb="0.76 0.81 0.79"/>
-    <material name="floor" texture="floorgrid" texrepeat="2 2" texuniform="true" reflectance="0.04"/>
-    <material name="wall" rgba="0.965 0.955 0.93 1" specular="0.08"/>
-    <material name="block" rgba="0.33 0.41 0.58 1" specular="0.1"/>
-    <material name="head" rgba="0.90 0.86 0.80 1" specular="0.1"/>
+    <texture name="sky" type="skybox" builtin="gradient" {look['sky']} width="512" height="512"/>
+    <texture name="floorgrid" type="2d" builtin="flat" {look['floor']} width="40" height="40"/>
+    <material name="floor" texture="floorgrid" texrepeat="2 2" texuniform="true" reflectance="{look['floor_reflect']}"/>
+    <material name="wall" rgba="{look['wall']}" specular="0.08"/>
+    <material name="block" rgba="{look['block']}" specular="0.1"/>
+    <material name="head" rgba="{look['head']}" specular="0.1"/>
     {mats}
   </asset>
   <worldbody>
-    <light name="sun" directional="true" pos="3 -6 14" dir="0.25 0.45 -1" diffuse="0.62 0.61 0.59" specular="0.1 0.1 0.1" castshadow="true"/>
+    <light name="sun" directional="true" pos="3 -6 14" dir="0.25 0.45 -1" {look['sun']} specular="0.1 0.1 0.1" castshadow="true"/>
     <geom name="floor" type="plane" size="40 40 0.1" pos="4 0 0" material="floor" contype="0" conaffinity="0"/>
     {''.join(statics)}
     {''.join(people)}
@@ -150,10 +174,12 @@ def main():
     ap.add_argument('--elevation', type=float, default=-50)
     ap.add_argument('--distance', type=float, default=7.2)
     ap.add_argument('--crf', type=int, default=24)
+    ap.add_argument('--look', choices=sorted(LOOKS), default='notebook')
     args = ap.parse_args()
+    style = LOOKS[args.look]
 
     world, t_traj, q_traj, people_t, people, tracks, modes = load_run(args.run)
-    model = build_model(world, people.shape[1])
+    model = build_model(world, people.shape[1], style)
     data = mujoco.MjData(model)
     renderer = mujoco.Renderer(model, args.height, args.width, max_geom=4000)
     pid = [model.body(f'person{i}').mocapid[0] for i in range(people.shape[1])]
@@ -192,14 +218,13 @@ def main():
         renderer.update_scene(data, cam)
         sc = renderer.scene
         # goal marker
-        add_geom(sc, mujoco.mjtGeom.mjGEOM_CYLINDER, [0.32, 0.004, 0], [goal[0], goal[1], 0.006], [0.11, 0.17, 0.29, 0.9])
-        add_geom(sc, mujoco.mjtGeom.mjGEOM_CYLINDER, [0.22, 0.005, 0], [goal[0], goal[1], 0.008], [0.94, 0.95, 0.94, 1])
-        add_geom(sc, mujoco.mjtGeom.mjGEOM_CYLINDER, [0.08, 0.006, 0], [goal[0], goal[1], 0.010], [0.11, 0.17, 0.29, 1])
+        for (radius, half, z), rgba in zip(((0.32, 0.004, 0.006), (0.22, 0.005, 0.008), (0.08, 0.006, 0.010)), style['goal']):
+            add_geom(sc, mujoco.mjtGeom.mjGEOM_CYLINDER, [radius, half, 0], [goal[0], goal[1], z], rgba)
         # robot trail
         j = int(np.searchsorted(t_traj, t))
         pts = trail[: max(j, 1)][::2]
         for a, b in zip(pts[:-1], pts[1:]):
-            add_segment(sc, [a[0], a[1], 0.012], [b[0], b[1], 0.012], 0.028, [0.75, 0.16, 0.23, 0.95])
+            add_segment(sc, [a[0], a[1], 0.012], [b[0], b[1], 0.012], 0.028, style['trail'])
         # LiDAR tracks at this time: footprint disc plus 1 s velocity arrow
         k = bisect.bisect_right(track_t, t) - 1
         if k >= 0:
@@ -208,11 +233,11 @@ def main():
                 if np.linalg.norm(v) < 0.12:
                     continue  # static returns (walls, blocks) stay out of the picture
                 r = float(np.clip(tr.get('radius', 0.3), 0.15, 0.7))
-                add_geom(sc, mujoco.mjtGeom.mjGEOM_CYLINDER, [r, 0.003, 0], [tr['x'], tr['y'], 0.016], [0.94, 0.84, 0.29, 0.55])
+                add_geom(sc, mujoco.mjtGeom.mjGEOM_CYLINDER, [r, 0.003, 0], [tr['x'], tr['y'], 0.016], style['track'])
                 if True:
                     a = [tr['x'], tr['y'], 0.03]
                     b = [tr['x'] + v[0] * 1.2, tr['y'] + v[1] * 1.2, 0.03]
-                    add_segment(sc, a, b, 0.022, [0.11, 0.17, 0.29, 0.85])
+                    add_segment(sc, a, b, 0.022, style['arrow'])
         return renderer.render()
 
     if args.stills:
