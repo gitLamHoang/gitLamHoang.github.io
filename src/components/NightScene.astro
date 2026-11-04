@@ -1154,8 +1154,15 @@ const lamps = [
     }
   }
 
-  /* Phones see a narrow slice of the middle: bring the tower and the moon into it. */
-  @media (max-width: 760px) {
+  /* Squarer screens crop the sides: bring the tower in so it stands clear of the edge. */
+  @media (min-width: 761px) and (min-aspect-ratio: 1/1) and (max-aspect-ratio: 3/2) {
+    .scene :global(.tower-pos) {
+      transform: translate(-60px, 0);
+    }
+  }
+
+  /* Phones and portrait screens see a narrow slice of the middle: bring the tower and the moon into it. */
+  @media (max-width: 760px), (max-aspect-ratio: 1/1) {
     /* Set lower, as if further back, so its railing sits below the sentence. */
     .scene :global(.tower-pos) {
       transform: translate(330px, 150px);
