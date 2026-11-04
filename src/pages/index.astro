@@ -269,12 +269,17 @@ const scholarly = papers.map((p) => ({
     list-style: none;
   }
 
-  @media (max-width: 900px) {
+  /* Below 1200px the actions move under the headline, so it keeps its two lines. */
+  @media (max-width: 1199px) {
     .hero {
       grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero {
       padding-top: calc(var(--space-900) + var(--space-200));
     }
-
   }
 
   /* ---------- research ---------- */
