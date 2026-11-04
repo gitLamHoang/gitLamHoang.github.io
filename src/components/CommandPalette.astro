@@ -87,10 +87,10 @@ const items: Item[] = [
       }
     </ul>
     <p class="palette-empty" data-palette-empty hidden>No match. Try "mpc", "paper", or "email".</p>
-    <p class="palette-foot ui"><kbd>↑</kbd><kbd>↓</kbd> to move <kbd>Enter</kbd> to open <kbd>⌘K</kbd> to toggle</p>
+    <p class="palette-foot"><kbd>↑</kbd><kbd>↓</kbd> to move <kbd>Enter</kbd> to open <kbd>⌘K</kbd> to toggle</p>
   </div>
 </dialog>
-<p class="toast ui" data-toast role="status" aria-live="polite"></p>
+<p class="toast" data-toast role="status" aria-live="polite"></p>
 
 <script>
   import { contact } from '../data/profile';
@@ -244,33 +244,21 @@ const items: Item[] = [
 </script>
 
 <style>
+  /* Opened from the keyboard many times a day, so it appears at once: no open animation. */
   .palette {
     width: min(640px, calc(100vw - 32px));
     max-height: min(560px, calc(100vh - 96px));
     margin: 12vh auto auto;
     padding: 0;
-    border: 1.5px solid var(--ink);
-    border-radius: 10px;
-    background: var(--paper-raised);
+    border: 0;
+    background: var(--surface);
     color: var(--ink);
-    box-shadow: 0 24px 60px -20px rgb(15 22 40 / 0.45);
+    box-shadow: 0 24px 64px -16px rgb(0 0 0 / 0.6);
     overflow: hidden;
   }
 
   .palette::backdrop {
-    background: rgb(18 27 41 / 0.42);
-    backdrop-filter: blur(3px);
-  }
-
-  .palette[open] {
-    animation: palette-in 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-
-  @keyframes palette-in {
-    from {
-      opacity: 0;
-      transform: translateY(-6px) scale(0.985);
-    }
+    background: rgb(0 0 0 / 0.55);
   }
 
   .palette-box {
@@ -282,16 +270,16 @@ const items: Item[] = [
   .palette-input {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--grid);
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface-2);
   }
 
   .palette-input svg {
     flex: none;
-    width: 20px;
-    height: 20px;
-    color: var(--graphite);
+    width: 18px;
+    height: 18px;
+    color: var(--muted);
   }
 
   .palette-input input {
@@ -302,28 +290,30 @@ const items: Item[] = [
     outline: 0;
     background: transparent;
     color: var(--ink);
-    font-family: var(--font-text);
-    font-size: 1.125rem;
+    font: inherit;
+    font-size: var(--step-body);
+    caret-color: var(--measure);
+  }
+
+  .palette-input input::placeholder {
+    color: var(--muted);
   }
 
   kbd {
     display: inline-block;
     min-width: 1.6em;
-    padding: 1px 6px;
-    border: 1px solid var(--grid);
-    border-bottom-width: 2px;
-    border-radius: 4px;
-    font-family: var(--font-ui);
+    padding: 2px 6px;
+    font: inherit;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: 500;
     text-align: center;
-    color: var(--graphite);
-    background: var(--paper);
+    color: var(--muted);
+    background: var(--bg);
   }
 
   .palette-list {
     margin: 0;
-    padding: 6px;
+    padding: 8px;
     list-style: none;
     overflow-y: auto;
   }
@@ -337,19 +327,17 @@ const items: Item[] = [
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: baseline;
     gap: 2px 16px;
-    padding: 9px 12px;
-    border-radius: 6px;
+    padding: 10px 12px;
     cursor: pointer;
   }
 
   .pi-group {
     display: none;
     grid-column: 1 / -1;
-    margin: 6px 0 2px;
-    font-family: var(--font-ui);
+    margin: 8px 0 2px;
     font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--graphite);
+    font-weight: 500;
+    color: var(--muted);
   }
 
   .palette-list li.first-of-group .pi-group {
@@ -357,15 +345,12 @@ const items: Item[] = [
   }
 
   .pi-label {
-    font-family: var(--font-ui);
-    font-size: 1.0625rem;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .pi-hint {
-    font-family: var(--font-ui);
-    font-size: 0.875rem;
-    color: var(--graphite);
+    font-size: var(--step-small);
+    color: var(--muted);
     text-align: right;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -374,13 +359,12 @@ const items: Item[] = [
   }
 
   .palette-list li[aria-selected='true'] {
-    background: color-mix(in srgb, var(--hl) 34%, transparent);
-    box-shadow: inset 3px 0 0 var(--pen);
+    background: var(--surface-2);
   }
 
   .palette-empty {
     padding: 18px;
-    color: var(--graphite);
+    color: var(--muted);
   }
 
   .palette-foot {
@@ -389,14 +373,10 @@ const items: Item[] = [
     align-items: center;
     gap: 6px;
     margin: 0;
-    padding: 9px 14px;
-    border-top: 1px solid var(--grid);
-    font-size: 0.875rem;
-    color: var(--graphite);
-  }
-
-  .palette-foot kbd + kbd {
-    margin-left: -2px;
+    padding: 10px 16px;
+    background: var(--surface-2);
+    font-size: var(--step-small);
+    color: var(--muted);
   }
 
   .toast {
@@ -405,16 +385,16 @@ const items: Item[] = [
     bottom: 24px;
     z-index: 40;
     margin: 0;
-    padding: 10px 16px;
-    border: 1.5px solid var(--ink);
-    border-radius: 999px;
-    background: var(--paper-raised);
-    color: var(--ink);
-    font-weight: 600;
-    transform: translate(-50%, 16px);
+    padding: 12px 18px;
+    background: var(--ink);
+    color: var(--bg);
+    font-weight: 500;
+    transform: translate(-50%, 12px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition:
+      opacity var(--dur-ui) ease,
+      transform var(--dur-ui) var(--ease-out);
   }
 
   .toast.is-on {
@@ -423,10 +403,7 @@ const items: Item[] = [
   }
 
   @media (max-width: 560px) {
-    .pi-hint {
-      display: none;
-    }
-
+    .pi-hint,
     .palette-foot {
       display: none;
     }
