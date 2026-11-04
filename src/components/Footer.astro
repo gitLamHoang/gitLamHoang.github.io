@@ -3,6 +3,7 @@
 // details, then a short footer with the legal-name and quote credits.
 import Epigraph from './Epigraph.astro';
 import Icon from './Icon.astro';
+import Skyline from './Skyline.astro';
 import { contact, person } from '../data/profile';
 
 const built = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Los_Angeles' });
@@ -30,6 +31,8 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
     </dl>
   </section>
 
+  <Skyline />
+
   <div class="base">
     <div class="fine caption-2 text-2">
       <p>Legal name: {person.legalName}. Papers are listed under the published author name.</p>
@@ -49,7 +52,13 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
 <style>
   .site-footer {
     padding-top: var(--space-900);
-    padding-bottom: var(--space-400);
+    padding-bottom: 0;
+  }
+
+  /* The skyline and the base band run edge to edge, past the page's own width. */
+  .site-footer :global(.skyline) {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
   }
 
   .close-cta {
@@ -117,8 +126,10 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--space-300) var(--space-600);
-    margin-top: var(--space-600);
-    padding-top: var(--space-300);
+    margin-left: calc(50% - 50vw);
+    width: 100vw;
+    padding: var(--space-400) max(var(--gutter), calc(50vw - var(--page-max) / 2)) 0;
+    background: #08112b;
   }
 
   .fine {
@@ -151,6 +162,7 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
 
   .year {
     grid-column: 1 / -1;
+    padding-bottom: var(--space-400);
   }
 
   @media (max-width: 900px) {

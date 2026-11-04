@@ -1,0 +1,315 @@
+---
+// Stanford at night, screen-printed: Hoover Tower, the Main Quad arcade and Memorial Church, Palm
+// Drive's palms, a full moon, and the plaza where a small G1 walks its waypoints between people.
+// Drawn in flat layers so each can move on its own: the windows light, the path draws itself,
+// the robot walks it once, and the layers drift apart as the page scrolls.
+
+// Deterministic stars, so every build draws the same sky.
+let seed = 7;
+const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+const stars = Array.from({ length: 70 }, () => ({
+  x: Math.round(rand() * 1440),
+  y: Math.round(rand() * 470),
+  r: +(0.6 + rand() * 1.3).toFixed(2),
+  o: +(0.25 + rand() * 0.6).toFixed(2),
+}));
+
+// Arcade openings along the Main Quad, skipping the church front.
+const arches = Array.from({ length: 15 }, (_, i) => 540 + i * 62).filter((x) => x < 900 || x > 1110);
+
+// People crossing the plaza: x, y (feet), height, drift distance.
+const walkers = [
+  { x: 430, y: 796, h: 44, d: 70 },
+  { x: 575, y: 752, h: 34, d: -50 },
+  { x: 640, y: 808, h: 46, d: 60 },
+  { x: 770, y: 770, h: 38, d: -60 },
+  { x: 845, y: 804, h: 44, d: 50 },
+  { x: 945, y: 744, h: 30, d: 40 },
+  { x: 1125, y: 784, h: 40, d: -70 },
+  { x: 1230, y: 806, h: 46, d: 50 },
+  { x: 1330, y: 758, h: 34, d: -40 },
+];
+
+// The robot's planned route: start, three waypoints, the church steps.
+const route = 'M 214 812 C 320 806, 400 782, 500 788 S 616 808, 700 786 S 806 744, 892 752 S 984 734, 1010 712';
+const waypoints = [
+  [500, 788],
+  [700, 786],
+  [892, 752],
+  [1010, 712],
+];
+---
+
+<svg
+  class="scene"
+  viewBox="0 0 1440 900"
+  preserveAspectRatio="xMidYMax slice"
+  role="img"
+  aria-label="Illustration: Stanford at night. Hoover Tower and the Main Quad stand under a full moon; on the plaza a small humanoid robot walks a dotted route between people."
+  data-scene
+>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#091127" />
+      <stop offset="0.7" stop-color="#121f45" />
+      <stop offset="1" stop-color="#1a2b55" />
+    </linearGradient>
+    <radialGradient id="moonGlow">
+      <stop offset="0" stop-color="#efe3c6" stop-opacity="0.32" />
+      <stop offset="0.45" stop-color="#efe3c6" stop-opacity="0.08" />
+      <stop offset="1" stop-color="#efe3c6" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="lamp">
+      <stop offset="0" stop-color="#f0b860" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#f0b860" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="plaza" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16244a" />
+      <stop offset="1" stop-color="#0a1229" />
+    </linearGradient>
+    <!-- Halftone: cream dots where the moon lights a surface, fading away from it. -->
+    <pattern id="dots" width="5" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="2.5" cy="2.5" r="1.15" fill="#efe3c6" />
+    </pattern>
+    <linearGradient id="litRight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0.35" stop-color="#fff" stop-opacity="0" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="litTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.8" />
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+    <radialGradient id="litMoon" cx="0.68" cy="0.32" r="0.75">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.85" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </radialGradient>
+    <mask id="mTower"><rect x="200" y="190" width="100" height="520" fill="url(#litRight)" /></mask>
+    <mask id="mRoof"><rect x="520" y="560" width="920" height="80" fill="url(#litTop)" /></mask>
+    <clipPath id="cTower">
+      <path d="M207 700 L215 330 L285 330 L293 700 Z" />
+      <rect x="209" y="290" width="82" height="40" />
+      <path d="M214 282 C 214 246, 236 230, 250 230 C 264 230, 286 246, 286 282 Z" />
+    </clipPath>
+    <clipPath id="cQuad">
+      <rect x="520" y="596" width="920" height="108" />
+      <path d="M916 704 L916 548 L1010 482 L1104 548 L1104 704 Z" />
+    </clipPath>
+    <mask id="mMoon"><circle cx="1238" cy="158" r="56" fill="url(#litMoon)" /></mask>
+    <!-- The plan draws itself ahead of the robot: a solid copy of the route reveals the dotted one. -->
+    <mask id="mRoute" maskUnits="userSpaceOnUse" x="0" y="600" width="1440" height="300">
+      <path d={route} fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round" data-route-reveal />
+    </mask>
+  </defs>
+
+  <!-- sky, glow, stars, moon -->
+  <g data-layer="0.08">
+    <rect width="1440" height="900" fill="url(#sky)" />
+    <circle cx="1238" cy="158" r="300" fill="url(#moonGlow)" />
+    {stars.map((s) => <circle class="star" cx={s.x} cy={s.y} r={s.r} fill="#efe3c6" opacity={s.o} />)}
+    <g class="moon">
+      <circle cx="1238" cy="158" r="56" fill="#e9dcbc" />
+      <circle cx="1238" cy="158" r="56" fill="url(#dots)" mask="url(#mMoon)" opacity="0.6" />
+      <g fill="#cdbd98" opacity="0.75">
+        <circle cx="1222" cy="140" r="11" />
+        <circle cx="1255" cy="172" r="8" />
+        <circle cx="1230" cy="182" r="5" />
+        <circle cx="1260" cy="135" r="4" />
+        <circle cx="1210" cy="166" r="3.5" />
+      </g>
+    </g>
+  </g>
+
+  <!-- the foothills behind campus -->
+  <g data-layer="0.14">
+    <path d="M0 610 C 160 560, 300 575, 430 590 S 700 540, 860 566 S 1150 548, 1300 572 S 1420 586, 1440 590 L1440 700 L0 700 Z" fill="#13214a" />
+    <path d="M0 640 C 220 610, 420 628, 600 620 S 980 600, 1180 618 S 1380 630, 1440 626 L1440 700 L0 700 Z" fill="#101c3f" />
+  </g>
+
+  <!-- palms behind the arcade -->
+  <g data-layer="0.22" class="palms">
+    {
+      [
+        [470, 690, 400],
+        [604, 640, 430],
+        [1216, 640, 386],
+        [1378, 650, 418],
+      ].map(([x, base, top]) => (
+        <g>
+          <path d={`M${x} ${base} C ${x - 6} ${(base + top) / 2}, ${x + 8} ${top + 40}, ${x + 2} ${top}`} stroke="#081029" stroke-width="7" fill="none" stroke-linecap="round" />
+          <g fill="#081029" transform={`translate(${x + 2} ${top})`}>
+            <path d="M0 0 C -30 -12, -58 -4, -74 18 C -50 4, -26 4, 0 6 Z" />
+            <path d="M0 0 C 30 -14, 60 -6, 76 16 C 52 2, 28 2, 0 6 Z" />
+            <path d="M0 0 C -14 -30, -42 -42, -66 -36 C -40 -26, -20 -14, 0 4 Z" />
+            <path d="M0 0 C 16 -30, 44 -40, 68 -32 C 42 -24, 22 -12, 0 4 Z" />
+            <path d="M0 0 C -4 -30, 6 -52, 22 -62 C 12 -44, 6 -24, 2 2 Z" />
+            <path d="M0 2 C -28 4, -48 22, -54 46 C -36 26, -18 14, 0 8 Z" />
+            <path d="M0 2 C 28 4, 50 22, 56 46 C 38 26, 20 14, 0 8 Z" />
+          </g>
+        </g>
+      ))
+    }
+  </g>
+
+  <!-- Hoover Tower -->
+  <g data-layer="0.26" class="tower"><g transform="translate(-112 0)">
+    <path d="M207 700 L215 330 L285 330 L293 700 Z" fill="#1c2c58" />
+    <path d="M250 700 L250 330 L285 330 L293 700 Z" fill="#26386a" />
+    <g clip-path="url(#cTower)"><rect x="200" y="190" width="100" height="520" fill="url(#dots)" mask="url(#mTower)" opacity="0.5" /></g>
+    <g fill="#0f1a39">
+      <rect x="228" y="360" width="6" height="300" />
+      <rect x="266" y="360" width="6" height="300" />
+    </g>
+    <g class="win" fill="#f0b860">
+      <rect x="244" y="380" width="12" height="18" rx="1" />
+      <rect x="244" y="452" width="12" height="18" rx="1" />
+      <rect x="244" y="524" width="12" height="18" rx="1" />
+      <rect x="244" y="596" width="12" height="18" rx="1" />
+    </g>
+    <path d="M209 330 L291 330 L291 290 L209 290 Z" fill="#203264" />
+    <g class="win" fill="#f0b860" fill-opacity="0.9">
+      <path d="M220 326 L220 306 A6 6 0 0 1 232 306 L232 326 Z" />
+      <path d="M244 326 L244 306 A6 6 0 0 1 256 306 L256 326 Z" />
+      <path d="M268 326 L268 306 A6 6 0 0 1 280 306 L280 326 Z" />
+    </g>
+    <rect x="204" y="282" width="92" height="9" fill="#2c4078" />
+    <path d="M214 282 C 214 246, 236 230, 250 230 C 264 230, 286 246, 286 282 Z" fill="#7a3b34" />
+    <path d="M250 230 C 264 230, 286 246, 286 282 L 262 282 C 262 252, 256 236, 250 230 Z" fill="#a4553f" />
+    <rect x="241" y="212" width="18" height="20" fill="#26386a" />
+    <path d="M239 213 C 239 203, 261 203, 261 213 Z" fill="#a4553f" />
+    <path d="M250 203 L250 186" stroke="#efe3c6" stroke-width="2" stroke-linecap="round" />
+  </g></g>
+
+  <!-- the Main Quad arcade and Memorial Church -->
+  <g data-layer="0.34" class="quad">
+    <rect x="520" y="612" width="920" height="92" fill="#1e2f5c" />
+    <rect x="520" y="596" width="920" height="18" fill="#6e3430" />
+    <g clip-path="url(#cQuad)"><rect x="520" y="560" width="920" height="80" fill="url(#dots)" mask="url(#mRoof)" opacity="0.35" /></g>
+    {
+      arches.map((x) => (
+        <g>
+          <path d={`M${x} 700 L${x} 652 A22 22 0 0 1 ${x + 44} 652 L${x + 44} 700 Z`} fill="#0c1530" />
+          <path class="win" d={`M${x + 6} 700 L${x + 6} 656 A16 16 0 0 1 ${x + 38} 656 L${x + 38} 700 Z`} fill="#f0b860" fill-opacity="0.22" />
+        </g>
+      ))
+    }
+    <!-- Memorial Church: gable, gold mosaic, great arch -->
+    <path d="M916 704 L916 548 L1010 482 L1104 548 L1104 704 Z" fill="#26386a" />
+    <path d="M1010 482 L1104 548 L1104 704 L1010 704 Z" fill="#2d4277" />
+    <path d="M904 552 L1010 476 L1116 552" fill="none" stroke="#7a3b34" stroke-width="10" stroke-linejoin="round" />
+    <rect x="944" y="560" width="132" height="56" fill="#c99a45" />
+    <g fill="#8c6a2d" opacity="0.9">
+      <rect x="954" y="568" width="22" height="40" />
+      <rect x="982" y="568" width="56" height="40" />
+      <rect x="1044" y="568" width="22" height="40" />
+    </g>
+    <path d="M980 704 L980 660 A30 30 0 0 1 1040 660 L1040 704 Z" fill="#0c1530" />
+    <path class="win" d="M988 704 L988 662 A22 22 0 0 1 1032 662 L1032 704 Z" fill="#f0b860" fill-opacity="0.45" />
+  </g>
+
+  <!-- the plaza: paths, lamps, people, the robot and its route -->
+  <g data-layer="0.5" class="plaza">
+    <rect x="0" y="700" width="1440" height="200" fill="url(#plaza)" />
+    <path d="M0 724 C 400 712, 1000 712, 1440 724" stroke="#22356a" stroke-width="2" fill="none" opacity="0.7" />
+    <path d="M520 830 L860 704 L1160 704 L1440 812 L1440 830 Z" fill="#14224a" opacity="0.8" />
+    <rect x="0" y="826" width="1440" height="74" fill="#08112b" />
+    <rect x="0" y="822" width="1440" height="4" fill="#0d1838" />
+    {
+      [
+        [400, 744],
+        [880, 728],
+        [1186, 748],
+      ].map(([x, y]) => (
+        <g>
+          <ellipse cx={x} cy={y + 46} rx="90" ry="22" fill="url(#lamp)" />
+          <rect x={x - 1.5} y={y - 6} width="3" height="52" fill="#0b132b" />
+          <circle class="win lamp" cx={x} cy={y - 8} r="5" fill="#f6cf86" />
+          <circle cx={x} cy={y - 8} r="18" fill="url(#lamp)" />
+        </g>
+      ))
+    }
+
+    <g mask="url(#mRoute)">
+      <path class="route" d={route} fill="none" stroke="#e4502f" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 12" data-route />
+      {waypoints.map(([x, y]) => <circle class="wp" cx={x} cy={y} r="9" fill="none" stroke="#e4502f" stroke-width="2.5" />)}
+    </g>
+
+    {
+      walkers.map((w) => (
+        <g class="walker" data-drift={w.d} transform={`translate(${w.x} ${w.y})`}>
+          <ellipse cx="0" cy="1" rx={w.h * 0.32} ry="3" fill="#050a1a" opacity="0.6" />
+          <path d={`M${-w.h * 0.1} 0 L${-w.h * 0.06} ${-w.h * 0.42} M${w.h * 0.1} 0 L${w.h * 0.06} ${-w.h * 0.42}`} stroke="#070d22" stroke-width={w.h * 0.1} stroke-linecap="round" />
+          <path d={`M${-w.h * 0.16} ${-w.h * 0.4} C ${-w.h * 0.2} ${-w.h * 0.62}, ${-w.h * 0.14} ${-w.h * 0.76}, 0 ${-w.h * 0.76} C ${w.h * 0.14} ${-w.h * 0.76}, ${w.h * 0.2} ${-w.h * 0.62}, ${w.h * 0.16} ${-w.h * 0.4} Z`} fill="#0a1229" />
+          <circle cx="0" cy={-w.h * 0.88} r={w.h * 0.11} fill="#0a1229" />
+          <path d={`M${w.h * 0.06} ${-w.h * 0.74} C ${w.h * 0.16} ${-w.h * 0.72}, ${w.h * 0.19} ${-w.h * 0.6}, ${w.h * 0.16} ${-w.h * 0.42}`} stroke="#efe3c6" stroke-opacity="0.45" stroke-width="1.6" fill="none" />
+          <path d={`M${w.h * 0.04} ${-w.h * 0.98} A ${w.h * 0.11} ${w.h * 0.11} 0 0 1 ${w.h * 0.11} ${-w.h * 0.86}`} stroke="#efe3c6" stroke-opacity="0.5" stroke-width="1.4" fill="none" />
+        </g>
+      ))
+    }
+
+    <!-- the G1: cream body, vermilion visor -->
+    <g class="robot" data-robot transform="translate(214 812)">
+      <ellipse cx="0" cy="1" rx="12" ry="3" fill="#050a1a" opacity="0.6" />
+      <g class="legs">
+        <rect class="leg l" x="-6" y="-17" width="4.5" height="17" rx="2" fill="#d9cba8" />
+        <rect class="leg r" x="1.5" y="-17" width="4.5" height="17" rx="2" fill="#efe3c6" />
+      </g>
+      <rect x="-8" y="-34" width="16" height="18" rx="4" fill="#efe3c6" />
+      <rect x="-11" y="-32" width="3.5" height="14" rx="1.75" fill="#d9cba8" />
+      <rect x="7.5" y="-32" width="3.5" height="14" rx="1.75" fill="#efe3c6" />
+      <rect x="-5.5" y="-44" width="11" height="10" rx="4" fill="#efe3c6" />
+      <rect x="-4" y="-41" width="8" height="3.5" rx="1.5" fill="#e4502f" />
+    </g>
+  </g>
+</svg>
+
+<style>
+  .scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .scene :global([data-layer]) {
+    will-change: transform;
+  }
+
+  /* Lit by script, one window after another; lit from the start without it. */
+  :global(html.js) .scene .win {
+    opacity: 0;
+    transition: opacity 600ms var(--ease) calc(var(--w, 0) * 70ms);
+  }
+
+  :global(html.js) .scene.is-lit .win {
+    opacity: 1;
+  }
+
+  .legs .leg {
+    transform-box: fill-box;
+    transform-origin: 50% 0%;
+  }
+
+  .scene.is-walking .leg.l {
+    animation: stride 520ms ease-in-out infinite alternate;
+  }
+
+  .scene.is-walking .leg.r {
+    animation: stride 520ms ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes stride {
+    from {
+      transform: rotate(-16deg);
+    }
+    to {
+      transform: rotate(16deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(html.js) .scene .win {
+      transition: none;
+    }
+  }
+</style>

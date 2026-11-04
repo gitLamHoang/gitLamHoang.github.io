@@ -1,0 +1,71 @@
+---
+// The close of the page: the same night, seen from further away. The arcade and palms run along the
+// bottom, the moon sits low, and the robot stands at the end of its route.
+const arches = Array.from({ length: 24 }, (_, i) => 40 + i * 60).filter((x) => x < 640 || x > 820);
+---
+
+<svg class="skyline" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="skyMoonGlow">
+      <stop offset="0" stop-color="#efe3c6" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#efe3c6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <circle cx="1180" cy="70" r="120" fill="url(#skyMoonGlow)" />
+  <circle cx="1180" cy="70" r="30" fill="#e9dcbc" />
+  <circle cx="1170" cy="62" r="6" fill="#cdbd98" opacity="0.75" />
+  <circle cx="1190" cy="80" r="4" fill="#cdbd98" opacity="0.75" />
+  <path d="M0 150 C 240 120, 520 138, 760 128 S 1200 120, 1440 136 L1440 220 L0 220 Z" fill="#101c3f" />
+  {
+    [
+      [120, 186, 70],
+      [540, 186, 86],
+      [980, 186, 64],
+      [1320, 186, 80],
+    ].map(([x, base, top]) => (
+      <g fill="#081029">
+        <path d={`M${x} ${base} C ${x - 4} ${(base + top) / 2}, ${x + 6} ${top + 30}, ${x + 2} ${top}`} stroke="#081029" stroke-width="5" fill="none" stroke-linecap="round" />
+        <g transform={`translate(${x + 2} ${top}) scale(0.7)`}>
+          <path d="M0 0 C -30 -12, -58 -4, -74 18 C -50 4, -26 4, 0 6 Z" />
+          <path d="M0 0 C 30 -14, 60 -6, 76 16 C 52 2, 28 2, 0 6 Z" />
+          <path d="M0 0 C -14 -30, -42 -42, -66 -36 C -40 -26, -20 -14, 0 4 Z" />
+          <path d="M0 0 C 16 -30, 44 -40, 68 -32 C 42 -24, 22 -12, 0 4 Z" />
+          <path d="M0 2 C -28 4, -48 22, -54 46 C -36 26, -18 14, 0 8 Z" />
+          <path d="M0 2 C 28 4, 50 22, 56 46 C 38 26, 20 14, 0 8 Z" />
+        </g>
+      </g>
+    ))
+  }
+  <rect x="0" y="150" width="1440" height="12" fill="#6e3430" />
+  <rect x="0" y="162" width="1440" height="58" fill="#1e2f5c" />
+  {
+    arches.map((x) => (
+      <g>
+        <path d={`M${x} 220 L${x} 190 A18 18 0 0 1 ${x + 36} 190 L${x + 36} 220 Z`} fill="#0c1530" />
+        <path d={`M${x + 5} 220 L${x + 5} 193 A13 13 0 0 1 ${x + 31} 193 L${x + 31} 220 Z`} fill="#f0b860" fill-opacity="0.2" />
+      </g>
+    ))
+  }
+  <path d="M650 220 L650 132 L730 92 L810 132 L810 220 Z" fill="#26386a" />
+  <path d="M640 134 L730 86 L820 134" fill="none" stroke="#7a3b34" stroke-width="7" stroke-linejoin="round" />
+  <rect x="676" y="140" width="108" height="34" fill="#c99a45" />
+  <path d="M708 220 L708 196 A22 22 0 0 1 752 196 L752 220 Z" fill="#0c1530" />
+  <!-- the robot, arrived, on the church steps -->
+  <g transform="translate(730 220)">
+    <rect x="-4.5" y="-14" width="3.5" height="14" rx="1.5" fill="#d9cba8" />
+    <rect x="1" y="-14" width="3.5" height="14" rx="1.5" fill="#efe3c6" />
+    <rect x="-6.5" y="-28" width="13" height="15" rx="3" fill="#efe3c6" />
+    <rect x="-4.5" y="-36" width="9" height="8" rx="3" fill="#efe3c6" />
+    <rect x="-3.2" y="-33.5" width="6.4" height="2.8" rx="1.2" fill="#e4502f" />
+  </g>
+</svg>
+
+<style>
+  .skyline {
+    display: block;
+    overflow: visible;
+    width: 100%;
+    height: clamp(140px, 16vw, 220px);
+    margin-top: var(--space-700);
+  }
+</style>

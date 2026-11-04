@@ -1,26 +1,30 @@
-/* Harvey's Hub, in elayadesign's visual system: one face in named text styles, a fixed spacing
-   scale, flat black surfaces, and one gold accent kept for measured figures. */
+/* Harvey's Hub as a screen-printed night poster of Stanford: navy ground with grain, cream type,
+   vermilion for the second line, the robot's path, and measured figures, gold for thin outlines.
+   The named text styles and spacing scale carry over from the previous system. */
 
 :root {
   color-scheme: dark;
 
-  /* surfaces: flat, from the approved dark set only */
-  --bg: #000000;
-  --surface-1: #181818;
-  --surface-2: #1f1f1f;
-  --surface-3: #272727;
-  --surface-4: #313131;
-  --border: #272727;
-  --border-strong: #313131;
+  /* night: navy surfaces, one tone step apart */
+  --bg: #0b1430;
+  --surface-1: #101b3b;
+  --surface-2: #152349;
+  --surface-3: #1c2d58;
+  --surface-4: #26386a;
+  --border: #22335f;
+  --border-strong: #2e4277;
 
-  /* text and the one accent */
-  --text: #ffffff;
-  --text-2: #9b9b9b;
-  --text-3: #8a8a8a;
-  --accent: #e5c04a;
-  --accent-ink: #000000;
+  /* cream type, vermilion for what was measured, gold for outlines */
+  --text: #efe3c6;
+  --text-2: #aeb6cc;
+  --text-3: #919bb6;
+  --accent: #ec5a36;
+  --accent-ink: #efe3c6;
+  --gold: #d9a441;
 
-  --font: 'Geist Variable', 'Geist', system-ui, sans-serif;
+  --font: 'Hanken Grotesk Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Big Shoulders Display Variable', 'Arial Narrow', sans-serif;
+  --font-serif: 'Young Serif', Georgia, serif;
 
   /* spacing: only these values */
   --space-25: 2px;
@@ -67,6 +71,7 @@
   --measure: var(--accent);
   --robot: var(--accent);
   --pen: #f28b74;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.94 0 0 0 0 0.89 0 0 0 0 0.78 0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   --route: var(--text);
   --surface: var(--surface-1);
   --muted: var(--text-2);
@@ -124,6 +129,19 @@ body {
   overflow-x: clip;
 }
 
+/* Screen-print grain over everything, faint enough to keep text crisp. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  background-image: var(--grain);
+  background-size: 220px 220px;
+  opacity: 0.09;
+  mix-blend-mode: screen;
+}
+
 :where(h1, h2, h3, h4, h5, h6, p, ul, ol, dl, dd, figure, blockquote) {
   margin: 0;
 }
@@ -141,7 +159,7 @@ body {
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.25em;
-  text-decoration-color: rgb(255 255 255 / 0.35);
+  text-decoration-color: rgb(239 227 198 / 0.4);
   transition: text-decoration-color var(--dur-fade) var(--ease);
 }
 
@@ -169,8 +187,8 @@ cite {
 }
 
 ::selection {
-  background: var(--text);
-  color: var(--bg);
+  background: var(--accent);
+  color: var(--text);
 }
 
 img,
@@ -218,12 +236,13 @@ code {
 
 /* ---------- named text styles (Tailwind scale) ---------- */
 
-.heading-1 { font-size: 3.75rem; line-height: 3.75rem; font-weight: 600; letter-spacing: -0.035em; }
-.heading-2 { font-size: 3rem; line-height: 3rem; font-weight: 600; letter-spacing: -0.03em; }
-.heading-3 { font-size: 2.25rem; line-height: 2.5rem; font-weight: 600; letter-spacing: -0.025em; }
-.heading-4 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 600; letter-spacing: -0.02em; }
-.heading-5 { font-size: 1.5rem; line-height: 2rem; font-weight: 600; letter-spacing: -0.015em; }
-.heading-6 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; letter-spacing: -0.01em; }
+/* Large headings are poster type: the condensed face, uppercase. Smaller ones are the serif. */
+.heading-1 { font-family: var(--font-display); font-size: 4.5rem; line-height: 4.25rem; font-weight: 800; letter-spacing: 0.005em; text-transform: uppercase; }
+.heading-2 { font-family: var(--font-display); font-size: 3.75rem; line-height: 3.5rem; font-weight: 800; letter-spacing: 0.005em; text-transform: uppercase; }
+.heading-3 { font-family: var(--font-display); font-size: 3rem; line-height: 3rem; font-weight: 800; letter-spacing: 0.01em; text-transform: uppercase; }
+.heading-4 { font-family: var(--font-serif); font-size: 1.875rem; line-height: 2.25rem; font-weight: 400; }
+.heading-5 { font-family: var(--font-serif); font-size: 1.5rem; line-height: 2rem; font-weight: 400; }
+.heading-6 { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.75rem; font-weight: 400; }
 .title-1 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 500; letter-spacing: -0.01em; }
 .title-2 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 500; }
 .title-3 { font-size: 1rem; line-height: 1.5rem; font-weight: 500; }
@@ -246,18 +265,15 @@ code {
 
 /* Headings step down on phones, still on the scale. */
 @media (max-width: 767px) {
-  .heading-1 { font-size: 2.25rem; line-height: 2.5rem; }
-  .heading-2 { font-size: 1.875rem; line-height: 2.25rem; }
-  .heading-3 { font-size: 1.5rem; line-height: 2rem; }
+  .heading-1 { font-size: 3rem; line-height: 3rem; }
+  .heading-2 { font-size: 2.75rem; line-height: 2.75rem; }
+  .heading-3 { font-size: 2.25rem; line-height: 2.25rem; }
   .heading-4 { font-size: 1.5rem; line-height: 2rem; }
 }
 
-/* The hero heading is the one place a gradient is allowed: on the text, left to right. */
+/* A page's top heading: cream poster type. (The name is kept from the previous system.) */
 .hero-gradient {
-  background: linear-gradient(90deg, #ffffff 0%, #9b9b9b 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--text);
 }
 
 .text-2 {
@@ -319,7 +335,7 @@ mark.hl {
   }
 }
 
-/* A panel is a flat surface with a full border; media inside it takes the nested radius. */
+/* A panel is a printed card: one tone up from the night, a full border, nested radius inside. */
 .panel {
   background: var(--surface-1);
   border: 1px solid var(--border);
@@ -364,9 +380,12 @@ mark.hl {
 }
 
 .btn-primary {
-  background: var(--text);
-  border-color: var(--text);
-  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text);
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 4px #f3c9a3;
+  padding-inline: var(--space-300);
 }
 
 .btn-sm {
@@ -384,7 +403,7 @@ mark.hl {
   }
 
   .btn-primary:hover {
-    background: #e6e6e6;
+    background: #ef5d3b;
   }
 }
 
@@ -426,7 +445,7 @@ mark.hl {
   font-weight: 500;
 }
 
-/* Running text keeps a readable measure in Geist (about 75 characters). */
+/* Running text keeps a readable measure (about 75 characters). */
 .measure {
   max-width: 36rem;
 }

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Epigraph from '../components/Epigraph.astro';
+import Poster from '../components/Poster.astro';
 import CaseFile from '../components/CaseFile.astro';
 import Tagline from '../components/Tagline.astro';
 import Icon from '../components/Icon.astro';
@@ -9,7 +10,7 @@ import BalancingMethod from '../components/BalancingMethod.astro';
 import Certificates from '../components/Certificates.astro';
 import People from '../components/People.astro';
 import Marked from '../components/Marked.astro';
-import { affiliations, contact, education, experience, honors, immc, papers, person, scores, tools } from '../data/profile';
+import { affiliations, education, experience, honors, immc, papers, scores, tools } from '../data/profile';
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const [balancing, macro] = papers;
@@ -31,22 +32,7 @@ const scholarly = papers.map((p) => ({
 ---
 
 <Base structured={scholarly}>
-  <section class="hero wrap" aria-labelledby="hero-title">
-    <div class="hero-main">
-      <h1 id="hero-title" class="heading-1 hero-gradient">
-        Navigation software<br />
-        for humanoid robots.
-      </h1>
-      <p class="sub title-1 text-2">{person.name}, Stanford CS. I lead navigation on HARP's Unitree G1.</p>
-    </div>
-    <div class="hero-side">
-      <div class="cta">
-        <a class="btn btn-primary" href={contact.resume} download="Harvey_Phan_Resume.pdf"><Icon name="download" />Download resume</a>
-        <a class="btn" href={`mailto:${contact.email}`}><Icon name="envelope" />Email me</a>
-      </div>
-      <Epigraph quote="hero" />
-    </div>
-  </section>
+  <Poster />
 
   <CaseFile entries={work} />
 
@@ -220,34 +206,6 @@ const scholarly = papers.map((p) => ({
 </Base>
 
 <style>
-  /* ---------- hero: heading and subheading at 680px, actions beside ---------- */
-
-  .hero {
-    display: grid;
-    grid-template-columns: minmax(0, 680px) minmax(0, 24rem);
-    justify-content: space-between;
-    align-items: end;
-    gap: var(--space-400) var(--space-600);
-    padding-top: calc(var(--space-900) + var(--space-400));
-  }
-
-  .sub {
-    margin-top: var(--space-300);
-    max-width: 680px;
-  }
-
-  .hero-side {
-    display: grid;
-    gap: var(--space-300);
-    justify-items: start;
-  }
-
-  .cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-100);
-  }
-
   /* ---------- the organizations: one composed row of names ---------- */
 
   .orgs-band {
@@ -267,19 +225,6 @@ const scholarly = papers.map((p) => ({
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-
-  /* Below 1200px the actions move under the headline, so it keeps its two lines. */
-  @media (max-width: 1199px) {
-    .hero {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  @media (max-width: 900px) {
-    .hero {
-      padding-top: calc(var(--space-900) + var(--space-200));
-    }
   }
 
   /* ---------- research ---------- */

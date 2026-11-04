@@ -1,6 +1,7 @@
 ---
-// A compact bar that floats off the top edge, sized to its content, on a translucent blurred surface.
-// On phones it opens a full-height panel whose links arrive one after another.
+// The top of the poster: the name in serif on the left, serif links on the right. Clear over the
+// night scene, a solid navy bar once the poster has scrolled away. On phones it opens a full-height
+// panel whose links arrive one after another.
 import Icon from './Icon.astro';
 import { contact, person } from '../data/profile';
 
@@ -17,12 +18,12 @@ const nav = [
 
 <header class="site-nav" data-nav data-home={home ? '' : undefined}>
   <nav class="pill" aria-label="Main">
-    <a class="brand title-4" href="/" aria-label={`${person.siteTitle}, home`}>{person.name}</a>
+    <a class="brand" href="/" aria-label={`${person.siteTitle}, home`}>{person.name}</a>
     <ul class="links">
       {
         nav.map((n) => (
           <li>
-            <a class="title-4" href={n.href} data-section={n.section || undefined} aria-current={n.current ? 'page' : undefined}>
+            <a href={n.href} data-section={n.section || undefined} aria-current={n.current ? 'page' : undefined}>
               {n.label}
             </a>
           </li>
@@ -32,7 +33,7 @@ const nav = [
     <button type="button" class="icon-btn" data-palette-open aria-label="Search the site" aria-keyshortcuts="Meta+K Control+K">
       <Icon name="search" />
     </button>
-    <a class="btn btn-sm btn-primary cv" href={contact.resume} download="Harvey_Phan_Resume.pdf">Resume</a>
+    <a class="cv" href={contact.resume} download="Harvey_Phan_Resume.pdf">Resume</a>
     <button type="button" class="icon-btn toggle" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open the menu">
       <span class="bars" aria-hidden="true"><span></span><span></span></span>
     </button>
@@ -87,6 +88,12 @@ const nav = [
     });
     matchMedia('(min-width: 768px)').addEventListener('change', (m) => m.matches && setOpen(false));
 
+    // Home: clear over the poster, solid once it has gone.
+    const end = document.querySelector('[data-poster-end]');
+    if (end) {
+      new IntersectionObserver(([e]) => root.classList.toggle('is-solid', e.boundingClientRect.top < 64)).observe(end);
+    } else root.classList.add('is-solid');
+
     // Home: the link for the section in view is marked current.
     if (root.hasAttribute('data-home')) {
       const links = [...root.querySelectorAll<HTMLAnchorElement>('.links a[data-section]')];
@@ -111,55 +118,75 @@ const nav = [
 </script>
 
 <style>
-  /* No view-transition name here: it would make the bar its own backdrop root, and the blur
-     would stop seeing the page behind it. */
   .site-nav {
     position: fixed;
-    top: var(--space-200);
+    top: 0;
     left: 0;
     right: 0;
     z-index: 40;
-    display: flex;
-    justify-content: center;
-    padding-inline: var(--space-200);
-    pointer-events: none;
+    transition: border-color var(--dur-fade) var(--ease);
+    border-bottom: 1px solid transparent;
+  }
+
+  /* The solid bar is drawn behind the content on a pseudo-element: a blur on the header itself
+     would trap the fixed phone menu inside the bar's own box. */
+  .site-nav::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(11 20 48 / 0.94);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    transition: opacity var(--dur-fade) var(--ease);
+  }
+
+  .site-nav.is-solid {
+    border-bottom-color: var(--border);
+  }
+
+  .site-nav.is-solid::before {
+    opacity: 1;
   }
 
   .pill {
-    pointer-events: auto;
     display: flex;
     align-items: center;
-    gap: var(--space-50);
-    max-width: 100%;
-    padding: var(--space-50) var(--space-50) var(--space-50) var(--space-200);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-full);
-    background: rgb(24 24 24 / 0.72);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    backdrop-filter: blur(16px) saturate(140%);
+    gap: var(--space-200);
+    max-width: calc(var(--page-max) + 2 * var(--gutter));
+    margin-inline: auto;
+    padding: var(--space-200) var(--gutter);
   }
 
   .brand {
-    margin-right: var(--space-100);
+    margin-right: auto;
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    line-height: 2rem;
     white-space: nowrap;
     text-decoration: none;
   }
 
   .links {
     display: flex;
-    gap: var(--space-25);
+    gap: var(--space-100);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .links a {
+  .links a,
+  .cv {
     display: inline-flex;
     align-items: center;
-    min-height: 36px;
-    padding: var(--space-75) var(--space-100);
+    min-height: 44px;
+    padding: 0 var(--space-100);
     border-radius: var(--radius-full);
-    color: var(--text-2);
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
     text-decoration: none;
     transition:
       color var(--dur-fade) var(--ease),
@@ -167,20 +194,25 @@ const nav = [
   }
 
   .links a[aria-current] {
-    color: var(--text);
-    background: var(--surface-3);
+    color: var(--gold);
+  }
+
+  .cv {
+    margin-left: var(--space-75);
+    border: 1.5px solid var(--gold);
+    padding-inline: var(--space-200);
   }
 
   .icon-btn {
     display: inline-grid;
     place-items: center;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     border: 0;
     border-radius: var(--radius-full);
     background: transparent;
-    color: var(--text-2);
+    color: var(--text);
     cursor: pointer;
     transition:
       color var(--dur-fade) var(--ease),
@@ -189,23 +221,23 @@ const nav = [
   }
 
   .icon-btn :global(.icon) {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
 
-  .icon-btn:active {
+  .icon-btn:active,
+  .cv:active {
     transform: scale(0.98);
-  }
-
-  .cv {
-    margin-left: var(--space-50);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .links a:hover,
     .icon-btn:hover {
-      color: var(--text);
-      background: var(--surface-3);
+      color: var(--gold);
+    }
+
+    .cv:hover {
+      background: rgb(217 164 65 / 0.14);
     }
   }
 
@@ -259,7 +291,7 @@ const nav = [
     flex-direction: column;
     justify-content: space-between;
     padding: var(--space-900) var(--space-300) var(--space-400);
-    background: rgb(0 0 0 / 0.9);
+    background: rgb(9 17 39 / 0.95);
     -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
   }
@@ -280,6 +312,11 @@ const nav = [
     display: flex;
     align-items: center;
     min-height: 48px;
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    line-height: 3rem;
+    font-weight: 800;
+    text-transform: uppercase;
     text-decoration: none;
   }
 
@@ -312,13 +349,8 @@ const nav = [
       display: inline-grid;
     }
 
-    .site-nav {
-      justify-content: stretch;
-    }
-
-    .pill {
-      width: 100%;
-      justify-content: space-between;
+    .brand {
+      font-size: 1.25rem;
     }
   }
 
