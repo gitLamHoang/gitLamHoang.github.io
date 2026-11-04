@@ -11,6 +11,51 @@
         ],
         "createdAt": "2026-11-04T02:36:00.739Z",
         "reason": "Harvey pinned elayadesign's system (2026-11-03); its rule B5 requires the hero heading in a white to grey text gradient"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "helvetica neue",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-11-04T04:42:08.682Z",
+        "reason": "Round-one direction sketch, git-ignored and never shipped; decision-page skeleton only"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "helvetica neue",
+        "files": [
+          ".impeccable/mocks/decision/model-pick.html"
+        ],
+        "createdAt": "2026-11-04T04:42:08.703Z",
+        "reason": "Round-one direction sketch, git-ignored and never shipped; decision-page skeleton only"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "helvetica neue",
+        "files": [
+          ".impeccable/mocks/decision/challenger-mono.html"
+        ],
+        "createdAt": "2026-11-04T04:42:08.723Z",
+        "reason": "Round-one direction sketch, git-ignored and never shipped; decision-page skeleton only"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "helvetica neue",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-11-04T04:42:08.742Z",
+        "reason": "Round-one direction sketch, git-ignored and never shipped; decision-page skeleton only"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "sf mono",
+        "files": [
+          "src/styles/global.css"
+        ],
+        "createdAt": "2026-11-04T04:42:08.762Z",
+        "reason": "System monospace for literal <code> only; the shipped type system is Geist"
       }
     ]
   }
