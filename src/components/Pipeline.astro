@@ -1,12 +1,12 @@
 ---
 // The predictive avoidance layer as a signal chain, LiDAR in, velocity request out.
-// Facts from the HARP branch lam/predictive-avoidance (context/predictive-avoidance.md, SFM_NMPC_REFERENCE.md).
+// Facts from the HARP branch lam/predictive-avoidance at 3a87d78 (context/predictive-avoidance.md).
 const stages = [
-  { name: 'Perceive', detail: 'Motion-compensated LiDAR, floor and self filtering, voxel clusters', param: 'stamped TF' },
-  { name: 'Track', detail: 'Joint Hungarian assignment, merged-return splitting, occlusion memory', param: '2.5 s coasting' },
-  { name: 'Forecast', detail: 'Constant-velocity motion with bounded uncertainty; no assumed cooperation', param: '4 s horizon' },
-  { name: 'Optimize', detail: 'Three velocity blocks, nonlinear rollout with delay and gains, sampled then SLSQP-refined', param: 'NMPC' },
-  { name: 'Certify', detail: 'Swept-disc checks with a braking tail; least-intrusion fallback when nothing is clear', param: 'hard body margin' },
+  { name: 'Perceive', detail: 'Motion-compensated LiDAR plus the head depth camera, floor and self filtering, clusters', param: 'LiDAR and depth' },
+  { name: 'Track', detail: 'Joint Hungarian assignment, occlusion memory; only what actually moved leaves the map', param: 'Multi-object tracking' },
+  { name: 'Forecast', detail: 'A cloud of 32 possible paths for each of the 8 nearest people; people react after 0.5 s', param: '8 people within 5 m' },
+  { name: 'Plan', detail: 'About 260 robot paths; six rounds of Bayesian best responses settle on a joint plan, after BRNE', param: 'Game-theoretic core' },
+  { name: 'Certify', detail: 'Clear of straight-line forecasts for 1.2 s, with a 2.5 s plan B; else the least violation', param: '0.30 m clearance rule' },
   { name: 'Command', detail: 'First request only, then replan; zero on stale input or a missed deadline', param: '5 Hz, 0.15 s' },
 ];
 ---

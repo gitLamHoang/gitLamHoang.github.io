@@ -8,14 +8,14 @@ import run from '../data/harp-crowd-run.json';
 import Epigraph from './Epigraph.astro';
 import { contact, person } from '../data/profile';
 
-// What happens inside one planning cycle in this run (the planner on the branch at the time).
-// Facts from lam/predictive-avoidance as of the Nov 1 recording (context/predictive-avoidance.md).
+// What happens inside one planning cycle on the branch today (lam/predictive-avoidance at 3a87d78,
+// context/predictive-avoidance.md). The replay itself ran the earlier sampling MPC; step four says so.
 const steps = [
-  { name: 'Perceive', detail: 'LiDAR returns are motion-compensated, floor and self points dropped, the rest clustered.', param: 'Stamped TF' },
-  { name: 'Track', detail: 'Clusters join tracks by Hungarian assignment; a lost track coasts on memory.', param: '2.5 s coasting' },
-  { name: 'Forecast', detail: 'Each person keeps walking at constant velocity, with growing uncertainty. No one is assumed to yield.', param: '4 s horizon' },
-  { name: 'Optimize', detail: 'Candidate velocity plans are rolled out with delay and gains, sampled, then refined.', param: 'Sampling MPC' },
-  { name: 'Certify', detail: 'Every plan is swept against each forecast with a braking tail; if none is clear, the least intrusive one wins.', param: 'Hard body margin' },
+  { name: 'Perceive', detail: 'LiDAR and the head depth camera are motion-compensated, floor and self points dropped, the rest clustered.', param: 'LiDAR and depth' },
+  { name: 'Track', detail: 'Clusters join tracks by Hungarian assignment. Only what actually moved leaves the map.', param: 'Multi-object tracking' },
+  { name: 'Forecast', detail: 'Each of the 8 nearest people gets a cloud of possible paths, and is expected to react after half a second.', param: '8 people within 5 m' },
+  { name: 'Plan', detail: 'Rounds of best responses between the robot and the crowd settle on one plan. This replay ran the earlier sampling MPC.', param: 'Game-theoretic core' },
+  { name: 'Certify', detail: 'The request must stay clear of straight-line forecasts for 1.2 s and leave a plan B; otherwise the least violation runs.', param: '0.30 m clearance rule' },
   { name: 'Command', detail: 'Only the first velocity goes to the GR00T walker, then it replans. Stale input means zero.', param: '5 Hz, 0.15 s deadline' },
 ];
 
