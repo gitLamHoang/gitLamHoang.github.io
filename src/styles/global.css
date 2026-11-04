@@ -335,6 +335,51 @@ mark.hl {
   }
 }
 
+/* A section that opens on a drawn shot: its heading sits on the shot's foot, like a title card. */
+.section:has(> .shot) {
+  padding-top: var(--space-600);
+}
+
+.shot + .section-head {
+  position: relative;
+  z-index: 1;
+  margin-top: calc(-1 * clamp(64px, 8vw, 120px));
+}
+
+/* Under each section's title, a stroke of vermilion paint, laid on as it comes into view. */
+.section-head .heading-2,
+.close-cta .heading-2 {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.3em;
+}
+
+.section-head .heading-2::after,
+.close-cta .heading-2::after {
+  content: '';
+  position: absolute;
+  left: -0.06em;
+  right: -0.2em;
+  bottom: 0;
+  height: 0.26em;
+  background: var(--accent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 44' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round'%3E%3Cpath d='M8 20 C 150 12, 380 10, 590 16' stroke-width='7'/%3E%3Cpath d='M14 26 C 170 19, 400 18, 584 22' stroke-width='6'/%3E%3Cpath d='M4 31 C 160 26, 360 25, 560 29' stroke-width='5'/%3E%3Cpath d='M30 14 C 200 8, 420 7, 570 11' stroke-width='3'/%3E%3Cpath d='M20 36 C 140 33, 300 32, 470 35' stroke-width='2.5'/%3E%3Cpath d='M60 23 C 220 17, 420 16, 596 19' stroke-width='4'/%3E%3Cpath d='M120 9 C 260 5, 380 5, 480 8' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 44' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round'%3E%3Cpath d='M8 20 C 150 12, 380 10, 590 16' stroke-width='7'/%3E%3Cpath d='M14 26 C 170 19, 400 18, 584 22' stroke-width='6'/%3E%3Cpath d='M4 31 C 160 26, 360 25, 560 29' stroke-width='5'/%3E%3Cpath d='M30 14 C 200 8, 420 7, 570 11' stroke-width='3'/%3E%3Cpath d='M20 36 C 140 33, 300 32, 470 35' stroke-width='2.5'/%3E%3Cpath d='M60 23 C 220 17, 420 16, 596 19' stroke-width='4'/%3E%3Cpath d='M120 9 C 260 5, 380 5, 480 8' stroke-width='1.6'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .section-head .heading-2::after,
+  html.js .close-cta .heading-2::after {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 1.2s cubic-bezier(0.65, 0, 0.35, 1) 0.35s;
+  }
+
+  html.js .section-head.is-in .heading-2::after,
+  html.js .close-cta.is-in .heading-2::after {
+    clip-path: inset(0 -4% 0 0);
+  }
+}
+
 /* A block of the poster: typeset under a gold rule, not a card. */
 .panel {
   background: none;

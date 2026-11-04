@@ -1,19 +1,93 @@
 ---
-// The tagline moment: one large statement, its words lighting from muted to full in reading order
-// as each crosses a line just below the middle of the screen. Plain full-colour text without
-// script or under reduced motion.
+// The tagline moment: one large statement under an open sky, its words lighting from muted to full
+// in reading order as each crosses a line just below the middle of the screen. Beside it the G1 is
+// drawn as a constellation, joined star by star as the words light. Plain full-colour text and the
+// whole figure without script or under reduced motion.
 interface Props {
   text: string;
 }
 
 const { text } = Astro.props;
 const words = text.split(' ');
+
+let seed = 41;
+const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+const sky = Array.from({ length: 110 }, () => ({
+  x: +(rand() * 1440).toFixed(1),
+  y: +(rand() * 520).toFixed(1),
+  r: +(0.5 + rand() * 1.2).toFixed(2),
+  o: +(0.25 + rand() * 0.55).toFixed(2),
+  d: +(rand() * 6).toFixed(2),
+}));
+const strokes = Array.from({ length: 18 }, () => {
+  const x = rand() * 1500 - 60;
+  const y = 30 + rand() * 460;
+  const len = 160 + rand() * 360;
+  const w = 1.5 + rand() * 4;
+  return { d: `M${x.toFixed(1)} ${y.toFixed(1)} Q ${(x + len / 2).toFixed(1)} ${(y - w).toFixed(1)} ${(x + len).toFixed(1)} ${y.toFixed(1)} Q ${(x + len / 2).toFixed(1)} ${(y + w * 0.6).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)} Z`, c: rand() > 0.5 ? '#16244a' : '#08102a', o: +(0.3 + rand() * 0.4).toFixed(2) };
+});
+
+// The G1 as a star chart: joints as stars, limbs as the lines between them.
+const joints: Record<string, [number, number, number]> = {
+  head: [100, 30, 4.2],
+  neck: [100, 66, 2.6],
+  lsh: [62, 80, 3],
+  rsh: [140, 78, 3],
+  lel: [46, 140, 2.4],
+  rel: [158, 132, 2.4],
+  lha: [40, 192, 3.4],
+  rha: [176, 176, 3.4],
+  hip: [100, 170, 2.6],
+  lhi: [80, 178, 2.2],
+  rhi: [120, 178, 2.2],
+  lkn: [74, 252, 2.6],
+  rkn: [128, 248, 2.6],
+  lft: [70, 322, 3.6],
+  rft: [136, 318, 3.6],
+};
+const limbs = [
+  ['head', 'neck'], ['neck', 'lsh'], ['neck', 'rsh'], ['lsh', 'lel'], ['rsh', 'rel'], ['lel', 'lha'], ['rel', 'rha'],
+  ['neck', 'hip'], ['hip', 'lhi'], ['hip', 'rhi'], ['lhi', 'lkn'], ['rhi', 'rkn'], ['lkn', 'lft'], ['rkn', 'rft'],
+];
+const bright = ['head', 'lha', 'rha', 'lft', 'rft'];
 ---
 
 <section class="tagline wrap" aria-label="What this site does" data-tagline>
+  <div class="sky" aria-hidden="true">
+    <svg viewBox="0 0 1440 520" preserveAspectRatio="xMidYMid slice">
+      {strokes.map((b) => <path d={b.d} fill={b.c} opacity={b.o} />)}
+      {sky.map((s) => <circle class="tw" cx={s.x} cy={s.y} r={s.r} fill="#efe3c6" opacity={s.o} style={`--d:${s.d}s;--o:${s.o}`} />)}
+      <path class="meteor" d="M300 60 L400 102" stroke="#efe3c6" stroke-width="1.6" stroke-linecap="round" />
+    </svg>
+  </div>
+
   <p class="heading-1">
     {words.map((w) => <span class="w">{w} </span>)}
   </p>
+
+  <figure class="chart" aria-hidden="true">
+    <svg viewBox="0 0 220 360" data-chart>
+      <g fill="none" stroke="#efe3c6" stroke-opacity="0.5" stroke-width="1.2" stroke-linecap="round">
+        {
+          limbs.map(([a, b]) => (
+            <path pathLength="1" d={`M${joints[a][0]} ${joints[a][1]} L${joints[b][0]} ${joints[b][1]}`} data-limb />
+          ))
+        }
+      </g>
+      <circle cx={joints.head[0]} cy={joints.head[1]} r="16" fill="none" stroke="#ec5a36" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="2 4" data-star />
+      {
+        Object.entries(joints).map(([k, [x, y, r]]) => (
+          <g data-star>
+            <circle class="tw" cx={x} cy={y} r={r} fill={k === 'head' ? '#f6cf86' : '#efe3c6'} style={`--d:${(x % 7) * 0.6}s;--o:1`} />
+            {bright.includes(k) && (
+              <path d={`M${x - r * 2.6} ${y} L${x + r * 2.6} ${y} M${x} ${y - r * 2.6} L${x} ${y + r * 2.6}`} stroke="#efe3c6" stroke-opacity="0.6" stroke-width="0.8" />
+            )}
+          </g>
+        ))
+      }
+    </svg>
+    <figcaption class="caption-4">Unitree G1, as a constellation</figcaption>
+  </figure>
 </section>
 
 <script>
@@ -22,12 +96,24 @@ const words = text.split(' ');
   if (!reduce.matches) {
     for (const root of roots) {
       const words = [...root.querySelectorAll<HTMLElement>('.w')];
+      const limbs = [...root.querySelectorAll<SVGPathElement>('[data-limb]')];
+      const stars = [...root.querySelectorAll<SVGElement>('[data-star]')];
       root.dataset.live = '';
+      for (const l of limbs) l.style.strokeDasharray = '1';
       let queued = false;
       const update = () => {
         queued = false;
         const line = innerHeight * 0.62;
-        for (const w of words) w.classList.toggle('on', w.getBoundingClientRect().top < line);
+        let lit = 0;
+        for (const w of words) {
+          const on = w.getBoundingClientRect().top < line;
+          w.classList.toggle('on', on);
+          if (on) lit++;
+        }
+        // The figure joins up as the sentence is read: one limb after another.
+        const p = (lit / words.length) * limbs.length;
+        limbs.forEach((l, i) => (l.style.strokeDashoffset = String(1 - Math.min(1, Math.max(0, p - i)))));
+        stars.forEach((s, i) => s.classList.toggle('lit', p >= (i / stars.length) * limbs.length * 0.92));
       };
       const ask = () => {
         if (queued) return;
@@ -36,6 +122,7 @@ const words = text.split(' ');
       };
       // Only listen while the statement is near the screen.
       new IntersectionObserver(([e]) => {
+        root.classList.toggle('is-live', e.isIntersecting);
         if (e.isIntersecting) {
           addEventListener('scroll', ask, { passive: true });
           ask();
@@ -47,7 +134,29 @@ const words = text.split(' ');
 
 <style>
   .tagline {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 680px) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-600);
     padding-block: var(--space-900);
+  }
+
+  .sky {
+    position: absolute;
+    inset: 0 auto 0 50%;
+    z-index: -1;
+    width: 100vw;
+    transform: translateX(-50%);
+    pointer-events: none;
+    mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  }
+
+  .sky svg {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
   p {
@@ -61,5 +170,88 @@ const words = text.split(' ');
 
   [data-live] .w.on {
     color: var(--text);
+  }
+
+  .chart {
+    justify-self: center;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-100);
+    margin: 0;
+  }
+
+  .chart svg {
+    width: clamp(180px, 19vw, 290px);
+    height: auto;
+    overflow: visible;
+  }
+
+  .chart figcaption {
+    color: var(--gold);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  [data-live] [data-limb] {
+    transition: stroke-dashoffset 500ms var(--ease);
+  }
+
+  [data-live] [data-star] {
+    opacity: 0.2;
+    transition: opacity 500ms var(--ease);
+  }
+
+  [data-live] [data-star].lit {
+    opacity: 1;
+  }
+
+  .meteor {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .is-live .tw {
+      animation: twinkle 5.5s ease-in-out infinite var(--d);
+    }
+
+    .is-live .meteor {
+      animation: meteor 9s ease-in infinite 2s;
+    }
+  }
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: var(--o, 0.6);
+    }
+    50% {
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes meteor {
+    0%,
+    86% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    88% {
+      opacity: 0.9;
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: translate(300px, 126px);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .tagline {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .chart svg {
+      width: 140px;
+    }
   }
 </style>

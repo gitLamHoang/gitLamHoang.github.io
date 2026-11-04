@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import Epigraph from '../components/Epigraph.astro';
 import Poster from '../components/Poster.astro';
 import Spine from '../components/Spine.astro';
+import SectionShot from '../components/SectionShot.astro';
 import CaseFile from '../components/CaseFile.astro';
 import Tagline from '../components/Tagline.astro';
 import Icon from '../components/Icon.astro';
@@ -50,6 +51,7 @@ const scholarly = papers.map((p) => ({
   <Tagline text="Every result on this site comes with how it was measured, and what it can't do yet." />
 
   <section class="section wrap" id="research" aria-labelledby="research-title">
+    <SectionShot kind="library" />
     <header class="section-head" data-reveal>
       <div>
         <h2 id="research-title" class="heading-2">Research</h2>
@@ -114,6 +116,7 @@ const scholarly = papers.map((p) => ({
   </section>
 
   <section class="section wrap" id="experience" aria-labelledby="experience-title">
+    <SectionShot kind="palmdrive" />
     <header class="section-head" data-reveal>
       <div>
         <h2 id="experience-title" class="heading-2">Experience</h2>
@@ -154,6 +157,7 @@ const scholarly = papers.map((p) => ({
   </section>
 
   <section class="section wrap" id="people" aria-labelledby="people-title">
+    <SectionShot kind="arcade" />
     <header class="section-head" data-reveal>
       <div>
         <h2 id="people-title" class="heading-2">People I've met</h2>
@@ -165,6 +169,7 @@ const scholarly = papers.map((p) => ({
   </section>
 
   <section class="section wrap" id="education" aria-labelledby="education-title">
+    <SectionShot kind="tower" />
     <header class="section-head" data-reveal>
       <div>
         <h2 id="education-title" class="heading-2">Education and honors</h2>
