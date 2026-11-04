@@ -1,12 +1,12 @@
 ---
 // Work as one case file: a tab per project, each showing the work beside its headline number,
-// claim, result, and limit, with the whole project and my part underneath. ARIA tabs with arrow,
-// Home, and End keys; #work-<slug> opens a tab. Without script every project shows, stacked.
+// claim, and limit, so four projects compare in seconds; the full result, the whole project, and my
+// part live on each write-up. ARIA tabs with arrow, Home, and End keys; #work-<slug> opens a tab.
+// Without script every project shows, stacked.
 import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import HeroVideo from './HeroVideo.astro';
 import Icon from './Icon.astro';
-import Marked from './Marked.astro';
 
 interface Props {
   entries: CollectionEntry<'work'>[];
@@ -42,12 +42,12 @@ const short: Record<string, string> = {
           ))
         }
       </div>
-      <p class="caption-2 text-2 hint">Each with its claim, measured result, and main limit</p>
+      <p class="caption-2 text-2 hint">Each with its measured result and main limit</p>
     </div>
 
     {
       entries.map((e) => {
-        const { title, org, role, dates, overview, contribution, claim, result, highlight, stat, limit, links, figure, showcase } = e.data;
+        const { title, org, role, dates, claim, stat, limit, links, figure, showcase } = e.data;
         const href = `/work/${e.id}/`;
         return (
           <article class="case" role="tabpanel" id={`work-${e.id}`} aria-labelledby={`tab-${e.id}`} tabindex="0">
@@ -68,7 +68,7 @@ const short: Record<string, string> = {
                 </p>
                 {stat && (
                   <p class="stat">
-                    <span class="heading-2 tnum">{stat.value}</span>
+                    <span class="heading-3 tnum">{stat.value}</span>
                     <span class="body-6 text-2">{stat.label}</span>
                   </p>
                 )}
@@ -76,12 +76,6 @@ const short: Record<string, string> = {
                   <div>
                     <dt class="title-4 text-2">Claim</dt>
                     <dd class="body-3">{claim}</dd>
-                  </div>
-                  <div>
-                    <dt class="title-4 text-2">Result</dt>
-                    <dd class="body-3">
-                      <Marked text={result} highlight={highlight} />
-                    </dd>
                   </div>
                   <div>
                     <dt class="title-4 text-2">Limit</dt>
@@ -102,16 +96,6 @@ const short: Record<string, string> = {
                     </li>
                   ))}
                 </ul>
-              </div>
-            </div>
-            <div class="story">
-              <div>
-                <h4 class="title-3">The project</h4>
-                <p class="body-6 text-2">{overview}</p>
-              </div>
-              <div>
-                <h4 class="title-3">My part</h4>
-                <p class="body-6 text-2">{contribution}</p>
               </div>
             </div>
           </article>
@@ -164,7 +148,7 @@ const short: Record<string, string> = {
 
 <style>
   .casefile {
-    margin-top: var(--space-600);
+    margin-top: var(--space-400);
     scroll-margin-top: var(--space-900);
   }
 
@@ -260,7 +244,7 @@ const short: Record<string, string> = {
 
   .top {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--space-400) var(--space-600);
     align-items: start;
   }
@@ -317,7 +301,7 @@ const short: Record<string, string> = {
     margin-top: var(--space-75);
   }
 
-  .stat .heading-2 {
+  .stat .heading-3 {
     color: var(--accent);
   }
 
@@ -336,23 +320,8 @@ const short: Record<string, string> = {
     height: 16px;
   }
 
-  .story {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-300) var(--space-600);
-    margin-top: var(--space-400);
-    padding: var(--space-300) var(--space-200) var(--space-200);
-    border-radius: var(--radius-lg);
-    background: var(--surface-2);
-  }
-
-  .story p {
-    margin-top: var(--space-75);
-  }
-
   @media (max-width: 1000px) {
-    .top,
-    .story {
+    .top {
       grid-template-columns: minmax(0, 1fr);
     }
 

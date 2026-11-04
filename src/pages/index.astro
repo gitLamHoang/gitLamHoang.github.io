@@ -37,7 +37,7 @@ const scholarly = papers.map((p) => ({
         Navigation software<br />
         for humanoid robots.
       </h1>
-      <p class="sub title-1 text-2">{person.name}, Stanford CS. I lead navigation for HARP's Unitree G1 humanoid, and I measure what it can't do yet.</p>
+      <p class="sub title-1 text-2">{person.name}, Stanford CS. I lead navigation on HARP's Unitree G1.</p>
     </div>
     <div class="hero-side">
       <div class="cta">
@@ -46,12 +46,18 @@ const scholarly = papers.map((p) => ({
       </div>
       <Epigraph quote="hero" />
     </div>
-    <ul class="orgs title-4 text-3" aria-label="Where I've worked, studied, and competed">
-      {orgs.map((o) => <li>{o}</li>)}
-    </ul>
   </section>
 
   <CaseFile entries={work} />
+
+  <section class="wrap orgs-band" aria-labelledby="orgs-title" data-reveal>
+    <div class="panel orgs-row">
+      <h2 id="orgs-title" class="title-4 text-2">Where I've worked, studied, and competed</h2>
+      <ul class="orgs">
+        {orgs.map((o) => <li class="title-2">{o}</li>)}
+      </ul>
+    </div>
+  </section>
 
   <Tagline text="Every result on this site comes with how it was measured, and what it can't do yet." />
 
@@ -222,7 +228,7 @@ const scholarly = papers.map((p) => ({
     justify-content: space-between;
     align-items: end;
     gap: var(--space-400) var(--space-600);
-    padding-top: calc(var(--space-900) + var(--space-600));
+    padding-top: calc(var(--space-900) + var(--space-400));
   }
 
   .sub {
@@ -242,28 +248,25 @@ const scholarly = papers.map((p) => ({
     gap: var(--space-100);
   }
 
+  /* ---------- the organizations: one composed row of names ---------- */
+
+  .orgs-band {
+    margin-top: var(--space-300);
+  }
+
+  .orgs-row {
+    display: grid;
+    gap: var(--space-200);
+    padding: var(--space-300);
+  }
+
   .orgs {
-    grid-column: 1 / -1;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-75) var(--space-200);
+    gap: var(--space-100) var(--space-400);
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-
-  .orgs li {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-200);
-  }
-
-  .orgs li + li::before {
-    content: '';
-    width: 4px;
-    height: 4px;
-    border-radius: var(--radius-full);
-    background: var(--surface-4);
   }
 
   @media (max-width: 900px) {
@@ -272,13 +275,6 @@ const scholarly = papers.map((p) => ({
       padding-top: calc(var(--space-900) + var(--space-200));
     }
 
-    .orgs {
-      gap: var(--space-75) var(--space-300);
-    }
-
-    .orgs li + li::before {
-      display: none;
-    }
   }
 
   /* ---------- research ---------- */
