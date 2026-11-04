@@ -111,8 +111,9 @@ const nav = [
 </script>
 
 <style>
+  /* No view-transition name here: it would make the bar its own backdrop root, and the blur
+     would stop seeing the page behind it. */
   .site-nav {
-    view-transition-name: site-nav;
     position: fixed;
     top: var(--space-200);
     left: 0;
@@ -134,8 +135,8 @@ const nav = [
     border: 1px solid var(--border);
     border-radius: var(--radius-full);
     background: rgb(24 24 24 / 0.72);
-    backdrop-filter: blur(16px) saturate(140%);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
   }
 
   .brand {
@@ -259,8 +260,8 @@ const nav = [
     justify-content: space-between;
     padding: var(--space-900) var(--space-300) var(--space-400);
     background: rgb(0 0 0 / 0.9);
-    backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
   }
 
   .panel-menu[hidden] {
