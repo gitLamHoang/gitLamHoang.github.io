@@ -524,7 +524,13 @@ mark.hl {
   .site-header,
   .skip-link,
   .cta,
-  .film,
+  .film .footage,
+  .film .scrim,
+  .film .readout,
+  .film .caption,
+  .film .track,
+  .film .steps,
+  .film .intro .epigraph,
   .replay,
   [data-explorer],
   [data-route],
@@ -542,6 +548,32 @@ mark.hl {
 
   .section {
     padding-top: 16pt;
+  }
+
+  /* The film's name and statement print as a plain header. */
+  .film .stage {
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .film .name,
+  .film .name span,
+  .film .slot {
+    position: static !important;
+    width: auto !important;
+  }
+
+  .film .name {
+    font-size: 28pt;
+  }
+
+  .film .name span + span::before {
+    content: ' ';
+  }
+
+  .film .slot {
+    margin-top: 8pt;
   }
 
   .section-head,
