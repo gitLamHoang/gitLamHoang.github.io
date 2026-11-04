@@ -112,7 +112,10 @@ To keep usage lean: I build in one session with text checks before screenshots, 
 
 1. **Theme:** dark only. The theme toggle and the light palette go away.
 2. **Organizations band:** a slow moving line, paused under reduced motion.
-3. **Plan:** approved. The HARP headline waits for Harvey to pick a suite from the repo report.
+3. **Plan:** approved.
+4. **HARP film:** keep the replay of the older public native-sim run (re-rendered in the graphite look); swap to a newer run later, once `scripts/replay` reads the new run format.
+5. **HARP text:** update the description and technical detail to the branch's current state (`.design-loop/harp-status-2026-11-03.md`). Lead with the claim (game core vs sampling MPC on four unseen worlds: 3 of 4 vs 0 of 4 reached, 0 contacts, none met the 0.30 m clearance rule), then where it stands (newest suite: 5 of 10 reached, 2 of 10 passed every check, 1 contact).
+6. **Old results:** 7 of 7 and 7 of 9 stay as dated history (Nov 1, native simulator, since deleted).
 
 ## Rules that still bind
 
