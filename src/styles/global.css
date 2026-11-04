@@ -49,7 +49,7 @@
   /* type: one family, five steps */
   --font: 'Switzer', 'Helvetica Neue', Arial, sans-serif;
   --step-small: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
-  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step-body: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
   --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
   --step-head: clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);
   --step-display: clamp(4rem, 9vw, 8.75rem);
@@ -231,11 +231,33 @@ code {
   padding-block: var(--section) 0;
 }
 
-/* A section opens with its heading and, under it, its quote. */
+/* A section opens with its heading and lede on the left, its quote across on the right. */
 .section-head {
   display: grid;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+  gap: 20px clamp(32px, 5vw, 96px);
   margin-bottom: clamp(40px, 5vw, 72px);
+}
+
+.section-head > :not(.epigraph) {
+  grid-column: 1;
+}
+
+.section-head > .epigraph {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: end;
+}
+
+@media (max-width: 900px) {
+  .section-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .section-head > .epigraph {
+    grid-column: 1;
+    grid-row: auto;
+  }
 }
 
 .section-head h2 {

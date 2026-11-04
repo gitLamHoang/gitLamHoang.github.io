@@ -68,29 +68,30 @@ const duration = run.frames[run.frames.length - 1].t;
         </div>
         <Epigraph quote="hero" />
       </div>
-      <div class="steps">
-        <div class="steps-head" data-slide="1">
-          <h2>How it decides</h2>
-          <p class="detail">Six steps, from LiDAR to the walker, five times a second.</p>
-        </div>
-        <ol>
-          {
-            steps.map((st, i) => (
-              <li data-slide={i + 2}>
-                <h3>{st.name}</h3>
-                <p class="detail">{st.detail}</p>
-                <p class="param tnum">{st.param}</p>
-              </li>
-            ))
-          }
-        </ol>
-        <p class="steps-end"><a href="/lab/">Try the method in the crowd lab</a></p>
-      </div>
     </div>
 
     <p class="caption small">
       Recorded run, replayed from its log: native MuJoCo G1, earlier planner, Nov 1. Walls cut to 0.9 m, 2.5× speed.
     </p>
+  </div>
+
+  <div class="steps wrap" data-steps>
+    <div class="steps-head" data-slide="1">
+      <h2>How it decides</h2>
+      <p class="detail">Six steps, from LiDAR to the walker, five times a second.</p>
+    </div>
+    <ol>
+      {
+        steps.map((st, i) => (
+          <li data-slide={i + 2}>
+            <h3>{st.name}</h3>
+            <p class="detail">{st.detail}</p>
+            <p class="param tnum">{st.param}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="steps-end"><a href="/lab/">Try the method in the crowd lab</a></p>
   </div>
 
   <div class="track" aria-hidden="true">
@@ -170,7 +171,12 @@ const duration = run.frames[run.frames.length - 1].t;
     ).observe(root.querySelector('.stage')!);
     sync();
 
-    // The pinned story: whichever beat crosses the middle of the screen owns the slot.
+    // The pinned story, only when motion is welcome: the steps move into the slot and whichever beat
+    // crosses the middle of the screen owns it. Otherwise they stay a plain section after the film.
+    if (!reduce.matches) {
+      root.querySelector('[data-slot]')!.append(root.querySelector('[data-steps]')!);
+      root.dataset.story = '';
+    }
     const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
     const show = (n: number) => {
       root.dataset.beat = String(n);
@@ -204,7 +210,7 @@ const duration = run.frames[run.frames.length - 1].t;
     background: var(--bg);
   }
 
-  [data-live] .stage {
+  [data-story] .stage {
     position: sticky;
     top: 0;
   }
@@ -215,6 +221,11 @@ const duration = run.frames[run.frames.length - 1].t;
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Script drives the video; nothing on it takes a click. */
+  [data-live] .footage {
+    pointer-events: none;
   }
 
   .scrim {
@@ -354,14 +365,24 @@ const duration = run.frames[run.frames.length - 1].t;
     margin-top: 32px;
   }
 
+  /* Without the pinned story (no script, or reduced motion): a plain section after the film. */
   .steps {
-    display: none;
+    padding-top: clamp(64px, 8vw, 120px);
   }
 
   .steps ol {
-    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px clamp(24px, 3vw, 56px);
+    margin: 40px 0 0;
     padding: 0;
     list-style: none;
+  }
+
+  @media (max-width: 900px) {
+    .steps ol {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .steps h2,
@@ -395,45 +416,51 @@ const duration = run.frames[run.frames.length - 1].t;
     min-height: 44px;
   }
 
-  /* With script, every slide shares the slot and only the current one shows. */
-  [data-live] .steps {
-    display: block;
+  /* In the story, every slide shares the slot and only the current one shows. */
+  [data-story] .steps {
     position: absolute;
     inset: 0 0 auto;
+    padding: 0;
+    max-width: none;
   }
 
-  [data-live] [data-slide],
-  [data-live] .steps-end {
+  [data-story] .steps ol {
+    display: block;
+    margin: 0;
+  }
+
+  [data-story] [data-slide],
+  [data-story] .steps-end {
     transition:
       opacity 360ms var(--ease-out),
       transform 360ms var(--ease-out),
       visibility 0s linear 360ms;
   }
 
-  [data-live] [data-slide]:not(.is-on) {
+  [data-story] [data-slide]:not(.is-on) {
     opacity: 0;
     transform: translateY(12px);
     visibility: hidden;
   }
 
-  [data-live] .is-on {
+  [data-story] .is-on {
     transition-delay: 80ms, 80ms, 0s;
   }
 
-  [data-live] .steps li,
-  [data-live] .steps-head {
+  [data-story] .steps li,
+  [data-story] .steps-head {
     position: absolute;
     inset: 0 0 auto;
   }
 
-  [data-live] .steps-end {
+  [data-story] .steps-end {
     position: absolute;
     top: 14.5rem;
     opacity: 0;
     visibility: hidden;
   }
 
-  [data-live][data-beat='7'] .steps-end {
+  [data-story][data-beat='7'] .steps-end {
     opacity: 1;
     visibility: visible;
     transition-delay: 160ms, 160ms, 0s;
@@ -453,7 +480,7 @@ const duration = run.frames[run.frames.length - 1].t;
     display: none;
   }
 
-  [data-live] .track {
+  [data-story] .track {
     display: block;
     position: relative;
     margin-top: -100svh;
@@ -461,18 +488,11 @@ const duration = run.frames[run.frames.length - 1].t;
   }
 
   .beat {
-    height: 40svh;
+    height: 26svh;
   }
 
   .beat:first-child {
     height: 100svh;
-  }
-
-  /* ---------- without script: a plain page ---------- */
-
-  .film:not([data-live]) .steps {
-    display: block;
-    position: static;
   }
 
   /* ---------- phones: name top and bottom, picture between, copy under it ---------- */
@@ -518,7 +538,7 @@ const duration = run.frames[run.frames.length - 1].t;
     }
 
     .statement {
-      font-size: var(--step-body);
+      font-size: 1.25rem;
     }
 
     .cta {
@@ -541,16 +561,9 @@ const duration = run.frames[run.frames.length - 1].t;
       font-size: var(--step-body);
     }
 
-    [data-live] .steps-end {
+    [data-story] .steps-end {
       top: 9.5rem;
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-live] [data-slide],
-    [data-live] .steps-end {
-      transform: none !important;
-      transition-duration: 0s, 0s, 0s;
-    }
-  }
 </style>
