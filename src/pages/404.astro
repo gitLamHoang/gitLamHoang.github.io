@@ -1,165 +1,52 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Epigraph from '../components/Epigraph.astro';
+import still from '../assets/harp/film-end.jpg';
 ---
 
 <Base title="Page not found">
-  <section class="lost wrap" aria-labelledby="lost-title">
-    <div class="floor">
-      <svg viewBox="0 0 16 6" preserveAspectRatio="xMidYMid slice" aria-hidden="true" class="floor-svg">
-        <defs>
-          <pattern id="lost-minor" width="0.5" height="0.5" patternUnits="userSpaceOnUse">
-            <path d="M 0.5 0 L 0 0 0 0.5" class="grid-line"></path>
-          </pattern>
-        </defs>
-        <rect width="16" height="6" fill="url(#lost-minor)"></rect>
-        <polyline points="2.5,3 7,3 7,1.6 12.5,1.6" class="dead-end"></polyline>
-        <g class="wp" transform="translate(2.5 3)"><circle r="0.22"></circle><text>1</text></g>
-        <g class="robot" data-lost-robot transform="translate(12.5 1.6)">
-          <path d="M 0.24 0 L 0.42 0" class="robot-heading"></path>
-          <circle r="0.24" class="robot-body"></circle>
-          <path d="M -0.09 -0.085 L 0.18 0 L -0.09 0.085 Z" class="robot-nose"></path>
-        </g>
-      </svg>
-    </div>
+  <section class="lost" aria-labelledby="lost-title">
+    <Image class="still" src={still} alt="" widths={[960, 1600]} sizes="100vw" loading="eager" />
     <div class="card">
       <h1 id="lost-title">No waypoint here.</h1>
       <p>This page does not exist. The link may be old or mistyped.</p>
-      <Epigraph quote="notFound" class="lost-quote" />
-      <a class="btn btn-primary" href="/" data-route-home>Route back home</a>
+      <Epigraph quote="notFound" />
+      <a class="btn btn-primary" href="/">Back to the start</a>
     </div>
   </section>
 </Base>
 
-<script>
-  // Walk the marker back along the dead-end route to waypoint 1, then go home.
-  const link = document.querySelector<HTMLAnchorElement>('[data-route-home]');
-  const robot = document.querySelector<SVGGElement>('[data-lost-robot]');
-  const path: [number, number][] = [
-    [12.5, 1.6],
-    [7, 1.6],
-    [7, 3],
-    [2.5, 3],
-  ];
-
-  link?.addEventListener('click', (e) => {
-    if (!robot || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    e.preventDefault();
-    const legs = path.slice(1).map((p, i) => Math.hypot(p[0] - path[i][0], p[1] - path[i][1]));
-    const total = legs.reduce((a, b) => a + b, 0);
-    const duration = 1100;
-    const t0 = performance.now();
-    const frame = (now: number) => {
-      const t = Math.min(1, (now - t0) / duration);
-      // ease in and out, like the speed ramp on the home page
-      let d = (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2) * total;
-      let i = 0;
-      while (i < legs.length - 1 && d > legs[i]) d -= legs[i++];
-      const [ax, ay] = path[i];
-      const [bx, by] = path[i + 1];
-      const f = legs[i] ? Math.min(1, d / legs[i]) : 1;
-      const angle = (Math.atan2(by - ay, bx - ax) * 180) / Math.PI;
-      robot.setAttribute('transform', `translate(${ax + (bx - ax) * f} ${ay + (by - ay) * f}) rotate(${angle})`);
-      if (t < 1) requestAnimationFrame(frame);
-      else window.location.href = link.href;
-    };
-    requestAnimationFrame(frame);
-  });
-</script>
-
 <style>
   .lost {
     position: relative;
-    padding-top: 32px;
-  }
-
-  .floor {
-    height: clamp(320px, 46vw, 460px);
-    border: 1.5px solid var(--ink);
-    border-radius: var(--radius);
-    background: var(--paper-raised);
+    display: grid;
+    min-height: calc(100svh - 64px);
+    padding: clamp(32px, 6vw, 80px) var(--margin);
     overflow: hidden;
   }
 
-  .floor-svg {
+  .still {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    display: block;
-  }
-
-  .grid-line {
-    fill: none;
-    stroke: var(--grid);
-    stroke-width: 1;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .dead-end {
-    fill: none;
-    stroke: var(--route);
-    stroke-width: 1.5;
-    stroke-dasharray: 6 6;
-    opacity: 0.6;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .wp circle {
-    fill: var(--paper-raised);
-    stroke: var(--ink);
-    stroke-width: 2;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .wp text {
-    fill: var(--ink);
-    font-family: var(--font-ui);
-    font-weight: 600;
-    font-size: 0.28px;
-    text-anchor: middle;
-    dominant-baseline: central;
-  }
-
-  .robot-body {
-    fill: var(--pen);
-  }
-
-  .robot-nose {
-    fill: var(--paper-raised);
-  }
-
-  .robot-heading {
-    stroke: var(--pen);
-    stroke-width: 3;
-    stroke-linecap: round;
-    vector-effect: non-scaling-stroke;
+    object-fit: cover;
+    object-position: 70% 50%;
   }
 
   .card {
     position: relative;
-    max-width: 30rem;
-    margin: -120px 0 0 clamp(12px, 4vw, 48px);
-    padding: 24px 26px 26px;
-    border: 1.5px solid var(--ink);
-    border-radius: var(--radius);
-    background: var(--paper);
+    align-self: end;
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    width: min(100%, 30rem);
+    padding: clamp(24px, 3vw, 36px);
+    background: var(--bg);
   }
 
   h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
-  }
-
-  .card > p {
-    margin-top: 10px;
-    color: var(--graphite);
-  }
-
-  .card :global(.lost-quote) {
-    margin-block: 20px 22px;
-  }
-
-  @media (max-width: 560px) {
-    .card {
-      margin: -60px 0 0;
-    }
+    font-size: var(--step-head);
   }
 </style>
