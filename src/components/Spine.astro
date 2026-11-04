@@ -1,0 +1,182 @@
+---
+// The robot's route, continued down the page: a vermilion dotted line in the left margin from the
+// poster to the letter, a waypoint ring at each section, and the G1 walking down it as the page
+// scrolls, so it always stands at the section being read. Wide screens only; under reduced motion
+// it stands at the end of the route.
+const stops = ['work', 'research', 'experience', 'people', 'education', 'contact'];
+---
+
+<div class="spine" aria-hidden="true" data-spine data-stops={stops.join(' ')}>
+  <svg class="line" data-spine-svg>
+    <path data-spine-path fill="none" stroke="#ec5a36" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 11" />
+    <g data-spine-rings></g>
+  </svg>
+  <svg class="g1" viewBox="-14 -48 28 52" width="28" height="52" data-spine-robot>
+    <ellipse cx="0" cy="1" rx="11" ry="3" fill="#050a1a" opacity="0.6" />
+    <rect class="leg l" x="-6" y="-17" width="4.5" height="17" rx="2" fill="#d9cba8" />
+    <rect class="leg r" x="1.5" y="-17" width="4.5" height="17" rx="2" fill="#efe3c6" />
+    <rect x="-8" y="-34" width="16" height="18" rx="4" fill="#efe3c6" />
+    <rect x="-11" y="-32" width="3.5" height="14" rx="1.75" fill="#d9cba8" />
+    <rect x="7.5" y="-32" width="3.5" height="14" rx="1.75" fill="#efe3c6" />
+    <rect x="-5.5" y="-44" width="11" height="10" rx="4" fill="#efe3c6" />
+    <rect x="-4" y="-41" width="8" height="3.5" rx="1.5" fill="#ec5a36" />
+  </svg>
+</div>
+
+<script>
+  const spine = document.querySelector<HTMLElement>('[data-spine]');
+  if (spine) {
+    const svg = spine.querySelector<SVGSVGElement>('[data-spine-svg]')!;
+    const path = spine.querySelector<SVGPathElement>('[data-spine-path]')!;
+    const rings = spine.querySelector<SVGGElement>('[data-spine-rings]')!;
+    const robot = spine.querySelector<SVGSVGElement>('[data-spine-robot]')!;
+    const ids = spine.dataset.stops!.split(' ');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const NS = 'http://www.w3.org/2000/svg';
+    let top = 0;
+    let height = 0;
+    let samples: { y: number; x: number }[] = [];
+    let lastY = -1;
+    let walkTimer = 0;
+
+    // Lay the route through each section's heading, swinging gently left and right between stops.
+    const layout = () => {
+      const anchor = spine.offsetParent as HTMLElement;
+      const base = anchor.getBoundingClientRect().top + scrollY;
+      const ys = ids
+        .map((id) => document.getElementById(id))
+        .filter((el): el is HTMLElement => !!el)
+        .map((el) => el.getBoundingClientRect().top + scrollY - base + 24);
+      if (ys.length < 2) return;
+      top = ys[0] - 120;
+      height = ys[ys.length - 1] - top + 40;
+      spine.style.top = `${top}px`;
+      spine.style.height = `${height}px`;
+      svg.setAttribute('viewBox', `0 0 40 ${height}`);
+      svg.setAttribute('height', String(height));
+      const pts = [{ x: 20, y: 0 }, ...ys.map((y, i) => ({ x: i % 2 ? 12 : 28, y: y - top }))];
+      let d = `M ${pts[0].x} ${pts[0].y}`;
+      for (let i = 1; i < pts.length; i++) {
+        const a = pts[i - 1];
+        const b = pts[i];
+        const m = (a.y + b.y) / 2;
+        d += ` C ${a.x} ${m}, ${b.x} ${m}, ${b.x} ${b.y}`;
+      }
+      path.setAttribute('d', d);
+      rings.replaceChildren(
+        ...pts.slice(1).map((p) => {
+          const c = document.createElementNS(NS, 'circle');
+          c.setAttribute('cx', String(p.x));
+          c.setAttribute('cy', String(p.y));
+          c.setAttribute('r', '8');
+          c.setAttribute('fill', '#0b1430');
+          c.setAttribute('stroke', '#ec5a36');
+          c.setAttribute('stroke-width', '2.5');
+          return c;
+        }),
+      );
+      // Sample the route once so the robot can find its x for any y.
+      const L = path.getTotalLength();
+      samples = Array.from({ length: 400 }, (_, i) => {
+        const p = path.getPointAtLength((L * i) / 399);
+        return { x: p.x, y: p.y };
+      });
+      place();
+    };
+
+    const xAt = (y: number) => {
+      let i = samples.findIndex((s) => s.y >= y);
+      if (i <= 0) return samples[Math.max(0, i)]?.x ?? 20;
+      const a = samples[i - 1];
+      const b = samples[i];
+      return a.x + ((b.x - a.x) * (y - a.y)) / Math.max(1e-6, b.y - a.y);
+    };
+
+    const place = () => {
+      if (!samples.length) return;
+      const anchor = spine.offsetParent as HTMLElement;
+      const base = anchor.getBoundingClientRect().top + scrollY;
+      const target = reduce ? height : scrollY + innerHeight * 0.45 - base - top;
+      const y = Math.max(0, Math.min(height, target));
+      robot.style.transform = `translate(${(xAt(y) - 14).toFixed(1)}px, ${(y - 50).toFixed(1)}px)`;
+      if (!reduce && Math.abs(y - lastY) > 0.5) {
+        spine.classList.add('is-walking');
+        clearTimeout(walkTimer);
+        walkTimer = window.setTimeout(() => spine.classList.remove('is-walking'), 180);
+      }
+      lastY = y;
+    };
+
+    let queued = false;
+    addEventListener('scroll', () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        place();
+      });
+    }, { passive: true });
+    new ResizeObserver(() => layout()).observe(document.body);
+    addEventListener('load', layout);
+    layout();
+  }
+</script>
+
+<style>
+  .spine {
+    position: absolute;
+    left: max(8px, calc((100vw - var(--page-max)) / 2 - 56px));
+    width: 40px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .line {
+    display: block;
+    width: 40px;
+    overflow: visible;
+  }
+
+  .g1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+    transition: transform 120ms linear;
+  }
+
+  .leg {
+    transform-box: fill-box;
+    transform-origin: 50% 0%;
+  }
+
+  .is-walking .leg.l {
+    animation: stride 420ms ease-in-out infinite alternate;
+  }
+
+  .is-walking .leg.r {
+    animation: stride 420ms ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes stride {
+    from {
+      transform: rotate(-18deg);
+    }
+    to {
+      transform: rotate(18deg);
+    }
+  }
+
+  /* Only where the margin has room for it. */
+  @media (max-width: 1099px) {
+    .spine {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .g1 {
+      transition: none;
+    }
+  }
+</style>

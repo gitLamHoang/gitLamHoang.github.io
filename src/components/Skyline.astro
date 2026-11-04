@@ -1,20 +1,40 @@
 ---
 // The close of the page: the same night, seen from further away. The arcade and palms run along the
 // bottom, the moon sits low, and the robot stands at the end of its route.
+// Two skylines can share a page (a write-up's header and the footer), so the ids are per instance.
+const uid = Math.random().toString(36).slice(2, 8);
 const arches = Array.from({ length: 24 }, (_, i) => 40 + i * 60).filter((x) => x < 640 || x > 820);
 ---
 
 <svg class="skyline" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
   <defs>
-    <radialGradient id="skyMoonGlow">
-      <stop offset="0" stop-color="#efe3c6" stop-opacity="0.22" />
-      <stop offset="1" stop-color="#efe3c6" stop-opacity="0" />
+    <pattern id={`skyDots-${uid}`} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+      <circle cx="2" cy="2" r="0.9" fill="#efe3c6" />
+    </pattern>
+    <radialGradient id={`skyFade-${uid}`}>
+      <stop offset="0" stop-color="#fff" stop-opacity="1" />
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0.3" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
     </radialGradient>
+    <mask id={`skyGlowMask-${uid}`} maskUnits="userSpaceOnUse" x="1000" y="-80" width="360" height="300">
+      <circle cx="1180" cy="70" r="140" fill={`url(#skyFade-${uid})`} />
+      <circle cx="1180" cy="70" r="33" fill="#000" />
+    </mask>
   </defs>
-  <circle cx="1180" cy="70" r="120" fill="url(#skyMoonGlow)" />
+  <rect x="1000" y="-80" width="360" height="300" fill={`url(#skyDots-${uid})`} mask={`url(#skyGlowMask-${uid})`} opacity="0.5" />
+  <circle cx="1182" cy="72" r="30" fill="#b9a983" opacity="0.5" />
   <circle cx="1180" cy="70" r="30" fill="#e9dcbc" />
   <circle cx="1170" cy="62" r="6" fill="#cdbd98" opacity="0.75" />
   <circle cx="1190" cy="80" r="4" fill="#cdbd98" opacity="0.75" />
+  <!-- Hoover Tower, far off -->
+  <g transform="translate(250 0)">
+    <path d="M-17 152 L-14 40 L14 40 L17 152 Z" fill="#1c2c58" />
+    <path d="M0 152 L0 40 L14 40 L17 152 Z" fill="#26386a" />
+    <rect x="-16" y="26" width="32" height="14" fill="#203264" />
+    <path d="M-12 26 C -12 12, -4 6, 0 6 C 4 6, 12 12, 12 26 Z" fill="#7a3b34" />
+    <path d="M0 6 L0 -4" stroke="#efe3c6" stroke-width="1.5" />
+    <g fill="#f0b860"><rect x="-2" y="56" width="4" height="7" /><rect x="-2" y="86" width="4" height="7" /><rect x="-2" y="116" width="4" height="7" /></g>
+  </g>
   <path d="M0 150 C 240 120, 520 138, 760 128 S 1200 120, 1440 136 L1440 220 L0 220 Z" fill="#101c3f" />
   {
     [

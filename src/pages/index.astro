@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Epigraph from '../components/Epigraph.astro';
 import Poster from '../components/Poster.astro';
+import Spine from '../components/Spine.astro';
 import CaseFile from '../components/CaseFile.astro';
 import Tagline from '../components/Tagline.astro';
 import Icon from '../components/Icon.astro';
@@ -33,6 +34,7 @@ const scholarly = papers.map((p) => ({
 
 <Base structured={scholarly}>
   <Poster />
+  <Spine />
 
   <CaseFile entries={work} />
 
@@ -233,7 +235,7 @@ const scholarly = papers.map((p) => ({
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: var(--space-400);
-    padding: var(--space-75);
+    padding: var(--space-300) 0 0;
   }
 
   .paper-text,
@@ -244,11 +246,11 @@ const scholarly = papers.map((p) => ({
   }
 
   .paper-text {
-    padding: var(--space-300) var(--space-200) var(--space-200);
+    padding: 0;
   }
 
   .paper-small {
-    padding: var(--space-400) var(--space-300);
+    padding: var(--space-300) 0 0;
   }
 
   .qa {
@@ -291,7 +293,7 @@ const scholarly = papers.map((p) => ({
   }
 
   .leg {
-    padding: var(--space-400) var(--space-300);
+    padding: var(--space-300) 0 0;
   }
 
   .roles {
@@ -305,6 +307,15 @@ const scholarly = papers.map((p) => ({
   .role {
     display: grid;
     gap: var(--space-50);
+  }
+
+  .role + .role {
+    padding-top: var(--space-400);
+    border-top: 1px dotted rgb(217 164 65 / 0.45);
+  }
+
+  .roles {
+    gap: var(--space-400) !important;
   }
 
   .role-link a {
@@ -335,7 +346,7 @@ const scholarly = papers.map((p) => ({
   }
 
   .facts .panel {
-    padding: var(--space-400) var(--space-300);
+    padding: var(--space-300) 0 0;
   }
 
   .facts ul {

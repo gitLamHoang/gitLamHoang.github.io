@@ -5,6 +5,7 @@ import Base from '../../layouts/Base.astro';
 import Marked from '../../components/Marked.astro';
 import HeroVideo from '../../components/HeroVideo.astro';
 import Icon from '../../components/Icon.astro';
+import Skyline from '../../components/Skyline.astro';
 import Pipeline from '../../components/Pipeline.astro';
 
 export async function getStaticPaths() {
@@ -41,6 +42,7 @@ const toc = headings.filter((h) => h.depth === 2);
         {org}. {role}, {dates}{stack && <span class="stack">. {stack.join(', ')}</span>}
       </p>
     </header>
+    <div class="band"><Skyline /></div>
 
     {
       showcase === 'harp' && (
@@ -197,6 +199,13 @@ const toc = headings.filter((h) => h.depth === 2);
     display: grid;
     gap: var(--space-300);
     max-width: 680px;
+  }
+
+  /* The night continues: the skyline runs under the title, edge to edge. */
+  .band :global(.skyline) {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-top: var(--space-400);
   }
 
   .figure {

@@ -65,14 +65,13 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: var(--space-400);
-    padding: var(--space-75);
+    padding-top: var(--space-400);
   }
 
   .ask {
     display: grid;
     align-content: start;
     gap: var(--space-300);
-    padding: var(--space-600) var(--space-400);
   }
 
   .cta {
@@ -86,7 +85,11 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
     align-content: center;
     gap: var(--space-75);
     margin: 0;
-    padding: var(--space-600) var(--space-400) var(--space-600) 0;
+    padding: 0;
+  }
+
+  .contact div + div {
+    border-top: 1px dotted rgb(217 164 65 / 0.45);
   }
 
   .contact div {
@@ -172,7 +175,7 @@ const source = 'https://github.com/gitLamHoang/gitLamHoang.github.io';
     }
 
     .ask {
-      padding: var(--space-400) var(--space-200);
+      padding: 0;
     }
 
     .contact div {

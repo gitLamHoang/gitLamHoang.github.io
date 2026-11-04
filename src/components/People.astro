@@ -52,16 +52,13 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
 
   figure {
     margin: 0;
-    padding: var(--space-75);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-2xl);
-    background: var(--surface-1);
   }
 
   .photo {
     overflow: hidden;
-    border-radius: var(--radius-lg);
-    background: var(--surface-2);
+    padding: var(--space-75);
+    border: 1.5px solid rgb(217 164 65 / 0.7);
+    background: var(--surface-1);
   }
 
   .photo img {
@@ -74,7 +71,7 @@ const photo = (slug: string) => photos[`../assets/people/${slug}.jpg`].default;
   figcaption {
     display: grid;
     gap: var(--space-25);
-    padding: var(--space-200) var(--space-100) var(--space-100);
+    padding-top: var(--space-200);
   }
 
   @media (max-width: 700px) {

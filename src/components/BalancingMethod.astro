@@ -85,10 +85,16 @@ const steps = [
   .method {
     height: 100%;
     margin: 0;
-    padding: var(--space-300);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    background: var(--surface-2);
+    padding: var(--space-300) 0 0 var(--space-400);
+    border-left: 1px dotted rgb(217 164 65 / 0.6);
+  }
+
+  @media (max-width: 1000px) {
+    .method {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px dotted rgb(217 164 65 / 0.6);
+    }
   }
 
   .method-idea {
