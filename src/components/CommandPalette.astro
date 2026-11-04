@@ -250,9 +250,10 @@ const items: Item[] = [
     max-height: min(560px, calc(100vh - 96px));
     margin: 12vh auto auto;
     padding: 0;
-    border: 0;
-    background: var(--surface);
-    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    background: var(--surface-1);
+    color: var(--text);
     box-shadow: 0 24px 64px -16px rgb(0 0 0 / 0.6);
     overflow: hidden;
   }
@@ -292,7 +293,7 @@ const items: Item[] = [
     color: var(--ink);
     font: inherit;
     font-size: var(--step-body);
-    caret-color: var(--measure);
+    caret-color: var(--accent);
   }
 
   .palette-input input::placeholder {
@@ -307,8 +308,9 @@ const items: Item[] = [
     font-size: 0.8125rem;
     font-weight: 500;
     text-align: center;
-    color: var(--muted);
+    color: var(--text-2);
     background: var(--bg);
+    border-radius: var(--radius-md);
   }
 
   .palette-list {
@@ -328,6 +330,7 @@ const items: Item[] = [
     align-items: baseline;
     gap: 2px 16px;
     padding: 10px 12px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
   }
 
@@ -386,7 +389,8 @@ const items: Item[] = [
     z-index: 40;
     margin: 0;
     padding: 12px 18px;
-    background: var(--ink);
+    border-radius: var(--radius-full);
+    background: var(--text);
     color: var(--bg);
     font-weight: 500;
     transform: translate(-50%, 12px);
@@ -394,7 +398,7 @@ const items: Item[] = [
     pointer-events: none;
     transition:
       opacity var(--dur-ui) ease,
-      transform var(--dur-ui) var(--ease-out);
+      transform var(--dur-fade) var(--ease);
   }
 
   .toast.is-on {
