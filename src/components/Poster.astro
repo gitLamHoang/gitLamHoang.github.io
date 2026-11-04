@@ -112,7 +112,7 @@ const route = [
     };
 
     if (reduce) {
-      scene.classList.add('is-lit');
+      scene.classList.add('is-lit', 'is-arrived');
       drawPlan(1);
       placeRobot(1);
     } else {
@@ -130,6 +130,7 @@ const route = [
         const q = Math.min(1, Math.max(0, (t - DRAW * 0.6) / WALK));
         placeRobot(ease(q));
         scene.classList.toggle('is-walking', q > 0 && q < 1);
+        scene.classList.toggle('is-arrived', q >= 1);
         placeWalkers(now);
         placeLayers();
         if (visible) requestAnimationFrame(frame);

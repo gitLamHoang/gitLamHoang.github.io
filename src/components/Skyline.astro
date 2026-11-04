@@ -1,91 +1,440 @@
 ---
-// The close of the page: the same night, seen from further away. The arcade and palms run along the
-// bottom, the moon sits low, and the robot stands at the end of its route.
-// Two skylines can share a page (a write-up's header and the footer), so the ids are per instance.
+// The closing shot: the same night, seen from across the Oval as it ends. Hoover Tower and the
+// Dish to the left, the Quad and Memorial Church in the middle with their windows still lit, the
+// moon low on the right, and the G1 arriving at the church door at the end of its route, where it
+// turns and waves. It lives only while on screen; without motion it stands at the door.
+// Two can share a page (a write-up's header and the footer), so every id is per instance, and it
+// draws everything it uses, since it closes pages that have no poster.
 const uid = Math.random().toString(36).slice(2, 8);
-const arches = Array.from({ length: 24 }, (_, i) => 40 + i * 60).filter((x) => x < 640 || x > 820);
+const id = (n: string) => `${n}-${uid}`;
+const url = (n: string) => `url(#${n}-${uid})`;
+const f = (v: number) => +v.toFixed(1);
+
+let seed = 23;
+const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+const stars = Array.from({ length: 90 }, () => ({
+  x: f(rand() * 1440),
+  y: f(rand() * 170),
+  r: f(0.5 + rand() * 1.2),
+  o: f(0.3 + rand() * 0.6),
+  d: f(rand() * 6),
+}));
+const strokes = Array.from({ length: 20 }, () => {
+  const x = rand() * 1500 - 60;
+  const y = 16 + rand() * 170;
+  const len = 120 + rand() * 320;
+  const w = 1.4 + rand() * 3.4;
+  return { d: `M${f(x)} ${f(y)} Q ${f(x + len / 2)} ${f(y - w)} ${f(x + len)} ${f(y)} Q ${f(x + len / 2)} ${f(y + w * 0.6)} ${f(x)} ${f(y)} Z`, c: rand() > 0.5 ? '#16244a' : '#08102a', o: f(0.3 + rand() * 0.4) };
+});
+const town = Array.from({ length: 26 }, () => ({ x: f(rand() * 1440), y: f(196 + rand() * 14), r: f(0.6 + rand() * 0.8) }));
+
+// The Quad's arcade either side of the church, and the upper-floor windows behind it.
+const arches = Array.from({ length: 22 }, (_, i) => 380 + i * 36).filter((x) => x < 678 || x > 836);
+const upper = Array.from({ length: 34 }, (_, i) => 384 + i * 22).filter((x) => x < 684 || x > 832);
+const palms = [
+  [64, 252, 132, 0.62], [318, 252, 128, 0.7], [1168, 252, 124, 0.66], [1352, 252, 120, 0.74],
+  [452, 236, 156, 0.4], [1086, 236, 160, 0.38], [1250, 236, 150, 0.42],
+];
+const walkers = [
+  { x: 540, y: 282, h: 26 },
+  { x: 930, y: 276, h: 22 },
+  { x: 1262, y: 288, h: 28 },
+];
 ---
 
-<svg class="skyline" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+<svg class="skyline" viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true" data-skyline>
   <defs>
-    <pattern id={`skyDots-${uid}`} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+    <linearGradient id={id('sky')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1430" />
+      <stop offset="0.7" stop-color="#132147" />
+      <stop offset="1" stop-color="#1a2b55" />
+    </linearGradient>
+    <linearGradient id={id('lawn')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#121f45" />
+      <stop offset="1" stop-color="#08112b" />
+    </linearGradient>
+    <pattern id={id('dots')} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
       <circle cx="2" cy="2" r="0.9" fill="#efe3c6" />
     </pattern>
-    <radialGradient id={`skyFade-${uid}`}>
+    <pattern id={id('gold')} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+      <circle cx="2" cy="2" r="1.05" fill="#f0b860" />
+    </pattern>
+    <pattern id={id('tiles')} width="5" height="12" patternUnits="userSpaceOnUse">
+      <path d="M0.5 0 L0.5 12" stroke="#3e1a22" stroke-width="1.2" />
+      <path d="M3 0 L3 12" stroke="#b4664a" stroke-width="0.6" stroke-opacity="0.6" />
+    </pattern>
+    <pattern id={id('courses')} width="10" height="7" patternUnits="userSpaceOnUse">
+      <path d="M0 6.5 L10 6.5" stroke="#0f1a39" stroke-width="0.9" />
+      <path d="M5 0 L5 6.5" stroke="#0f1a39" stroke-width="0.5" stroke-opacity="0.6" />
+    </pattern>
+    <pattern id={id('tess')} width="3.4" height="3.4" patternUnits="userSpaceOnUse">
+      <rect width="2.7" height="2.7" fill="#d6a94e" />
+      <rect x="0.5" y="0.5" width="1" height="1" fill="#f1cf80" />
+    </pattern>
+    <radialGradient id={id('fade')}>
       <stop offset="0" stop-color="#fff" stop-opacity="1" />
       <stop offset="0.5" stop-color="#fff" stop-opacity="0.3" />
       <stop offset="1" stop-color="#fff" stop-opacity="0" />
     </radialGradient>
-    <mask id={`skyGlowMask-${uid}`} maskUnits="userSpaceOnUse" x="1000" y="-80" width="360" height="300">
-      <circle cx="1180" cy="70" r="140" fill={`url(#skyFade-${uid})`} />
-      <circle cx="1180" cy="70" r="33" fill="#000" />
+    <radialGradient id={id('bloom')}>
+      <stop offset="0" stop-color="#f6c86f" stop-opacity="0.55" />
+      <stop offset="0.45" stop-color="#f0b860" stop-opacity="0.18" />
+      <stop offset="1" stop-color="#f0b860" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id={id('corona')}>
+      <stop offset="0.3" stop-color="#efe3c6" stop-opacity="0.18" />
+      <stop offset="1" stop-color="#efe3c6" stop-opacity="0" />
+    </radialGradient>
+    <mask id={id('glow')} maskUnits="userSpaceOnUse" x="1020" y="-80" width="420" height="300">
+      <circle cx="1236" cy="78" r="150" fill={url('fade')} />
+      <circle cx="1236" cy="78" r="40" fill="#000" />
     </mask>
+    <linearGradient id={id('spill')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.9" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+    <mask id={id('door')} maskUnits="userSpaceOnUse" x="600" y="250" width="320" height="50">
+      <path d="M742 252 L778 252 L830 300 L690 300 Z" fill={url('spill')} />
+    </mask>
+    <g id={id('crown')}>
+      <path d="M0 0 C -30 -12, -58 -4, -74 18 C -50 4, -26 4, 0 6 Z" />
+      <path d="M0 0 C 30 -14, 60 -6, 76 16 C 52 2, 28 2, 0 6 Z" />
+      <path d="M0 0 C -14 -30, -42 -42, -66 -36 C -40 -26, -20 -14, 0 4 Z" />
+      <path d="M0 0 C 16 -30, 44 -40, 68 -32 C 42 -24, 22 -12, 0 4 Z" />
+      <path d="M0 0 C -4 -30, 6 -52, 22 -62 C 12 -44, 6 -24, 2 2 Z" />
+      <path d="M0 2 C -28 4, -48 22, -54 46 C -36 26, -18 14, 0 8 Z" />
+      <path d="M0 2 C 28 4, 50 22, 56 46 C 38 26, 20 14, 0 8 Z" />
+    </g>
   </defs>
-  <rect x="1000" y="-80" width="360" height="300" fill={`url(#skyDots-${uid})`} mask={`url(#skyGlowMask-${uid})`} opacity="0.5" />
-  <circle cx="1182" cy="72" r="30" fill="#b9a983" opacity="0.5" />
-  <circle cx="1180" cy="70" r="30" fill="#e9dcbc" />
-  <circle cx="1170" cy="62" r="6" fill="#cdbd98" opacity="0.75" />
-  <circle cx="1190" cy="80" r="4" fill="#cdbd98" opacity="0.75" />
-  <!-- Hoover Tower, far off -->
-  <g transform="translate(250 0)">
-    <path d="M-17 152 L-14 40 L14 40 L17 152 Z" fill="#1c2c58" />
-    <path d="M0 152 L0 40 L14 40 L17 152 Z" fill="#26386a" />
-    <rect x="-16" y="26" width="32" height="14" fill="#203264" />
-    <path d="M-12 26 C -12 12, -4 6, 0 6 C 4 6, 12 12, 12 26 Z" fill="#7a3b34" />
-    <path d="M0 6 L0 -4" stroke="#efe3c6" stroke-width="1.5" />
-    <g fill="#f0b860"><rect x="-2" y="56" width="4" height="7" /><rect x="-2" y="86" width="4" height="7" /><rect x="-2" y="116" width="4" height="7" /></g>
+
+  <!-- sky, brushwork, stars, the moon low on the right -->
+  <rect width="1440" height="300" fill={url('sky')} />
+  {strokes.map((b) => <path d={b.d} fill={b.c} opacity={b.o} />)}
+  {stars.map((s) => <circle class="tw" cx={s.x} cy={s.y} r={s.r} fill="#efe3c6" opacity={s.o} style={`--d:${s.d}s;--o:${s.o}`} />)}
+  <path class="meteor" d="M520 30 L600 62" stroke="#efe3c6" stroke-width="1.4" stroke-linecap="round" />
+  <circle cx="1236" cy="78" r="140" fill={url('corona')} />
+  <rect x="1020" y="-80" width="420" height="300" fill={url('dots')} mask={url('glow')} opacity="0.5" />
+  <circle cx="1239" cy="81" r="38" fill="#b9a983" opacity="0.5" />
+  <circle cx="1236" cy="78" r="38" fill="#e9dcbc" />
+  <g fill="#cdbd98" opacity="0.75">
+    <circle cx="1224" cy="66" r="8" />
+    <circle cx="1250" cy="88" r="5.5" />
+    <circle cx="1230" cy="96" r="3.5" />
   </g>
-  <path d="M0 150 C 240 120, 520 138, 760 128 S 1200 120, 1440 136 L1440 220 L0 220 Z" fill="#101c3f" />
+  <circle cx="1236" cy="78" r="38" fill="none" stroke="#f5ecd5" stroke-width="1" stroke-opacity="0.7" />
+  <g class="cloud">
+    <path d="M1080 110 C 1140 98, 1220 100, 1270 106 S 1380 100, 1420 110 Z" fill="#1b2b56" />
+    <path d="M1110 104 C 1160 96, 1220 97, 1262 102" fill="none" stroke="#efe3c6" stroke-opacity="0.35" stroke-width="1" />
+  </g>
+
+  <!-- foothills, house lights, the Dish on the ridge -->
+  <path d="M0 196 C 180 170, 360 180, 520 186 S 860 168, 1040 180 S 1320 176, 1440 186 L1440 260 L0 260 Z" fill="#13214a" />
+  <path d="M0 196 C 180 170, 360 180, 520 186 S 860 168, 1040 180 S 1320 176, 1440 186" fill="none" stroke="#24376b" stroke-width="1.2" />
+  {town.map((l, i) => <circle class="tw" cx={l.x} cy={l.y} r={l.r} fill="#f0b860" style={`--d:${(i % 6) * 0.9}s;--o:0.8`} />)}
+  <g transform="translate(118 176)">
+    <path d="M-5 6 L-2 -3 L2 -3 L5 6 Z" fill="#0a1433" />
+    <ellipse cx="0" cy="-8" rx="10" ry="4.5" transform="rotate(30 0 -8)" fill="#0a1433" />
+    <ellipse cx="0.5" cy="-9.5" rx="9.5" ry="2.8" transform="rotate(30 0.5 -9.5)" fill="#24376b" />
+    <path d="M-6 -14 L4 -16 L8 -4" fill="none" stroke="#0a1433" stroke-width="0.8" />
+    <circle class="beacon" cx="4" cy="-17" r="1.3" fill="#ec5a36" />
+  </g>
+
+  <!-- far palms -->
   {
-    [
-      [120, 186, 70],
-      [540, 186, 86],
-      [980, 186, 64],
-      [1320, 186, 80],
-    ].map(([x, base, top]) => (
-      <g fill="#081029">
-        <path d={`M${x} ${base} C ${x - 4} ${(base + top) / 2}, ${x + 6} ${top + 30}, ${x + 2} ${top}`} stroke="#081029" stroke-width="5" fill="none" stroke-linecap="round" />
-        <g transform={`translate(${x + 2} ${top}) scale(0.7)`}>
-          <path d="M0 0 C -30 -12, -58 -4, -74 18 C -50 4, -26 4, 0 6 Z" />
-          <path d="M0 0 C 30 -14, 60 -6, 76 16 C 52 2, 28 2, 0 6 Z" />
-          <path d="M0 0 C -14 -30, -42 -42, -66 -36 C -40 -26, -20 -14, 0 4 Z" />
-          <path d="M0 0 C 16 -30, 44 -40, 68 -32 C 42 -24, 22 -12, 0 4 Z" />
-          <path d="M0 2 C -28 4, -48 22, -54 46 C -36 26, -18 14, 0 8 Z" />
-          <path d="M0 2 C 28 4, 50 22, 56 46 C 38 26, 20 14, 0 8 Z" />
-        </g>
+    palms.slice(4).map(([x, base, top, k]) => (
+      <g fill="#0d1838">
+        <path d={`M${x} ${base} C ${x - 4 * k} ${(base + top) / 2}, ${x + 6 * k} ${top + 30 * k}, ${x + 2} ${top}`} stroke="#0d1838" stroke-width={6 * k} fill="none" />
+        <use href={`#${id('crown')}`} transform={`translate(${x + 2} ${top}) scale(${k})`} />
       </g>
     ))
   }
-  <rect x="0" y="150" width="1440" height="12" fill="#6e3430" />
-  <rect x="0" y="162" width="1440" height="58" fill="#1e2f5c" />
-  {
-    arches.map((x) => (
+
+  <!-- Hoover Tower and its wing -->
+  <g>
+    <path d="M214 252 L214 222 L336 222 L336 252 Z" fill="#1c2c58" />
+    <path d="M208 224 L216 214 L332 214 L340 224 Z" fill="#6e3430" />
+    <path d="M208 224 L216 214 L332 214 L340 224 Z" fill={url('tiles')} />
+    {[226, 244, 262, 280, 298, 316].map((x, i) => <rect class="win" x={x} y="230" width="6" height="9" rx="1" fill="#f0b860" opacity={i % 2 ? 0.55 : 0.85} />)}
+    <path d="M182 252 L186 82 L224 82 L228 252 Z" fill="#081029" />
+    <path d="M184 250 L188 80 L222 80 L226 250 Z" fill="#1c2c58" />
+    <path d="M205 250 L205 80 L222 80 L226 250 Z" fill="#26386a" />
+    <path d="M184 250 L188 80 L222 80 L226 250 Z" fill={url('courses')} opacity="0.5" />
+    <path d="M205 250 L205 80 L222 80 L226 250 Z" fill={url('dots')} opacity="0.2" />
+    {[110, 150, 190].map((y) => <rect class="win" x="203" y={y} width="5" height="8" fill="#f0b860" />)}
+    <rect x="183" y="76" width="44" height="5" fill="#2c4078" />
+    <rect x="186" y="60" width="38" height="16" fill="#203264" />
+    {[192, 202, 212].map((x) => (
       <g>
-        <path d={`M${x} 220 L${x} 190 A18 18 0 0 1 ${x + 36} 190 L${x + 36} 220 Z`} fill="#0c1530" />
-        <path d={`M${x + 5} 220 L${x + 5} 193 A13 13 0 0 1 ${x + 31} 193 L${x + 31} 220 Z`} fill="#f0b860" fill-opacity="0.2" />
+        <path class="win" d={`M${x} 75 L${x} 66 A3 3 0 0 1 ${x + 6} 66 L${x + 6} 75 Z`} fill="#f0b860" />
+        <path d={`M${x + 1} 74 C ${x + 1} 70, ${x + 2} 68, ${x + 3} 68 C ${x + 4} 68, ${x + 5} 70, ${x + 5} 74 Z`} fill="#4a3216" />
+      </g>
+    ))}
+    <ellipse class="win" cx="205" cy="68" rx="34" ry="16" fill={url('bloom')} />
+    <rect x="184" y="56" width="42" height="5" fill="#2c4078" />
+    <path d="M189 57 C 189 42, 199 34, 205 34 C 211 34, 221 42, 221 57 Z" fill="#7a3b34" />
+    <path d="M205 34 C 211 34, 221 42, 221 57 L 212 57 C 212 46, 209 38, 205 34 Z" fill="#a4553f" />
+    <path d="M205 35 L205 57 M198 38 C 194 44, 192 50, 192 57 M212 38 C 216 44, 218 50, 218 57" fill="none" stroke="#3e1a22" stroke-width="0.8" />
+    <rect x="201" y="26" width="8" height="9" fill="#26386a" />
+    <path d="M200 27 C 200 21, 210 21, 210 27 Z" fill="#a4553f" />
+    <path d="M205 21 L205 12" stroke="#efe3c6" stroke-width="1.2" />
+    <path d="M222 84 L226 248" stroke="#efe3c6" stroke-opacity="0.5" stroke-width="1.2" />
+    <path d="M184 250 L188 80 L222 80 L226 250" stroke="#050b1e" stroke-width="1.4" fill="none" />
+  </g>
+
+  <!-- the Quad: upper floor, roof, arcade, and Memorial Church with its mosaic -->
+  <g>
+    <rect x="372" y="200" width="796" height="24" fill="#18284f" />
+    <rect x="372" y="200" width="796" height="24" fill={url('courses')} opacity="0.45" />
+    <rect x="372" y="194" width="796" height="7" fill="#5c2c2a" />
+    <rect x="372" y="194" width="796" height="7" fill={url('tiles')} opacity="0.8" />
+    {upper.map((x, i) => i % 5 !== 2 && <rect class="win" x={x} y="205" width="6" height="10" fill="#f0b860" opacity={i % 3 ? 0.55 : 0.85} />)}
+    <rect x="372" y="222" width="796" height="9" fill="#6e3430" />
+    <rect x="372" y="222" width="796" height="9" fill={url('tiles')} />
+    <rect x="372" y="231" width="796" height="22" fill="#1e2f5c" />
+    <rect x="372" y="231" width="796" height="2" fill="#2c4078" />
+    {
+      arches.map((x) => (
+        <g>
+          <path d={`M${x} 253 L${x} 243 A12 12 0 0 1 ${x + 24} 243 L${x + 24} 253 Z`} fill="#0c1530" />
+          <path class="win" d={`M${x + 3} 253 L${x + 3} 244 A9 9 0 0 1 ${x + 21} 244 L${x + 21} 253 Z`} fill={url('gold')} />
+          <path class="win" d={`M${x + 3} 253 L${x + 3} 244 A9 9 0 0 1 ${x + 21} 244 L${x + 21} 253 Z`} fill="#f0b860" opacity="0.4" />
+          <path d={`M${x - 2} 243 A14 14 0 0 1 ${x + 26} 243`} fill="none" stroke="#efe3c6" stroke-opacity="0.28" stroke-width="0.9" />
+        </g>
+      ))
+    }
+    {arches.map((x) => <ellipse class="win" cx={x + 12} cy="248" rx="22" ry="16" fill={url('bloom')} />)}
+    <path d="M684 254 L684 170 L760 118 L836 170 L836 254 Z" fill="#081029" />
+    <path d="M686 253 L686 168 L760 116 L834 168 L834 253 Z" fill="#26386a" />
+    <path d="M760 116 L834 168 L834 253 L760 253 Z" fill="#2d4277" />
+    <path d="M676 172 L760 112 L844 172" fill="none" stroke="#7a3b34" stroke-width="7" stroke-linejoin="round" />
+    <path d="M761 108 L846 170" fill="none" stroke="#c96a4c" stroke-width="1.2" stroke-opacity="0.8" />
+    <path d="M704 168 L760 130 L816 168 L816 204 L704 204 Z" fill={url('tess')} />
+    <path d="M704 168 L760 130 L816 168 L816 204 L704 204 Z" fill="none" stroke="#5a3e17" stroke-width="1.6" />
+    <g fill="#8c6a2d">
+      <rect x="714" y="174" width="10" height="27" />
+      <rect x="730" y="170" width="10" height="31" />
+      <rect x="755" y="156" width="11" height="45" />
+      <rect x="780" y="170" width="10" height="31" />
+      <rect x="796" y="174" width="10" height="27" />
+    </g>
+    <g fill="#e8c77a" opacity="0.8">
+      <circle cx="760.5" cy="150" r="3" />
+      <circle cx="719" cy="171" r="2" />
+      <circle cx="735" cy="167" r="2" />
+      <circle cx="785" cy="167" r="2" />
+      <circle cx="801" cy="171" r="2" />
+    </g>
+    <ellipse class="win" cx="760" cy="180" rx="90" ry="50" fill={url('bloom')} />
+    <rect x="686" y="204" width="148" height="4" fill="#203264" />
+    <path d="M740 253 L740 228 A20 20 0 0 1 780 228 L780 253 Z" fill="#0c1530" />
+    <path class="win" d="M744 253 L744 229 A16 16 0 0 1 776 229 L776 253 Z" fill="#f0b860" opacity="0.8" />
+    <path class="win" d="M744 253 L744 229 A16 16 0 0 1 776 229 L776 253 Z" fill={url('gold')} />
+    {[700, 806].map((x) => (
+      <g>
+        <path d={`M${x} 253 L${x} 236 A7 7 0 0 1 ${x + 14} 236 L${x + 14} 253 Z`} fill="#0c1530" />
+        <path class="win" d={`M${x + 2.5} 253 L${x + 2.5} 237 A4.5 4.5 0 0 1 ${x + 11.5} 237 L${x + 11.5} 253 Z`} fill="#f0b860" opacity="0.6" />
+      </g>
+    ))}
+    <path d="M686 253 L686 168 L760 116 L834 168 L834 253" stroke="#050b1e" stroke-width="1.4" fill="none" />
+    <path d="M762 120 L832 169" stroke="#efe3c6" stroke-opacity="0.45" stroke-width="1.1" />
+  </g>
+
+  <!-- near palms -->
+  {
+    palms.slice(0, 4).map(([x, base, top, k]) => (
+      <g fill="#060d24">
+        <path d={`M${x} ${base} C ${x - 4 * k} ${(base + top) / 2}, ${x + 6 * k} ${top + 30 * k}, ${x + 2} ${top}`} stroke="#060d24" stroke-width={7 * k} fill="none" stroke-linecap="round" />
+        <path d={`M${x} ${base} C ${x - 4 * k} ${(base + top) / 2}, ${x + 6 * k} ${top + 30 * k}, ${x + 2} ${top}`} stroke="#16244a" stroke-width={7 * k + 1} fill="none" stroke-dasharray={`1.2 ${f(5 * k + 2)}`} />
+        <use href={`#${id('crown')}`} transform={`translate(${x + 2} ${top}) scale(${k})`} />
+        <path d={`M${f(x + 10 * k)} ${f(top - 7 * k)} C ${f(x + 38 * k)} ${f(top - 13 * k)}, ${f(x + 60 * k)} ${f(top - 5 * k)}, ${f(x + 74 * k)} ${f(top + 12 * k)}`} stroke="#efe3c6" stroke-opacity="0.2" stroke-width="1" fill="none" />
       </g>
     ))
   }
-  <path d="M650 220 L650 132 L730 92 L810 132 L810 220 Z" fill="#26386a" />
-  <path d="M640 134 L730 86 L820 134" fill="none" stroke="#7a3b34" stroke-width="7" stroke-linejoin="round" />
-  <rect x="676" y="140" width="108" height="34" fill="#c99a45" />
-  <path d="M708 220 L708 196 A22 22 0 0 1 752 196 L752 220 Z" fill="#0c1530" />
-  <!-- the robot, arrived, on the church steps -->
-  <g transform="translate(730 220)">
+
+  <!-- the Oval in front, lamps, people, light from the door on the path -->
+  <rect x="0" y="252" width="1440" height="48" fill={url('lawn')} />
+  <path d="M0 262 C 400 254, 1040 254, 1440 262" fill="none" stroke="#22356a" stroke-width="1.4" opacity="0.8" />
+  <path d="M0 280 C 420 268, 1020 268, 1440 280" fill="none" stroke="#1a2a55" stroke-width="1" />
+  <rect class="win" x="600" y="250" width="320" height="50" fill={url('gold')} mask={url('door')} opacity="0.9" />
+  {
+    [470, 1040].map((x) => (
+      <g>
+        <ellipse cx={x} cy="272" rx="60" ry="9" fill={url('gold')} opacity="0.45" />
+        <circle class="halo" cx={x} cy="246" r="26" fill={url('bloom')} />
+        <rect x={x - 1} y="248" width="2" height="24" fill="#0b132b" />
+        <path d={`M${x - 5} 240 L${x + 5} 240 L${x} 235 Z`} fill="#0b132b" />
+        <rect class="win" x={x - 3.5} y="240" width="7" height="8" rx="1" fill="#f6cf86" />
+      </g>
+    ))
+  }
+  {
+    walkers.map((w) => (
+      <g class="walker" transform={`translate(${w.x} ${w.y})`}>
+        <ellipse cx="0" cy="1" rx={w.h * 0.3} ry="2" fill="#050a1a" opacity="0.6" />
+        <path d={`M${-w.h * 0.1} 0 L${-w.h * 0.06} ${-w.h * 0.42} M${w.h * 0.1} 0 L${w.h * 0.06} ${-w.h * 0.42}`} stroke="#070d22" stroke-width={w.h * 0.1} stroke-linecap="round" />
+        <path d={`M${-w.h * 0.16} ${-w.h * 0.4} C ${-w.h * 0.2} ${-w.h * 0.62}, ${-w.h * 0.14} ${-w.h * 0.76}, 0 ${-w.h * 0.76} C ${w.h * 0.14} ${-w.h * 0.76}, ${w.h * 0.2} ${-w.h * 0.62}, ${w.h * 0.16} ${-w.h * 0.4} Z`} fill="#0a1229" />
+        <circle cx="0" cy={-w.h * 0.88} r={w.h * 0.11} fill="#0a1229" />
+        <path d={`M${w.h * 0.06} ${-w.h * 0.74} C ${w.h * 0.16} ${-w.h * 0.72}, ${w.h * 0.19} ${-w.h * 0.6}, ${w.h * 0.16} ${-w.h * 0.42}`} stroke="#efe3c6" stroke-opacity="0.4" stroke-width="1.1" fill="none" />
+      </g>
+    ))
+  }
+
+  <!-- the route ends at the church door, and the G1 waves -->
+  <path d="M250 296 C 400 290, 520 282, 620 276 S 720 266, 758 258" fill="none" stroke="#ec5a36" stroke-width="2.4" stroke-dasharray="1.6 9" stroke-linecap="round" />
+  <circle class="goal" cx="760" cy="258" r="9" fill="none" stroke="#ec5a36" stroke-width="2" />
+  <circle cx="760" cy="258" r="9" fill="none" stroke="#ec5a36" stroke-width="2" opacity="0.9" />
+  <g transform="translate(760 262)">
+    <ellipse cx="0" cy="1" rx="9" ry="2.2" fill="#050a1a" opacity="0.6" />
     <rect x="-4.5" y="-14" width="3.5" height="14" rx="1.5" fill="#d9cba8" />
     <rect x="1" y="-14" width="3.5" height="14" rx="1.5" fill="#efe3c6" />
     <rect x="-6.5" y="-28" width="13" height="15" rx="3" fill="#efe3c6" />
+    <rect x="-9" y="-27" width="3" height="11" rx="1.5" fill="#d9cba8" />
+    <g class="wave"><rect x="6" y="-38" width="3" height="12" rx="1.5" fill="#efe3c6" /></g>
     <rect x="-4.5" y="-36" width="9" height="8" rx="3" fill="#efe3c6" />
     <rect x="-3.2" y="-33.5" width="6.4" height="2.8" rx="1.2" fill="#e4502f" />
+    <circle cx="0" cy="-32" r="6" fill="#ec5a36" opacity="0.18" />
   </g>
 </svg>
+
+<script>
+  // Alive only while on screen: stars, the beacon, the goal ring, the wave.
+  for (const s of document.querySelectorAll<SVGSVGElement>('[data-skyline]')) {
+    new IntersectionObserver(([e]) => s.classList.toggle('is-live', e.isIntersecting)).observe(s);
+  }
+</script>
 
 <style>
   .skyline {
     display: block;
     overflow: visible;
     width: 100%;
-    height: clamp(140px, 16vw, 220px);
+    height: clamp(180px, 21vw, 300px);
     margin-top: var(--space-700);
+  }
+
+  .meteor {
+    opacity: 0;
+  }
+
+  .wave {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .is-live .tw {
+      animation: twinkle 5.5s ease-in-out infinite var(--d);
+    }
+
+    .is-live .meteor {
+      animation: meteor 12s ease-in infinite 3s;
+    }
+
+    .is-live .beacon {
+      animation: beacon 2.4s steps(1, end) infinite;
+    }
+
+    .is-live .halo {
+      animation: breathe 4.8s ease-in-out infinite;
+    }
+
+    .is-live .cloud {
+      animation: drift 40s ease-in-out infinite alternate;
+    }
+
+    .is-live .goal {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: goal 2.2s ease-out infinite;
+    }
+
+    .is-live .wave {
+      animation: wave 2.6s ease-in-out infinite;
+    }
+  }
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: var(--o, 0.6);
+    }
+    50% {
+      opacity: 0.15;
+    }
+  }
+
+  @keyframes meteor {
+    0%,
+    88% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    90% {
+      opacity: 0.9;
+    }
+    97%,
+    100% {
+      opacity: 0;
+      transform: translate(200px, 80px);
+    }
+  }
+
+  @keyframes beacon {
+    0%,
+    60% {
+      opacity: 1;
+    }
+    61%,
+    100% {
+      opacity: 0.15;
+    }
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes drift {
+    to {
+      transform: translateX(-40px);
+    }
+  }
+
+  @keyframes goal {
+    0% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+  }
+
+  /* A wave: up, two shakes, down, then a rest. */
+  @keyframes wave {
+    0%,
+    55%,
+    100% {
+      transform: rotate(0deg);
+    }
+    12% {
+      transform: rotate(-24deg);
+    }
+    22% {
+      transform: rotate(12deg);
+    }
+    32% {
+      transform: rotate(-24deg);
+    }
+    42% {
+      transform: rotate(12deg);
+    }
   }
 </style>

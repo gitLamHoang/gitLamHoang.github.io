@@ -351,6 +351,7 @@ mark.hl {
 .close-cta .heading-2 {
   position: relative;
   display: inline-block;
+  justify-self: start;
   padding-bottom: 0.3em;
 }
 

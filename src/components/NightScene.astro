@@ -863,6 +863,7 @@ const lamps = [
       <path class="route" d={route} fill="none" stroke="#ec5a36" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="2 12" data-route />
       {waypoints.map(([x, y]) => <circle class="wp" cx={x} cy={y} r="9" fill="none" stroke="#ec5a36" stroke-width="2.5" />)}
     </g>
+    <circle class="goal" cx="1010" cy="714" r="9" fill="none" stroke="#ec5a36" stroke-width="2.5" />
 
     {
       walkers.map((w, i) => (
@@ -915,7 +916,7 @@ const lamps = [
       </g>
       <rect x="-8" y="-34" width="16" height="18" rx="4" fill="#efe3c6" />
       <rect x="-11" y="-32" width="3.5" height="14" rx="1.75" fill="#d9cba8" />
-      <rect x="7.5" y="-32" width="3.5" height="14" rx="1.75" fill="#efe3c6" />
+      <g class="arm-r"><rect x="7.5" y="-32" width="3.5" height="14" rx="1.75" fill="#efe3c6" /></g>
       <rect x="-5.5" y="-44" width="11" height="10" rx="4" fill="#efe3c6" />
       <rect x="-4" y="-41" width="8" height="3.5" rx="1.5" fill="#ec5a36" />
       <circle cx="0" cy="-39.3" r="7" fill="#ec5a36" opacity="0.18" />
@@ -968,6 +969,57 @@ const lamps = [
   .legs .leg {
     transform-box: fill-box;
     transform-origin: 50% 0%;
+  }
+
+  /* At the church steps: the goal ring rings out and the robot turns to wave, twice. */
+  .scene .goal {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .scene .arm-r {
+    transform-box: fill-box;
+    transform-origin: 50% 8%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scene.is-arrived .goal {
+      animation: goal 2.2s ease-out infinite;
+    }
+
+    .scene.is-arrived .arm-r {
+      animation: wave 2.4s ease-in-out 2 300ms;
+    }
+  }
+
+  @keyframes goal {
+    0% {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(2.8);
+    }
+  }
+
+  @keyframes wave {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    18%,
+    82% {
+      transform: rotate(-150deg);
+    }
+    34%,
+    66% {
+      transform: rotate(-126deg);
+    }
+    50% {
+      transform: rotate(-160deg);
+    }
   }
 
   .scene.is-walking .leg.l {

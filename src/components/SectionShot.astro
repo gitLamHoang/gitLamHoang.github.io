@@ -582,7 +582,7 @@ const bells = [700, 760, 820];
       )
     }
 
-    <rect x="0" y="0" width="1440" height="40" fill={url('head')} />
+    <rect x="0" y="0" width="1440" height={kind === 'library' ? 90 : 48} fill={url('head')} />
     <rect x="0" y="300" width="1440" height="120" fill={url('foot')} />
   </svg>
 </div>
