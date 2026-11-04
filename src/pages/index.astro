@@ -130,23 +130,26 @@ const scholarly = papers.map((p) => ({
           { label: 'Now', roles: current },
           { label: 'Before', roles: past },
         ].map((leg) => (
-          <section class="panel leg" aria-labelledby={`leg-${leg.label}`} data-reveal>
+          <section class="leg" aria-labelledby={`leg-${leg.label}`} data-reveal>
             <h3 id={`leg-${leg.label}`} class="title-2 text-2">{leg.label}</h3>
             <ol class="roles">
               {leg.roles.map((r) => (
-                <li class="role">
-                  <p class="caption-2 text-2 tnum">{r.dates}</p>
-                  <p class="heading-6">{r.org}</p>
-                  <p class="body-2">{r.title}</p>
-                  {r.context && <p class="body-6 text-2">{r.context}</p>}
-                  {r.detail && <p class="body-6 text-2">{r.detail}</p>}
-                  {r.work && (
-                    <p class="role-link">
-                      <a href={`/#work-${r.work}`} class="body-5">
-                        See the project <Icon name="arrowRight" />
-                      </a>
-                    </p>
-                  )}
+                <li class:list={['role', { 'is-current': leg.label === 'Now' }]}>
+                  <span class="wp" aria-hidden="true" />
+                  <div class="role-body">
+                    <p class="caption-2 text-2 tnum">{r.dates}</p>
+                    <p class="heading-6">{r.org}</p>
+                    <p class="body-2">{r.title}</p>
+                    {r.context && <p class="body-6 text-2">{r.context}</p>}
+                    {r.detail && <p class="body-6 text-2">{r.detail}</p>}
+                    {r.work && (
+                      <p class="role-link">
+                        <a href={`/#work-${r.work}`} class="body-5">
+                          See the project <Icon name="arrowRight" />
+                        </a>
+                      </p>
+                    )}
+                  </div>
                 </li>
               ))}
             </ol>
@@ -288,39 +291,69 @@ const scholarly = papers.map((p) => ({
     }
   }
 
-  /* ---------- experience ---------- */
+  /* ---------- experience: waypoints on a route, now and before side by side ---------- */
 
   .legs {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-300);
+    gap: 0 var(--space-600);
     align-items: start;
-  }
-
-  .leg {
-    padding: var(--space-300) 0 0;
+    padding-top: var(--space-300);
+    border-top: 2px solid var(--gold);
   }
 
   .roles {
     display: grid;
-    gap: var(--space-400);
-    margin: var(--space-300) 0 0;
+    margin: var(--space-200) 0 0;
     padding: 0;
     list-style: none;
   }
 
+  /* Current roles get filled waypoints, earlier ones open rings, on one line per leg. */
   .role {
+    position: relative;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 0 var(--space-200);
+    padding-bottom: var(--space-400);
+  }
+
+  .role::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 9px;
+    width: 2px;
+    background: rgb(239 227 198 / 0.22);
+  }
+
+  .role:first-child::before {
+    top: 8px;
+  }
+
+  .role:last-child::before {
+    bottom: var(--space-400);
+  }
+
+  .wp {
+    position: relative;
+    z-index: 1;
+    width: 14px;
+    height: 14px;
+    margin: 3px 0 0 3px;
+    border: 2px solid var(--text);
+    border-radius: var(--radius-full);
+    background: var(--bg);
+  }
+
+  .is-current .wp {
+    background: var(--text);
+  }
+
+  .role-body {
     display: grid;
     gap: var(--space-50);
-  }
-
-  .role + .role {
-    padding-top: var(--space-400);
-    border-top: 1px dotted rgb(217 164 65 / 0.45);
-  }
-
-  .roles {
-    gap: var(--space-400) !important;
   }
 
   .role-link a {
@@ -335,7 +368,7 @@ const scholarly = papers.map((p) => ({
     height: 16px;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 1000px) {
     .legs {
       grid-template-columns: minmax(0, 1fr);
     }
