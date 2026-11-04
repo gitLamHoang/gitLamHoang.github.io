@@ -2,22 +2,24 @@
 version: 1
 slug: "src-pages-index-astro"
 primary_target: "src/pages/index.astro"
-related_targets: ["src/pages/work/[slug].astro","src/pages/404.astro"]
+related_targets: ["src/pages/work/[slug].astro","src/pages/404.astro","src/pages/lab.astro"]
 ---
 
-Scope: home page `/` (Experience mode), with the write-ups, 404, and the new `/lab` page inheriting the world.
-Audience: robotics and AI people and internship recruiters, equally. Action: email Harvey or open the CV. Proof: the recorded HARP run, four projects with claim, result, limit. Constraints: PRODUCT.md truth rules; lab and explorer move to `/lab`.
+Scope: home page `/` (Experience mode); write-ups, `/lab`, and 404 inherit the world.
+Audience: robotics and AI people and internship recruiters, equally. Action: open the CV or email. Proof: the recorded HARP run and four projects with claim, result, limit.
+Pinned by Harvey (2026-11-03): impeccable runs the process; the visual world is elayadesign's landing-page-design system (Part B), so it beats any roll. Structure chosen in the surface round: case file with tabs.
+Constraints: PRODUCT.md truth rules. Harvey's own copy choices win over the system: dates stay "Jun 2026 - Sep 2026"; project titles are not rewritten. Elaya's no-italics rule applies, so the Specter quotes set upright.
 
 ## Direction contract
 
-THESIS: The home page plays like a humanoid launch film cut from Harvey's own recorded run. It refuses the name-plus-project-cards portfolio, and the notebook and test-report looks already tried.
+THESIS: The work is a case file you open on the first screen: one panel, a tab per project, each showing the work running beside its claim, measured result, and limit. It refuses the long scroll of identical project blocks and the dark film poster tried before.
 
-OWN-WORLD: Graphite ground #0d0f12 with one tone step for panels, off-white ink #f4f5f6, steel grey #8a9099 for secondary text, and one yellow #ffcf3f from the sim's LiDAR tracks, spent only on measured results. Switzer alone: tight semibold display, tabular figures for readouts. Full-bleed MuJoCo footage rendered in the same graphite, square corners, no rules, no glass, no shadows at rest.
+OWN-WORLD: Elaya's system, exactly. Geist alone in named text styles on the Tailwind scale; spacing only 2 to 96 px tokens; flat black #000000 ground with #181818, #1F1F1F, #272727 surfaces and full borders; Tailwind radii with nested-radius math; one gold accent #E5C04A on measured figures; hero heading in a white to grey text gradient; floating blurred pill nav; Phosphor icons.
 
-STORY: In one screen the visitor sees the G1 walk through a crowd and learns who wrote its navigation. Scrolling, they watch how it decides, read four projects as claim, result, limit, then email or open the CV.
+STORY: The visitor reads who Harvey is in one line, sees the HARP run playing inside the case file, flips the tabs to compare four projects in seconds, watches the tagline light up word by word, and opens the CV or emails.
 
-FIRST VIEWPORT: The replay fills the screen. "Harvey" is pinned top-left and "Phan" bottom-right at 9vw. One sentence and a solid Resume button sit at the left, 44% down. The run's result is a readout top-right, in yellow.
+FIRST VIEWPORT: Floating pill nav at top centre. Gradient two-line headline and one-line subheading at 680 px on the left, Download resume and Email me on the right of the same block, an organizations line under it. The case-file panel starts above the fold: four tabs, HARP selected, the replay on the left, claim, gold result, and limit on the right.
 
-FORM: Launch film, my top-ranked grounded candidate (1 of 7), taken as the pick. Composition is taste-skill "pinned poster" (seed 1316146310). seed:bfe0609774af5011
+FORM: Case file with tabs, dealt structure 6 of my seven, from the surface round. seed:bfe0609774af5011
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

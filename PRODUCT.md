@@ -44,6 +44,8 @@ Every result comes with how it was measured and what it can't do yet. Harvey's R
 - Copy: direct, specific, sentence case, no em dashes, no excess adjectives, technical and professional.
 - Harvey's words for the feel he wants: professional, robust, smooth, minimal, and still very creative, with beautiful animation and graphics.
 - Rejected before: the "report and instrument" redesign (IBM Carbon structure, Plex type), 2026-11-02, as not different enough.
+- Rejected 2026-11-03: the "launch film" redesign (graphite cinema, Switzer), as too simple and not designed well.
+- Pinned 2026-11-03: impeccable runs the design process, and the visual system is elayadesign's landing-page-design (Part B: Geist, named text styles on the Tailwind scale, fixed spacing tokens, flat dark surfaces, gradient hero heading text, floating blurred nav, word-by-word tagline reveal). Harvey's own copy rules win where they differ (dates written like LinkedIn, "Jun 2026 - Sep 2026").
 
 ## Evidence on Hand
 
