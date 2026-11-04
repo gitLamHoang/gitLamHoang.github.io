@@ -1,8 +1,8 @@
 ---
-// The recorded HARP crowd run, replayed, with a live instrument overlay: simulation time, planner
-// mode, and distance to goal, read frame by frame from the run's own log (the same data as the
-// run explorer). Without JavaScript the video keeps native controls and the overlay stays hidden.
-import poster from '../assets/harp/replay-poster.jpg';
+// The recorded HARP crowd run as a figure: the graphite replay with a readout of simulation time,
+// planner mode, and distance to goal, read frame by frame from the run's own log. Plays once, then
+// offers Replay. Without JavaScript the video keeps native controls and the readout stays hidden.
+import poster from '../assets/harp/film-poster.jpg';
 import run from '../data/harp-crowd-run.json';
 
 interface Props {
@@ -11,65 +11,44 @@ interface Props {
 }
 
 const { caption = true } = Astro.props;
-
-const frames = run.frames;
-const strip: { mode: string; x: number; w: number }[] = [];
-frames.forEach((f, i) => {
-  const cur = strip[strip.length - 1];
-  if (cur && cur.mode === f.m) cur.w += 1;
-  else strip.push({ mode: f.m, x: i, w: 1 });
-});
-const duration = frames[frames.length - 1].t;
+const duration = run.frames[run.frames.length - 1].t;
+const people = run.frames[0].p.length;
 ---
 
 <figure class="replay" data-replay>
-  <div class="replay-frame frame">
+  <div class="replay-frame">
     <video
       data-replay-video
       muted
-      loop
       playsinline
       controls
       preload="metadata"
       poster={poster.src}
       width="1600"
       height="900"
-      aria-label="Replay of a recorded simulation: HARP's Unitree G1 humanoid walks down a hallway past seven moving pedestrians to a goal marker, steering around them using LiDAR tracks."
+      aria-label={`Replay of a recorded simulation: HARP's Unitree G1 humanoid walks through a building past ${people} moving pedestrians to a goal marker, its path drawn in yellow.`}
     >
-      <source src="/media/harp-crowd-replay-960.mp4" type="video/mp4" media="(max-width: 700px)" />
-      <source src="/media/harp-crowd-replay.mp4" type="video/mp4" />
+      <source src="/media/film-720x900.mp4" type="video/mp4" media="(max-width: 700px)" />
+      <source src="/media/film-1600.mp4" type="video/mp4" />
     </video>
 
-    <dl class="hud mono" aria-hidden="true">
-      <div><dt>Sim time</dt><dd><span data-hud="time">0.0</span> / {duration.toFixed(1)} s</dd></div>
-      <div><dt>Planner</dt><dd><span class="mode-chip m-follow" data-hud="mode">Follow</span></dd></div>
-      <div><dt>To goal</dt><dd><span data-hud="goal">9.00</span> m</dd></div>
-    </dl>
-
-    <button type="button" class="replay-toggle" data-replay-toggle aria-pressed="false">
-      <svg viewBox="0 0 16 16" aria-hidden="true" class="icon-pause"><rect x="3" y="2" width="3.5" height="12" rx="1"></rect><rect x="9.5" y="2" width="3.5" height="12" rx="1"></rect></svg>
-      <svg viewBox="0 0 16 16" aria-hidden="true" class="icon-play"><path d="M4 2.5 L13.5 8 L4 13.5 Z"></path></svg>
-      <span data-replay-label>Pause</span>
-    </button>
-    <ul class="legend ui" aria-label="Legend">
-      <li><span class="swatch sw-path"></span>Robot path</li>
-      <li><span class="swatch sw-track"></span>LiDAR track</li>
-      <li><span class="swatch sw-goal"></span>Goal</li>
-    </ul>
-
-    <svg class="strip" viewBox={`0 0 ${frames.length} 1`} preserveAspectRatio="none" aria-hidden="true">
-      {strip.map((b) => <rect x={b.x} y="0" width={b.w} height="1" class={`m-${b.mode}`}></rect>)}
-      <rect x="0" y="0" width="1.5" height="1" class="head" data-hud="head"></rect>
-    </svg>
+    <div class="readout tnum" data-ui>
+      <dl aria-hidden="true">
+        <div><dt>Sim time</dt><dd><span data-hud="time">0.0</span> / {duration.toFixed(1)} s</dd></div>
+        <div><dt>Planner</dt><dd data-hud="mode">Follow</dd></div>
+        <div><dt>To goal</dt><dd><span data-hud="goal">9.00</span> m</dd></div>
+      </dl>
+      <button type="button" class="replay-toggle" data-replay-toggle>Pause</button>
+    </div>
   </div>
   {
     caption && (
       <figcaption class="replay-caption">
-        <strong>Recorded run, replayed.</strong> A native MuJoCo Unitree G1 on HARP's GR00T walking policy, steered by my NMPC filter
-        through a building with seven moving pedestrians, recorded before the Nov 1 rework. It reached the goal with zero contacts in
-        64.7 s. The controller sees only its
-        LiDAR tracks. The overlay and the colored strip along the bottom show the planner's mode from the run's log; walls are cut away
-        to 0.9 m for visibility, and playback runs at 2.5×.
+        <strong>Recorded run, replayed.</strong> A native MuJoCo Unitree G1 on HARP's GR00T walking policy, steered by the earlier
+        sampling planner through a building with {people} moving pedestrians, recorded on Nov 1 before the rework. It reached the goal
+        with {run.summary.contacts} contacts in {run.summary.seconds.toFixed(1)} s. The controller sees only its LiDAR tracks, drawn as
+        pale discs; the robot's path is yellow. The readout is the run's log. Walls are cut to 0.9 m for visibility, and playback runs
+        at 2.5×.
       </figcaption>
     )
   }
@@ -86,15 +65,12 @@ const duration = frames[frames.length - 1].t;
   for (const root of document.querySelectorAll<HTMLElement>('[data-replay]')) {
     const video = root.querySelector<HTMLVideoElement>('[data-replay-video]')!;
     const toggle = root.querySelector<HTMLButtonElement>('[data-replay-toggle]')!;
-    const label = root.querySelector('[data-replay-label]')!;
     const time = root.querySelector('[data-hud="time"]')!;
-    const mode = root.querySelector<HTMLElement>('[data-hud="mode"]')!;
+    const mode = root.querySelector('[data-hud="mode"]')!;
     const goal = root.querySelector('[data-hud="goal"]')!;
-    const head = root.querySelector<SVGRectElement>('[data-hud="head"]')!;
     let userPaused = reduce.matches;
     let last = -1;
 
-    // Scripted controls replace the native ones.
     video.controls = false;
     root.dataset.live = '';
 
@@ -105,15 +81,8 @@ const duration = frames[frames.length - 1].t;
       const f = frames[i];
       time.textContent = f.t.toFixed(1);
       goal.textContent = Math.hypot(run.goal[0] - f.r[0], run.goal[1] - f.r[1]).toFixed(2);
-      if (mode.dataset.mode !== f.m) {
-        mode.dataset.mode = f.m;
-        mode.className = `mode-chip m-${f.m}`;
-        mode.textContent = LABEL[f.m] ?? f.m;
-      }
-      head.setAttribute('x', String(i));
+      mode.textContent = LABEL[f.m] ?? f.m;
     };
-
-    // Follow the decoded frame when the browser can tell us, otherwise the animation clock.
     const rvfc = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
     const tick = () => {
       draw();
@@ -121,18 +90,15 @@ const duration = frames[frames.length - 1].t;
       if (rvfc) video.requestVideoFrameCallback(tick);
       else requestAnimationFrame(tick);
     };
-
     const sync = () => {
-      const paused = video.paused;
-      toggle.setAttribute('aria-pressed', String(paused));
-      toggle.classList.toggle('is-paused', paused);
-      label.textContent = paused ? 'Play' : 'Pause';
+      toggle.textContent = video.ended ? 'Replay' : video.paused ? 'Play' : 'Pause';
     };
 
     toggle.addEventListener('click', () => {
       if (video.paused) {
         userPaused = false;
-        video.play().catch(() => {});
+        if (video.ended) video.currentTime = 0;
+        video.play().catch(sync);
       } else {
         userPaused = true;
         video.pause();
@@ -143,17 +109,18 @@ const duration = frames[frames.length - 1].t;
       tick();
     });
     video.addEventListener('pause', sync);
+    video.addEventListener('ended', sync);
     video.addEventListener('seeked', draw);
     video.addEventListener('loadeddata', draw);
 
-    // Play only while on screen, and never on its own under reduced motion.
+    // Plays once while on screen; never on its own under reduced motion.
     new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (!userPaused) video.play().catch(() => sync());
+      ([e]) => {
+        if (e.isIntersecting) {
+          if (!userPaused && !video.ended) video.play().catch(sync);
         } else video.pause();
       },
-      { threshold: 0.25 },
+      { threshold: 0.4 },
     ).observe(video);
     sync();
   }
@@ -167,8 +134,7 @@ const duration = frames[frames.length - 1].t;
   .replay-frame {
     position: relative;
     aspect-ratio: 16 / 9;
-    background: #eceff0;
-    view-transition-name: harp-replay;
+    background: var(--surface);
   }
 
   video {
@@ -178,236 +144,87 @@ const duration = frames[frames.length - 1].t;
     object-fit: cover;
   }
 
-  /* The overlay only appears once the script drives it. */
-  .hud,
-  .strip,
-  .replay-toggle,
-  .legend {
+  .readout {
     display: none;
   }
 
-  [data-live] .hud,
-  [data-live] .strip {
-    display: block;
-  }
-
-  [data-live] .replay-toggle,
-  [data-live] .legend {
-    display: flex;
-  }
-
-  .hud {
+  [data-live] .readout {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    margin: 0;
-    padding: 8px 12px;
-    border: 1px solid rgb(28 43 75 / 0.18);
-    border-radius: 6px;
-    background: rgb(246 248 246 / 0.9);
-    color: #1c2b4b;
-    font-size: 0.875rem;
-    line-height: 1.35;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    min-width: 13.5rem;
-  }
-
-  .hud div {
+    top: var(--margin);
+    right: var(--margin);
     display: grid;
-    grid-template-columns: 5.2rem auto;
-    align-items: center;
-    gap: 8px;
-    padding-block: 2px;
+    justify-items: end;
+    gap: 12px;
+    padding: 14px 16px 16px;
+    background: rgb(21 24 29 / 0.9);
+    font-size: var(--step-small);
   }
 
-  .hud dt {
-    font-family: var(--font-ui);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #3f4957;
-  }
-
-  .hud dd {
+  dl {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2px 16px;
     margin: 0;
-    font-variant-numeric: tabular-nums;
+    text-align: right;
   }
 
-  .mode-chip {
-    display: inline-block;
-    min-width: 5.4rem;
-    padding: 1px 8px;
-    border-radius: 3px;
-    font-family: var(--font-ui);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #fff;
-    background: var(--mc);
-    transition: background-color 160ms ease;
+  dl div {
+    display: contents;
   }
 
-  .mode-chip.m-evade {
-    color: #1c2b4b;
+  dt {
+    color: var(--muted);
   }
 
-  /* Planner-mode colors, shared with the run explorer. */
-  .m-follow { --mc: #1c2b4b; }
-  .m-evade { --mc: #d9a90b; }
-  .m-yield { --mc: #c0283a; }
-  .m-blocked { --mc: #5d6776; }
-  .m-idle { --mc: #b8c3bf; }
-
-  .strip {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 6px;
-  }
-
-  .strip rect {
-    fill: var(--mc);
-  }
-
-  .strip .head {
-    fill: #fff;
-    stroke: #1c2b4b;
-    stroke-width: 0.6;
-    vector-effect: non-scaling-stroke;
+  dd {
+    margin: 0;
+    min-width: 7.5ch;
   }
 
   .replay-toggle {
-    position: absolute;
-    right: 12px;
-    bottom: 18px;
-    align-items: center;
-    gap: 6px;
-    min-height: 40px;
-    padding: 0 14px 0 12px;
-    border: 1.5px solid #1c2b4b;
-    border-radius: 999px;
-    background: rgb(246 248 246 / 0.92);
-    color: #1c2b4b;
-    font-family: var(--font-ui);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-  }
-
-  .replay-toggle svg {
-    width: 14px;
-    height: 14px;
-    fill: currentColor;
-  }
-
-  .replay-toggle .icon-play,
-  .replay-toggle.is-paused .icon-pause {
-    display: none;
-  }
-
-  .replay-toggle.is-paused .icon-play {
-    display: block;
-  }
-
-  .legend {
-    position: absolute;
-    left: 12px;
-    bottom: 18px;
-    flex-wrap: wrap;
-    gap: 4px 14px;
-    margin: 0;
-    padding: 7px 12px;
-    list-style: none;
-    border-radius: 999px;
-    background: rgb(246 248 246 / 0.92);
-    color: #1c2b4b;
-    font-size: 0.875rem;
-    font-weight: 600;
-    backdrop-filter: blur(4px);
-  }
-
-  .legend li {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 0;
+    background: var(--surface-2);
+    font-size: var(--step-small);
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform var(--dur-press) var(--ease-out), background-color var(--dur-ui) ease;
   }
 
-  .swatch {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
+  .replay-toggle:active {
+    transform: scale(0.97);
   }
 
-  .sw-path {
-    height: 4px;
-    border-radius: 2px;
-    background: #c0283a;
-  }
-
-  .sw-track {
-    background: rgb(240 214 74 / 0.85);
-    border: 1px solid #c9a51c;
-  }
-
-  .sw-goal {
-    border: 3px solid #1c2b4b;
-    background: #f6f8f6;
+  @media (hover: hover) and (pointer: fine) {
+    .replay-toggle:hover {
+      background: #2a2f37;
+    }
   }
 
   .replay-caption {
-    margin-top: 12px;
-    font-size: 0.96875rem;
-    line-height: 1.5;
-    color: var(--ink-soft);
-    max-width: 82ch;
+    margin-top: 14px;
+    max-width: 78ch;
+    color: var(--muted);
+    font-size: var(--step-small);
   }
 
   .replay-caption strong {
-    font-family: var(--font-ui);
-    font-weight: 600;
-    font-size: 1.0625rem;
     color: var(--ink);
+    font-weight: 500;
   }
 
-  @media (max-width: 760px) {
-    .hud {
-      top: 8px;
-      left: 8px;
-      padding: 5px 9px;
-      min-width: 0;
-      font-size: 0.8125rem;
+  @media (max-width: 700px) {
+    .replay-frame {
+      aspect-ratio: 4 / 5;
     }
 
-    .hud div {
-      grid-template-columns: 4.4rem auto;
-    }
-
-    .hud dt,
-    .mode-chip {
-      font-size: 0.8125rem;
-    }
-
-    .mode-chip {
-      min-width: 4.6rem;
-    }
-
-    .hud div:first-child {
-      display: none;
-    }
-  }
-
-  @media (max-width: 560px) {
-    .legend {
-      display: none !important;
-    }
-
-    .replay-toggle {
-      min-height: 36px;
-      bottom: 14px;
-      right: 8px;
+    [data-live] .readout {
+      top: 12px;
+      right: 12px;
+      padding: 10px 12px 12px;
     }
   }
 </style>
